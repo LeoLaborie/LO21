@@ -4,7 +4,8 @@
 #include <iostream>
 #include "Plateau.h"
 
-class Joueur{
+class Joueur
+{
 private:
     int nbrPierres;
     int nbrPoints;

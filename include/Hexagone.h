@@ -6,18 +6,35 @@
 #include <string.h>
 #include "Tuile.h"
 
+using namespace std;
+
 class Hexagone
 {
 public:
-    void setParent(Tuile *parent) { Parent = parent; }
-    void setVoisins(std::vector<Hexagone *> v) { voisins = v; };
+    void setParent(Tuile *p) { parent = p; }
+    void setVoisins(vector<Hexagone *> v) { voisins = v; }
+    void addVoisin(Hexagone * v) { voisins.push_back(v); }
+    vector<Hexagone *> getVoisins() { return voisins; }
+
+    int getX() { return x; }
+    int getY() { return y; }
+
+    Hexagone(int x_coord, int y_coord, int z_coord, Tuile *p = nullptr, vector<Hexagone *> v = {})
+    {
+        voisins = v;
+        x = x_coord;
+        y = y_coord;
+        z = z_coord;
+        parent = p;
+    }
+
 
 private:
-    std::vector<Hexagone *> voisins;
+    vector<Hexagone *> voisins;
     int x;
     int y;
     int z;
-    Tuile *Parent;
+    Tuile *parent;
 };
 
 class Carriere : public Hexagone
