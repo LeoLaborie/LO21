@@ -13,7 +13,7 @@ class Hexagone
 public:
     void setParent(Tuile *p) { parent = p; }
     void setVoisins(vector<Hexagone *> v) { voisins = v; }
-    void addVoisin(Hexagone * v) { voisins.push_back(v); }
+    void addVoisin(Hexagone *v) { voisins.push_back(v); }
     vector<Hexagone *> getVoisins() { return voisins; }
 
     int getX() { return x; }
@@ -28,7 +28,6 @@ public:
         parent = p;
     }
 
-
 private:
     vector<Hexagone *> voisins;
     int x;
@@ -39,40 +38,51 @@ private:
 
 class Carriere : public Hexagone
 {
+    using Hexagone::Hexagone; //hérite du constructeur d'hexagone
+};
+
+enum class TypeQuartier
+{
+    Habitation,
+    Marche,
+    Temple,
+    Caserne,
+    Jardin
 };
 
 class Quartier : public Hexagone
 {
 private:
-    enum class TypeQuartier
-    {
-        Marche,
-        Temple,
-        Caserne,
-        Jardin
-    };
     TypeQuartier typeQuartier;
 
 public:
+    using Hexagone::Hexagone; // hérite du constructeur de Hexagone
     void setTypeQuartier(TypeQuartier t) { typeQuartier = t; }
     TypeQuartier getTypeQuartier() const { return typeQuartier; }
+};
+
+enum class TypePlace
+{
+    Habitation,
+    Marche,
+    Temple,
+    Caserne,
+    Jardin
 };
 
 class Place : public Hexagone
 {
 private:
-    enum class TypePlace
-    {
-        Marche,
-        Temple,
-        Caserne,
-        Jardin
-    };
     TypePlace typePlace;
     int multiplicateur;
 
 public:
+    Place(int x, int y, int z, TypePlace type, int mult,
+          Tuile *p = nullptr, vector<Hexagone *> v = {})
+        : Hexagone(x, y, z, p, v), typePlace(type), multiplicateur(mult) {}
+
     void setTypePlace(TypePlace t) { typePlace = t; }
+
     TypePlace getTypePlace() const { return typePlace; }
 };
 
