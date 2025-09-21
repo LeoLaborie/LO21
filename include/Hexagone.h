@@ -56,7 +56,9 @@ private:
     TypeQuartier typeQuartier;
 
 public:
-    using Hexagone::Hexagone; // hérite du constructeur de Hexagone
+    Quartier(int x, int y, int z, TypeQuartier type,
+             Tuile* p = nullptr, vector<Hexagone*> v = {})
+        : Hexagone(x, y, z, p, v), typeQuartier(type) {}
     void setTypeQuartier(TypeQuartier t) { typeQuartier = t; }
     TypeQuartier getTypeQuartier() const { return typeQuartier; }
 };
