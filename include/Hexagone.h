@@ -25,6 +25,9 @@ public:
     void setVoisins(vector<Hexagone *> v) { voisins = v; }
     void addVoisin(Hexagone *v) { voisins.push_back(v); }
     std::vector<Hexagone *> &getVoisins() { return voisins; }
+    bool getEstRecouvert() const { return est_recouvert; }
+    void setEstRecouvert(bool val) { est_recouvert = val; }
+
 
     int getX() { return x; }
     int getY() { return y; }
