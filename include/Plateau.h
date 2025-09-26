@@ -30,8 +30,10 @@ public:
             new Carriere(-1, 1, 0),
             new Carriere(0, -1, 0),
             new Carriere(1, 0, 0)
-            
         };
+        
+        updateVoisins();
+
     }
 };
 

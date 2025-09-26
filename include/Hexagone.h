@@ -4,17 +4,26 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
-#include "Tuile.h"
 
 using namespace std;
 
+class Tuile;
+
 class Hexagone
 {
+
+private:
+    vector<Hexagone *> voisins;
+    int x;
+    int y;
+    int z;
+    Tuile *parent;
+
 public:
     void setParent(Tuile *p) { parent = p; }
     void setVoisins(vector<Hexagone *> v) { voisins = v; }
     void addVoisin(Hexagone *v) { voisins.push_back(v); }
-    vector<Hexagone *> getVoisins() { return voisins; }
+    std::vector<Hexagone *> &getVoisins() { return voisins; }
 
     int getX() { return x; }
     int getY() { return y; }
@@ -27,18 +36,11 @@ public:
         z = z_coord;
         parent = p;
     }
-
-private:
-    vector<Hexagone *> voisins;
-    int x;
-    int y;
-    int z;
-    Tuile *parent;
 };
 
 class Carriere : public Hexagone
 {
-    using Hexagone::Hexagone; //hérite du constructeur d'hexagone
+    using Hexagone::Hexagone; // hérite du constructeur d'hexagone
 };
 
 enum class TypeQuartier
@@ -48,6 +50,7 @@ enum class TypeQuartier
     Temple,
     Caserne,
     Jardin
+
 };
 
 class Quartier : public Hexagone
@@ -57,7 +60,7 @@ private:
 
 public:
     Quartier(int x, int y, int z, TypeQuartier type,
-             Tuile* p = nullptr, vector<Hexagone*> v = {})
+             Tuile *p = nullptr, vector<Hexagone *> v = {})
         : Hexagone(x, y, z, p, v), typeQuartier(type) {}
     void setTypeQuartier(TypeQuartier t) { typeQuartier = t; }
     TypeQuartier getTypeQuartier() const { return typeQuartier; }
