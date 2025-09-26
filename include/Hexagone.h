@@ -18,6 +18,7 @@ private:
     int y;
     int z;
     Tuile *parent;
+    bool est_recouvert = false;
 
 public:
     void setParent(Tuile *p) { parent = p; }

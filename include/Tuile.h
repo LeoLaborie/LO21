@@ -13,6 +13,15 @@ private:
 public:
     void creerTuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
 
+    const std::vector<Hexagone*>& getHexagones() const { return hex; } // retourne les hexagones d'une tuile
+    
+    void pivoterTuile()    //permet de pivoter une tuile dans le sens horaire
+    {
+        Hexagone* tmp = hex[0];
+        hex[0] = hex[1];
+        hex[1] = hex[2];
+        hex[2] = tmp;
+    }
     Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3)
     {
         hex1->setParent(this); // définir le parent de chaque hexagone comme cette tuile

@@ -14,3 +14,6 @@ void Tuile::creerTuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3)
     hex.push_back(hex2);
     hex.push_back(hex3);
 }
+
+
+
