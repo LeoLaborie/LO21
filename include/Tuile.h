@@ -13,6 +13,8 @@ private:
 public:
     void creerTuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
 
+    const std::vector<Hexagone *> &getHexagones() const { return hex; }
+
     Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3)
     {
         hex1->setParent(this); // définir le parent de chaque hexagone comme cette tuile
