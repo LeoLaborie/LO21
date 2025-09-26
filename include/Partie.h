@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "Tuile.h"
-#include "Joueur.h"  
+#include "Joueur.h"
 
 using namespace std;
 
@@ -32,6 +32,9 @@ public:
     void addTuileInChantierFromPiles();
 
     void tourTermine();
+
+    void addJoueur(Joueur j);
+    vector<Joueur> &getJoueurs() { return joueurs; }
 
     Partie(int nJ)
     {
