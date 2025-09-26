@@ -1,20 +1,16 @@
-#include "Plateau.h"
-#include "iostream"
+#include <iostream>
+#include "Partie.h" // <-- ton header qui contient la classe Partie
+
+using namespace std;
 
 int main()
 {
-    Plateau p;
 
-    for (const auto &hex : p.getHexagones())
-    {
-        std::cout << "Hexagone (" << hex->getX() << ", " << hex->getY() << ")"
-                  << " a pour voisins : ";
-        for (const auto &voisin : hex->getVoisins())
-        {
-            std::cout << "(" << voisin->getX() << ", " << voisin->getY() << ") ";
-        }
-        std::cout << std::endl;
-    }
+    // Test avec 2 joueurs
+    Partie partie2(2);
+    partie2.preparerPartie();
+    std::cout << "✅ Partie à 2 joueurs préparée avec succès." << std::endl;
 
+    
     return 0;
 }

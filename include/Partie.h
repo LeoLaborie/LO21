@@ -36,6 +36,10 @@ public:
     void addJoueur(Joueur j);
     vector<Joueur> &getJoueurs() { return joueurs; }
 
+    const vector<Tuile> &getChantier() const { return chantier; }
+
+    void preparerPartie();
+
     Partie(int nJ)
     {
         nbrJoueurs = nJ;
