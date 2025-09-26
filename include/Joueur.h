@@ -7,6 +7,7 @@
 class Joueur
 {
 private:
+    string nom;
     int nbrPierres;
     int nbrPoints;
     Plateau plateau;
@@ -16,6 +17,14 @@ public:
     int getNbrPierres();
     void setNbrPoints(int);
     int getNbrPoints();
+
+    Joueur(string n)
+    {
+        nom = n;
+        nbrPierres = 0;
+        nbrPoints = 0;
+        plateau = Plateau();
+    }
 };
 
 #endif
