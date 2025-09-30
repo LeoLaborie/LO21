@@ -37,36 +37,52 @@ bool ContientPas(const std::vector<T>& v, const T& valeur) {
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(const Tuile &t) const {
+bool Plateau::verifierPlacementTuile(int x,int y ,int z) const {
     std::vector<Tuile*> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
 
-    int dx[6] = {+1, +1, 0, -1, -1, 0};
+    int dx[6] = {+1, +1, 0, -1, -1, 0}; 
     int dy[6] = {0, -1, -1, 0, +1, +1};
 
-    for (auto* hex : t.getHexagones()) {
+    struct coord{
+        int x;
+        int y;
+        int z;
+    };
+    coord coords[3];
+    coords[0].x=x; //hex0
+    coords[0].y=y;
+    coords[0].z=z;
+    coords[1].x=x-1;  //hex1
+    coords[1].y=y+1;
+    coords[1].z=z;
+    coords[2].x=x;  //hex2
+    coords[2].y=y+1;
+    coords[2].z=z;
+    for (const auto& h : coords) {
         bool supportTrouve = false;
 
-        if (hex->getZ() > 0) surElever = true;
+        if (h.z > 0) surElever = true;
 
         for (auto* hex_plateau : listeHexagones) {
             // pn vérifie si deux tuiles ne se superposent pas
-            if (hex->getX() == hex_plateau->getX() && hex->getY() == hex_plateau->getY() && hex->getZ() == hex_plateau->getZ())
+            if (h.x == hex_plateau->getX() &&  h.y == hex_plateau->getY() && h.z == hex_plateau->getZ())
                 return false;
 
-            // on récupere les tuiles en dessous si on est a un niveau supérieur à 1 et on garde que les tuiles différentes pour pouvoir vérifier la regle genre on pose sur au moins deux tuiles
-            if (hex->getX() == hex_plateau->getX() && hex->getY() == hex_plateau->getY() && hex->getZ() - hex_plateau->getZ() == 1) {
+            // on récupère les tuiles en dessous si on est à un niveau supérieur à 1
+            // et on garde que les tuiles différentes
+            if (h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && (h.z - hex_plateau->getZ()) == 1) {
                 supportTrouve = true;
                 Tuile* parent = hex_plateau->getParent();
                 if (ContientPas(tuiles_en_dessous, parent))
                     tuiles_en_dessous.push_back(parent);
             }
 
-            //on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)
-            if (hex->getZ() == 0) {
+            // on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)
+            if (h.z == 0) {
                 for (int i = 0; i < 6; ++i) {
-                    if (hex->getX() + dx[i] == hex_plateau->getX() && hex->getY() + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0) {
+                    if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0) {
                         toucheParBord = true;
                         break;
                     }
@@ -74,17 +90,35 @@ bool Plateau::verifierPlacementTuile(const Tuile &t) const {
             }
         }
 
-        if (hex->getZ() > 0 && !supportTrouve)
+        if (h.z > 0 && !supportTrouve)
             return false;
     }
-
     if (surElever) {
         if (tuiles_en_dessous.size() < 2)
             return false;
-   } else {
-    if (!toucheParBord)
-        return false;
-}
+    } else {
+        if (!toucheParBord)
+            return false;
+    }
 
     return true;
+}
+
+void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
+    if (!verifierPlacementTuile(x, y, z)) {
+        std::cout << "Placement de tuile invalide." << std::endl;
+        return;
+    }
+
+
+    auto* h0 = t.getHexagones()[0];
+    auto* h1 = t.getHexagones()[1];
+    auto* h2 = t.getHexagones()[2];
+
+    h0->SetCoord(x, y, z);
+    h1->SetCoord(x - 1, y + 1, z);
+    h2->SetCoord(x, y + 1, z);
+    // Insérer la tuile dans le plateau
+    listeTuiles.push_back(t);
+    updateVoisins();
 }

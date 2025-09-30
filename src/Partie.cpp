@@ -1,4 +1,6 @@
 #include "Partie.h"
+#include <algorithm>
+
 
 void Partie::setNbrJoueurs(int nbr)
 {

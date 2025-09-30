@@ -32,6 +32,12 @@ public:
     int getX() { return x; }
     int getY() { return y; }
     int getZ() { return z; }
+    
+    void SetCoord(int x_coord, int y_coord, int z_coord) {
+        x = x_coord;
+        y = y_coord;
+        z = z_coord;
+    }
 
     Hexagone(int x_coord, int y_coord, int z_coord, Tuile *p = nullptr, vector<Hexagone *> v = {})
     {

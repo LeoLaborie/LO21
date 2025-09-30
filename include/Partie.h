@@ -18,10 +18,14 @@ private:
     vector<Tuile> chantier;
     vector<vector<Tuile>> paquets;
     vector<Joueur> joueurs;
+    int mainJoueur; // indice du joueur dont c'est le tour
 
 public:
     void setNbrJoueurs(int nbr);
     void tourTermine();
+    Joueur& getJoueurMain() { return joueurs[mainJoueur]; }
 };
 
 #endif
+
+

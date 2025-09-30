@@ -12,12 +12,11 @@ private:
     std::vector<Hexagone *> listeHexagones;
 
 public:
-    void ajouterTuile(const Tuile &t) { listeTuiles.push_back(t); }
+    void ajouterTuile(Tuile &t,int x,int y,int z);
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; }
-
     void ajouterHexagone(Hexagone *h) { listeHexagones.push_back(h); }
     const std::vector<Hexagone *> getHexagones() const { return listeHexagones; }
-    bool verifierPlacementTuile(const Tuile &t) const;
+    bool verifierPlacementTuile(int x,int y, int z) const;
     void updateVoisins();
 
     Plateau()
