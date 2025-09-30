@@ -27,10 +27,11 @@ public:
     std::vector<Hexagone *> &getVoisins() { return voisins; }
     bool getEstRecouvert() const { return est_recouvert; }
     void setEstRecouvert(bool val) { est_recouvert = val; }
-
+    Tuile *getParent() { return parent; }
 
     int getX() { return x; }
     int getY() { return y; }
+    int getZ() { return z; }
 
     Hexagone(int x_coord, int y_coord, int z_coord, Tuile *p = nullptr, vector<Hexagone *> v = {})
     {

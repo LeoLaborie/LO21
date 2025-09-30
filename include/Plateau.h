@@ -17,7 +17,7 @@ public:
 
     void ajouterHexagone(Hexagone *h) { listeHexagones.push_back(h); }
     const std::vector<Hexagone *> getHexagones() const { return listeHexagones; }
-
+    bool verifierPlacementTuile(const Tuile &t) const;
     void updateVoisins();
 
     Plateau()
