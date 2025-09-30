@@ -1,105 +1,76 @@
 #ifndef HEXAGONE_H
 #define HEXAGONE_H
 
-#include <iostream>
 #include <vector>
-#include <string.h>
-
-using namespace std;
+#include <cstddef>
 
 class Tuile;
 
-class Hexagone
-{
-
+class Hexagone {
 private:
-    vector<Hexagone *> voisins;
-    int x;
-    int y;
-    int z;
-    Tuile *parent;
+    std::vector<Hexagone*> voisins;
+    int x{}, y{}, z{};
+    Tuile* parent{};
     bool est_recouvert = false;
 
 public:
-    void setParent(Tuile *p) { parent = p; }
-    void setVoisins(vector<Hexagone *> v) { voisins = v; }
-    void addVoisin(Hexagone *v) { voisins.push_back(v); }
-    std::vector<Hexagone *> &getVoisins() { return voisins; }
+    virtual ~Hexagone() = default;
+
+    void setParent(Tuile* p) { parent = p; }
+    void setVoisins(std::vector<Hexagone*> v) { voisins = std::move(v); }
+    void addVoisin(Hexagone* v) { voisins.push_back(v); }
+    std::vector<Hexagone*>& getVoisins() { return voisins; }
+
     bool getEstRecouvert() const { return est_recouvert; }
     void setEstRecouvert(bool val) { est_recouvert = val; }
-    Tuile *getParent() { return parent; }
+    Tuile* getParent() { return parent; }
 
-    int getX() { return x; }
-    int getY() { return y; }
-    int getZ() { return z; }
-    
+    int getX() const { return x; }
+    int getY() const { return y; }
+    int getZ() const { return z; }
+
     void SetCoord(int x_coord, int y_coord, int z_coord) {
-        x = x_coord;
-        y = y_coord;
-        z = z_coord;
+        x = x_coord; y = y_coord; z = z_coord;
     }
 
-    Hexagone(int x_coord, int y_coord, int z_coord, Tuile *p = nullptr, vector<Hexagone *> v = {})
-    {
-        voisins = v;
-        x = x_coord;
-        y = y_coord;
-        z = z_coord;
-        parent = p;
-    }
+    Hexagone(int x_coord, int y_coord, int z_coord,
+             Tuile* p = nullptr, std::vector<Hexagone*> v = {})
+        : voisins(std::move(v)), x(x_coord), y(y_coord), z(z_coord), parent(p) {}
 };
 
-class Carriere : public Hexagone
-{
-    using Hexagone::Hexagone; // hérite du constructeur d'hexagone
+class Carriere : public Hexagone {
+    using Hexagone::Hexagone;
 };
 
-enum class TypeQuartier
-{
-    Habitation,
-    Marche,
-    Temple,
-    Caserne,
-    Jardin
+enum class TypeQuartier { Habitation, Marche, Temple, Caserne, Jardin };
 
-};
-
-class Quartier : public Hexagone
-{
+class Quartier : public Hexagone {
 private:
     TypeQuartier typeQuartier;
 
 public:
     Quartier(int x, int y, int z, TypeQuartier type,
-             Tuile *p = nullptr, vector<Hexagone *> v = {})
-        : Hexagone(x, y, z, p, v), typeQuartier(type) {}
+             Tuile* p = nullptr, std::vector<Hexagone*> v = {})
+        : Hexagone(x, y, z, p, std::move(v)), typeQuartier(type) {}
+
     void setTypeQuartier(TypeQuartier t) { typeQuartier = t; }
     TypeQuartier getTypeQuartier() const { return typeQuartier; }
 };
 
-enum class TypePlace
-{
-    Habitation,
-    Marche,
-    Temple,
-    Caserne,
-    Jardin
-};
+enum class TypePlace { Habitation, Marche, Temple, Caserne, Jardin };
 
-class Place : public Hexagone
-{
+class Place : public Hexagone {
 private:
     TypePlace typePlace;
     int multiplicateur;
 
 public:
     Place(int x, int y, int z, TypePlace type, int mult,
-          Tuile *p = nullptr, vector<Hexagone *> v = {})
-        : Hexagone(x, y, z, p, v), typePlace(type), multiplicateur(mult) {}
+          Tuile* p = nullptr, std::vector<Hexagone*> v = {})
+        : Hexagone(x, y, z, p, std::move(v)), typePlace(type), multiplicateur(mult) {}
 
     void setTypePlace(TypePlace t) { typePlace = t; }
-
     TypePlace getTypePlace() const { return typePlace; }
 };
 
-#endif
+#endif 
