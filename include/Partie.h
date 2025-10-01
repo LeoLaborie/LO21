@@ -34,6 +34,7 @@ public:
     void setProchainJoueur() { if (nbrJoueurs) mainJoueur = (mainJoueur + 1) % nbrJoueurs; }
 
     int getTaillePaquet() const { return taillepaquet; }
+    void setTaillePaquet(int t) { taillepaquet = t; }
     std::vector<Tuile>& getTuilesDisponibles() { return tuilesPartie; }
 
     int getNbrTours() const { return nbrTours; }

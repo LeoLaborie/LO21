@@ -1,7 +1,21 @@
 #include <Plateau.h>
 #include <algorithm>
-#include "Partie.h"
 #include <iostream>
+#include "Joueur.h"
+
+Plateau::Plateau(Joueur* j) : proprietaire(j) {
+    listeTuiles.clear();
+    listeHexagones = {
+        // Tuile de départ au niveau 0 (z = 0)
+        new Place(0, 0, 0, TypePlace::Habitation, 1),
+        new Carriere(-1, 1, 0),
+        new Carriere(0, -1, 0),
+        new Carriere(1, 0, 0)
+    };
+
+    updateVoisins();
+}
+
 
 void Plateau::updateVoisins()
 {
@@ -113,13 +127,28 @@ void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
     }
     if (z>1){
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
-        if (h->getX() == x && h->getY() == y  && !h->getEstRecouvert()) h->setEstRecouvert();
+        if (h->getX() == x && h->getY() == y  && !h->getEstRecouvert()) {
+            h->setEstRecouvert();
+            if (dynamic_cast<const Carriere*>(h)){
+                proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
+            }
+        }
         });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
-        if (h->getX() == x - 1 && h->getY() == y + 1 && !h->getEstRecouvert()) h->setEstRecouvert();
+        if (h->getX() == x - 1 && h->getY() == y + 1 && !h->getEstRecouvert()){
+            h->setEstRecouvert();
+            if (dynamic_cast<const Carriere*>(h)){
+                proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
+            }
+        }
         });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
-        if (h->getX() == x && h->getY() == y + 1 && !h->getEstRecouvert()) h->setEstRecouvert();
+        if (h->getX() == x && h->getY() == y + 1 && !h->getEstRecouvert()) {
+            h->setEstRecouvert();
+            if (dynamic_cast<const Carriere*>(h)){
+                proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
+            }
+        }
         });
 
     }
@@ -134,9 +163,6 @@ void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
     updateVoisins();
-    if (z>0){
-
-    }
 }
 
 
