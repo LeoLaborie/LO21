@@ -17,8 +17,6 @@ bool Chantier::piocherTuile(int id, Partie& partie) {
         partie.tourTermine();
         partie.setProchainJoueur();
         if (partie.getTaillePaquet() > 0) {
-            int nouveauMaitre = (partie.getMaitreArchitecte() + 1) % partie.getNbrJoueurs();
-            partie.setMaitreArchitecte(nouveauMaitre);
             std::vector<Tuile> nouveauPaquet = genererPaquet(partie.getTaillePaquet(), partie);
             for (const auto& tuile : nouveauPaquet) {
                 this->ajouterTuile(tuile);
