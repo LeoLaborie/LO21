@@ -16,7 +16,7 @@ private:
     Tuile tuileEnMain;
 
 public:
-    explicit Joueur(Partie& p);   
+    Joueur(); 
     void setNbrPierres(int);
     int getNbrPierres();
     void setNbrPoints();

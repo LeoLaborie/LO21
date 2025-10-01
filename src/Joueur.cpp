@@ -1,7 +1,11 @@
 #include "Joueur.h"
 
 
-
+Joueur::Joueur()
+    : nbrPierres(0),
+      nbrPoints(0),
+      plateau()       
+{};
 int Joueur::getNbrPierres(){
     return nbrPierres;
 }

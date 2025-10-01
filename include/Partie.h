@@ -1,39 +1,42 @@
 #ifndef PARTIE_H
 #define PARTIE_H
 
-#include <iostream>
-#include <string>
 #include <vector>
 #include "Tuile.h"
-#include "Joueur.h"  
+#include "Joueur.h"
 
-using namespace std;
-
-class Partie
-{
+class Partie {
 private:
-    int nbrJoueurs;
-    int maitreArchitecte; // indice du joueur qui est maitre architecte
-    int nbrTours;
-    int taillepaquet; //nombre de tuiles par paquet
-    int nbpaquets;    //on a pas besion de stocker les paquets, on fera juste une liste de tuiles et on en tirera au hasard au sort le nombre de tuiles necessaires
-    vector<Tuile> tuilesPartie;   
-    vector<Joueur> joueurs;
-    int mainJoueur; // indice du joueur dont c'est le tour
+    int nbrJoueurs = 0;
+    int maitreArchitecte = 0;     // indice du joueur maître architecte
+    int mainJoueur = 0;           // indice du joueur dont c’est le tour
+    int nbrTours = 0;
+    int taillepaquet = 0;
+
+    std::vector<Joueur> joueurs;
+    std::vector<Tuile> tuilesPartie; 
 
 public:
-    Partie()=default;
+    Partie() = default;
+
+    // Configuration des joueurs
     void setNbrJoueurs(int nbr);
-    int getNbrJoueurs() const { return nbrJoueurs; }
+    int  getNbrJoueurs() const { return nbrJoueurs; }
+
+    // Tour / maître architecte
     void tourTermine();
-    Joueur& getJoueurMain() { return joueurs[mainJoueur]; }
-    void setProchainJoueur() { mainJoueur = (mainJoueur + 1) % nbrJoueurs; }
+    void setMaitreArchitecte(int i) { maitreArchitecte = i % (nbrJoueurs > 0 ? nbrJoueurs : 1); }
+    int  getMaitreArchitecte() const { return maitreArchitecte; }
+
+    // Navigation des joueurs
+    Joueur& getJoueurMain() { return joueurs.at(mainJoueur); }
+    const Joueur& getJoueurMain() const { return joueurs.at(mainJoueur); }
+    void setProchainJoueur() { if (nbrJoueurs) mainJoueur = (mainJoueur + 1) % nbrJoueurs; }
+
     int getTaillePaquet() const { return taillepaquet; }
-    vector<Tuile>& getTuilesDisponibles() { return tuilesPartie; }
-    void setMaitreArchitecte(int i) { maitreArchitecte = i; }
-    int getMaitreArchitecte() const { return maitreArchitecte; }
+    std::vector<Tuile>& getTuilesDisponibles() { return tuilesPartie; }
+
+    int getNbrTours() const { return nbrTours; }
 };
 
 #endif
-
-
