@@ -3,23 +3,25 @@
 
 #include <iostream>
 #include "Plateau.h"
+#include "Tuile.h"
+
+class Partie; 
 
 class Joueur
 {
 private:
-    int nbrPierres;
-    int nbrPoints;
+    int nbrPierres{};
+    int nbrPoints{};
     Plateau plateau;
+    Tuile tuileEnMain;
+
 public:
-    Joueur()
-    {
-        nbrPoints = 0;
-        plateau = Plateau();
-    }
+    explicit Joueur(Partie& p);   
     void setNbrPierres(int);
     int getNbrPierres();
     void setNbrPoints(int);
     int getNbrPoints();
+    void setTuileEnMain(const Tuile &t) { tuileEnMain = t; }
 };
 
-#endif
+#endif // JOUEUR_H

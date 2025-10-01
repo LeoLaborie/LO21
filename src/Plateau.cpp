@@ -1,6 +1,8 @@
 #include <Plateau.h>
 #include <algorithm>
+#include "Partie.h"
 #include <iostream>
+
 void Plateau::updateVoisins()
 {
     // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
@@ -121,4 +123,5 @@ void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
     updateVoisins();
+    //partie.setProchainJoueur();
 }

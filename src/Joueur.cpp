@@ -1,5 +1,7 @@
 #include "Joueur.h"
 
+
+
 int Joueur::getNbrPierres(){
     return nbrPierres;
 }
