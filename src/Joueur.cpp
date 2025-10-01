@@ -14,6 +14,6 @@ void Joueur::setNbrPierres(int nbr){
     nbrPierres = nbr;
 }
 
-void Joueur::setNbrPoints(int nbr){
-    nbrPoints = nbr;
+void Joueur::setNbrPoints(){
+    nbrPoints = getPlateau().calculerPoints();
 }

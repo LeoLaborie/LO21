@@ -2,7 +2,7 @@
 #define HEXAGONE_H
 
 #include <vector>
-#include <cstddef>
+
 
 class Tuile;
 
@@ -19,10 +19,10 @@ public:
     void setParent(Tuile* p) { parent = p; }
     void setVoisins(std::vector<Hexagone*> v) { voisins = std::move(v); }
     void addVoisin(Hexagone* v) { voisins.push_back(v); }
-    std::vector<Hexagone*>& getVoisins() { return voisins; }
+    const std::vector<Hexagone*>& getVoisins() const { return voisins; }
 
     bool getEstRecouvert() const { return est_recouvert; }
-    void setEstRecouvert(bool val) { est_recouvert = val; }
+    void setEstRecouvert() { est_recouvert = true; }
     Tuile* getParent() { return parent; }
 
     int getX() const { return x; }
@@ -71,6 +71,7 @@ public:
 
     void setTypePlace(TypePlace t) { typePlace = t; }
     TypePlace getTypePlace() const { return typePlace; }
+    int getMultiplicateur() const { return multiplicateur; }
 };
 
 #endif 

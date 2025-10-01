@@ -65,7 +65,7 @@ bool Plateau::verifierPlacementTuile(int x,int y ,int z) const {
     for (const auto& h : coords) {
         bool supportTrouve = false;
 
-        if (h.z > 0) surElever = true;
+        if (h.z > 1) surElever = true;
 
         for (auto* hex_plateau : listeHexagones) {
             // pn vérifie si deux tuiles ne se superposent pas
@@ -82,7 +82,7 @@ bool Plateau::verifierPlacementTuile(int x,int y ,int z) const {
             }
 
             // on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)
-            if (h.z == 0) {
+            if (h.z == 1) {
                 for (int i = 0; i < 6; ++i) {
                     if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0) {
                         toucheParBord = true;
@@ -92,7 +92,7 @@ bool Plateau::verifierPlacementTuile(int x,int y ,int z) const {
             }
         }
 
-        if (h.z > 0 && !supportTrouve)
+        if (h.z > 1 && !supportTrouve)
             return false;
     }
     if (surElever) {
@@ -111,7 +111,18 @@ void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
         std::cout << "Placement de tuile invalide." << std::endl;
         return;
     }
+    if (z>1){
+        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
+        if (h->getX() == x && h->getY() == y  && !h->getEstRecouvert()) h->setEstRecouvert();
+        });
+        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
+        if (h->getX() == x - 1 && h->getY() == y + 1 && !h->getEstRecouvert()) h->setEstRecouvert();
+        });
+        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
+        if (h->getX() == x && h->getY() == y + 1 && !h->getEstRecouvert()) h->setEstRecouvert();
+        });
 
+    }
 
     auto* h0 = t.getHexagones()[0];
     auto* h1 = t.getHexagones()[1];
@@ -123,5 +134,66 @@ void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
     updateVoisins();
-    //partie.setProchainJoueur();
+    if (z>0){
+
+    }
+}
+
+
+int Plateau::calculerPoints() const {
+
+
+
+    int placeHabitation=0;
+    int placeMarche=0;
+    int placeTemple=0;
+    int placeCaserne=0;
+    int placeJardin=0;
+
+    int nbJardin=0;
+    int nbCaserne=0;
+    int nbTemple=0;
+    int nbHabitation=0;
+    int nbMarche=0;
+
+    for (const auto* hex : listeHexagones) {
+        if (hex->getEstRecouvert()) continue;
+
+        if (hex->getEstRecouvert()) continue;
+
+        if (auto q = dynamic_cast<const Quartier*>(hex)) {
+            if (q->getTypeQuartier()==TypeQuartier::Jardin) nbJardin+=q->getZ();
+            
+            if (q->getTypeQuartier()==TypeQuartier::Caserne){
+                if (q->getVoisins().size()<=3) nbCaserne+=q->getZ(); //si il a 4 voisins ou moins c'est qu'il est sur un bord
+            }
+            
+            if (q->getTypeQuartier()==TypeQuartier::Temple){
+                if (q->getVoisins().size()==5) nbTemple+=q->getZ(); 
+            }
+            if (q->getTypeQuartier()==TypeQuartier::Marche){
+                for (const auto& voisin: q->getVoisins()){
+                    if (dynamic_cast<const Quartier*>(voisin)->getTypeQuartier()==TypeQuartier::Marche){
+                        continue;
+                    }
+                }
+                nbMarche+=q->getZ();
+
+            }
+
+            //reste habitation plus compliqué
+
+        }
+        if (auto p = dynamic_cast<const Place*>(hex)) {
+            switch (p->getTypePlace()) {
+                case TypePlace::Habitation: placeHabitation += p->getMultiplicateur(); break;
+                case TypePlace::Marche:     placeMarche     += p->getMultiplicateur(); break;
+                case TypePlace::Temple:     placeTemple     += p->getMultiplicateur(); break;
+                case TypePlace::Caserne:    placeCaserne    += p->getMultiplicateur(); break;
+                case TypePlace::Jardin:     placeJardin     += p->getMultiplicateur(); break;
+            }
+            continue;
+        }
+    }
+    return placeCaserne*nbCaserne + placeHabitation*nbHabitation + placeJardin*nbJardin + placeMarche*nbMarche + placeTemple*nbTemple;
 }

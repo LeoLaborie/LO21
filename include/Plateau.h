@@ -19,6 +19,7 @@ public:
     const std::vector<Hexagone *> getHexagones() const { return listeHexagones; }
     bool verifierPlacementTuile(int x,int y, int z) const;
     void updateVoisins();
+    int calculerPoints() const;
     Plateau()
     {
         listeTuiles = {};

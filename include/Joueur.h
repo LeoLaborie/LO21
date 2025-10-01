@@ -19,9 +19,11 @@ public:
     explicit Joueur(Partie& p);   
     void setNbrPierres(int);
     int getNbrPierres();
-    void setNbrPoints(int);
+    void setNbrPoints();
+    Plateau& getPlateau() { return plateau; }
+    const Tuile& getTuileEnMain() const { return tuileEnMain; }
     int getNbrPoints();
     void setTuileEnMain(const Tuile &t) { tuileEnMain = t; }
 };
 
-#endif // JOUEUR_H
+#endif 
