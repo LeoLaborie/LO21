@@ -3,19 +3,18 @@
 #include <iostream>
 #include "Joueur.h"
 
-Plateau::Plateau(Joueur* j) : proprietaire(j) {
+Plateau::Plateau(Joueur *j) : proprietaire(j)
+{
     listeTuiles.clear();
     listeHexagones = {
         // Tuile de départ au niveau 0 (z = 0)
         new Place(0, 0, 0, TypePlace::Habitation, 1),
         new Carriere(-1, 1, 0),
         new Carriere(0, -1, 0),
-        new Carriere(1, 0, 0)
-    };
+        new Carriere(1, 0, 0)};
 
     updateVoisins();
 }
-
 
 void Plateau::updateVoisins()
 {
@@ -49,56 +48,66 @@ void Plateau::updateVoisins()
 }
 
 template <class T>
-bool ContientPas(const std::vector<T>& v, const T& valeur) {
+bool ContientPas(const std::vector<T> &v, const T &valeur)
+{
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(int x,int y ,int z) const {
-    std::vector<Tuile*> tuiles_en_dessous;
+bool Plateau::verifierPlacementTuile(int x, int y, int z) const
+{
+    std::vector<Tuile *> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
 
-    int dx[6] = {+1, +1, 0, -1, -1, 0}; 
+    int dx[6] = {+1, +1, 0, -1, -1, 0};
     int dy[6] = {0, -1, -1, 0, +1, +1};
 
-    struct coord{
+    struct coord
+    {
         int x;
         int y;
         int z;
     };
     coord coords[3];
-    coords[0].x=x; //hex0
-    coords[0].y=y;
-    coords[0].z=z;
-    coords[1].x=x-1;  //hex1
-    coords[1].y=y+1;
-    coords[1].z=z;
-    coords[2].x=x;  //hex2
-    coords[2].y=y+1;
-    coords[2].z=z;
-    for (const auto& h : coords) {
+    coords[0].x = x; // hex0
+    coords[0].y = y;
+    coords[0].z = z;
+    coords[1].x = x - 1; // hex1
+    coords[1].y = y + 1;
+    coords[1].z = z;
+    coords[2].x = x; // hex2
+    coords[2].y = y + 1;
+    coords[2].z = z;
+    for (const auto &h : coords)
+    {
         bool supportTrouve = false;
 
-        if (h.z > 1) surElever = true;
+        if (h.z > 1)
+            surElever = true;
 
-        for (auto* hex_plateau : listeHexagones) {
+        for (auto *hex_plateau : listeHexagones)
+        {
             // pn vérifie si deux tuiles ne se superposent pas
-            if (h.x == hex_plateau->getX() &&  h.y == hex_plateau->getY() && h.z == hex_plateau->getZ())
+            if (h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && h.z == hex_plateau->getZ())
                 return false;
 
             // on récupère les tuiles en dessous si on est à un niveau supérieur à 1
             // et on garde que les tuiles différentes
-            if (h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && (h.z - hex_plateau->getZ()) == 1) {
+            if (h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && (h.z - hex_plateau->getZ()) == 1)
+            {
                 supportTrouve = true;
-                Tuile* parent = hex_plateau->getParent();
+                Tuile *parent = hex_plateau->getParent();
                 if (ContientPas(tuiles_en_dessous, parent))
                     tuiles_en_dessous.push_back(parent);
             }
 
             // on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)
-            if (h.z == 1) {
-                for (int i = 0; i < 6; ++i) {
-                    if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0) {
+            if (h.z == 1)
+            {
+                for (int i = 0; i < 6; ++i)
+                {
+                    if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0)
+                    {
                         toucheParBord = true;
                         break;
                     }
@@ -109,10 +118,13 @@ bool Plateau::verifierPlacementTuile(int x,int y ,int z) const {
         if (h.z > 1 && !supportTrouve)
             return false;
     }
-    if (surElever) {
+    if (surElever)
+    {
         if (tuiles_en_dessous.size() < 2)
             return false;
-    } else {
+    }
+    else
+    {
         if (!toucheParBord)
             return false;
     }
@@ -120,42 +132,44 @@ bool Plateau::verifierPlacementTuile(int x,int y ,int z) const {
     return true;
 }
 
-void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
-    if (!verifierPlacementTuile(x, y, z)) {
+void Plateau::ajouterTuile(Tuile &t, int x, int y, int z)
+{
+    if (!verifierPlacementTuile(x, y, z))
+    {
         std::cout << "Placement de tuile invalide." << std::endl;
         return;
     }
-    if (z>1){
-        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
+    if (z > 1)
+    {
+        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
+                      {
         if (h->getX() == x && h->getY() == y  && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
                 proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
             }
-        }
-        });
-        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
+        } });
+        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
+                      {
         if (h->getX() == x - 1 && h->getY() == y + 1 && !h->getEstRecouvert()){
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
                 proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
             }
-        }
-        });
-        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone* h){
+        } });
+        std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
+                      {
         if (h->getX() == x && h->getY() == y + 1 && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
                 proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
             }
-        }
-        });
-
+        } });
     }
 
-    auto* h0 = t.getHexagones()[0];
-    auto* h1 = t.getHexagones()[1];
-    auto* h2 = t.getHexagones()[2];
+    auto *h0 = t.getHexagones()[0];
+    auto *h1 = t.getHexagones()[1];
+    auto *h2 = t.getHexagones()[2];
 
     h0->SetCoord(x, y, z);
     h1->SetCoord(x - 1, y + 1, z);
@@ -165,93 +179,119 @@ void Plateau::ajouterTuile(Tuile& t, int x, int y, int z) {
     updateVoisins();
 }
 
+int Plateau::calculerPoints() const
+{
 
-int Plateau::calculerPoints() const {
+    int placeHabitation = 0;
+    int placeMarche = 0;
+    int placeTemple = 0;
+    int placeCaserne = 0;
+    int placeJardin = 0;
 
-
-
-    int placeHabitation=0;
-    int placeMarche=0;
-    int placeTemple=0;
-    int placeCaserne=0;
-    int placeJardin=0;
-
-    int nbJardin=0;
-    int nbCaserne=0;
-    int nbTemple=0;
-    int nbHabitation=0;
-    int nbMarche=0;
+    int nbJardin = 0;
+    int nbCaserne = 0;
+    int nbTemple = 0;
+    int nbHabitation = 0;
+    int nbMarche = 0;
 
     std::vector<const Quartier *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
 
-    for (const Hexagone* hex : listeHexagones) {
-        if (hex->getEstRecouvert()) continue;
+    for (const Hexagone *hex : listeHexagones)
+    {
+        if (hex->getEstRecouvert())
+            continue;
 
-        if (hex->getEstRecouvert()) continue;
+        if (hex->getEstRecouvert())
+            continue;
 
-        if (const Quartier* q = dynamic_cast<const Quartier*>(hex)) {
-            if (q->getTypeQuartier()==TypeQuartier::Jardin) nbJardin+=q->getZ();
-            
-            if (q->getTypeQuartier()==TypeQuartier::Caserne){
-                if (q->getVoisins().size()<=3) nbCaserne+=q->getZ(); //si il a 3 voisins ou moins c'est qu'il est sur un bord
+        if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
+        {
+            if (q->getTypeQuartier() == TypeQuartier::Jardin)
+                nbJardin += q->getZ();
+
+            if (q->getTypeQuartier() == TypeQuartier::Caserne)
+            {
+                if (q->getVoisins().size() <= 3)
+                    nbCaserne += q->getZ(); // si il a 3 voisins ou moins c'est qu'il est sur un bord
             }
-            
-            if (q->getTypeQuartier()==TypeQuartier::Temple){
-                if (q->getVoisins().size()==4) nbTemple+=q->getZ(); 
+
+            if (q->getTypeQuartier() == TypeQuartier::Temple)
+            {
+                if (q->getVoisins().size() == 4)
+                    nbTemple += q->getZ();
             }
-            if (q->getTypeQuartier()==TypeQuartier::Marche){
-                for (const auto& voisin: q->getVoisins()){
-                    if (dynamic_cast<const Quartier*>(voisin)->getTypeQuartier()==TypeQuartier::Marche){
+            if (q->getTypeQuartier() == TypeQuartier::Marche)
+            {
+                for (const auto &voisin : q->getVoisins())
+                {
+                    if (dynamic_cast<const Quartier *>(voisin)->getTypeQuartier() == TypeQuartier::Marche)
+                    {
                         continue;
                     }
                 }
-                nbMarche+=q->getZ();
-
+                nbMarche += q->getZ();
             }
-            if(q->getTypeQuartier()==TypeQuartier::Habitation){
-                tabHabitation.push_back(q);                
-
+            if (q->getTypeQuartier() == TypeQuartier::Habitation)
+            {
+                tabHabitation.push_back(q);
             }
-
         }
-        if (const Place* p = dynamic_cast<const Place*>(hex)) {
-            switch (p->getTypePlace()) {
-                case TypePlace::Habitation: placeHabitation += p->getMultiplicateur(); break;
-                case TypePlace::Marche:     placeMarche     += p->getMultiplicateur(); break;
-                case TypePlace::Temple:     placeTemple     += p->getMultiplicateur(); break;
-                case TypePlace::Caserne:    placeCaserne    += p->getMultiplicateur(); break;
-                case TypePlace::Jardin:     placeJardin     += p->getMultiplicateur(); break;
+        if (const Place *p = dynamic_cast<const Place *>(hex))
+        {
+            switch (p->getTypePlace())
+            {
+            case TypePlace::Habitation:
+                placeHabitation += p->getMultiplicateur();
+                break;
+            case TypePlace::Marche:
+                placeMarche += p->getMultiplicateur();
+                break;
+            case TypePlace::Temple:
+                placeTemple += p->getMultiplicateur();
+                break;
+            case TypePlace::Caserne:
+                placeCaserne += p->getMultiplicateur();
+                break;
+            case TypePlace::Jardin:
+                placeJardin += p->getMultiplicateur();
+                break;
             }
             continue;
         }
     }
-    //On détermine le plus grand groupe d'habitations
-    std::vector<const Quartier*> groupeMaxHab; //le groupe d'habitation le plus grand, la taille est à 0 par défaut
-    std::vector<const Quartier*> habVisites;// liste des habitations déjà visités
+    // On détermine le plus grand groupe d'habitations
+    std::vector<const Quartier *> groupeMaxHab; // le groupe d'habitation le plus grand, la taille est à 0 par défaut
+    std::vector<const Quartier *> habVisites;   // liste des habitations déjà visités
 
-    for (const Quartier* hab :tabHabitation){
+    for (const Quartier *hab : tabHabitation)
+    {
 
-        if (ContientPas(habVisites,hab)){
+        if (ContientPas(habVisites, hab))
+        {
 
-            std::vector<const Quartier*> voisinsHabitation;// les voisins, que l'on va ajouter et supprimer au fur et à mesure
+            std::vector<const Quartier *> voisinsHabitation; // les voisins, que l'on va ajouter et supprimer au fur et à mesure
             voisinsHabitation.push_back(hab);
 
             habVisites.push_back(hab);
 
-            std::vector<const Quartier*> groupeHabitation;// le groupe d'habitation que l'on est en train de regarder
+            std::vector<const Quartier *> groupeHabitation; // le groupe d'habitation que l'on est en train de regarder
             groupeHabitation.push_back(hab);
 
-            while(voisinsHabitation.size()){// on parcourt les voisins jusqu'à ce qu'il n'y en ait plus
+            while (voisinsHabitation.size())
+            { // on parcourt les voisins jusqu'à ce qu'il n'y en ait plus
 
-                const Quartier* habActuelle = voisinsHabitation.back();
+                const Quartier *habActuelle = voisinsHabitation.back();
                 voisinsHabitation.pop_back();
 
-                for(const Hexagone* voisin : habActuelle->getVoisins()){
+                for (const Hexagone *voisin : habActuelle->getVoisins())
+                {
 
-                    if (const Quartier* quartierVoisin = dynamic_cast<const Quartier*>(voisin)){
+                    if (const Quartier *quartierVoisin = dynamic_cast<const Quartier *>(voisin))
+                    {
                         // On vérifie que le voisin est un quartier (si la conversion marche, c'est le cas, sinon ça renvoie nullprt)
 
-                        if ((quartierVoisin->getTypeQuartier() == TypeQuartier::Habitation) && ContientPas(habVisites,quartierVoisin)){
+                        if ((quartierVoisin->getTypeQuartier() == TypeQuartier::Habitation) && ContientPas(habVisites, quartierVoisin))
+                        {
                             // On vérifie que le quartier voisin n'a pas déjà été visité et que c'est bien une habitation
 
                             voisinsHabitation.push_back(quartierVoisin);
@@ -259,19 +299,20 @@ int Plateau::calculerPoints() const {
                             habVisites.push_back(quartierVoisin);
                         }
                     }
-                }   
+                }
             }
 
-            if (groupeHabitation.size() > groupeMaxHab.size()){ 
+            if (groupeHabitation.size() > groupeMaxHab.size())
+            {
                 groupeMaxHab = groupeHabitation;
             }
         }
     }
 
-    for (const Quartier* hab:groupeMaxHab){
+    for (const Quartier *hab : groupeMaxHab)
+    {
         nbHabitation += hab->getZ();
     }
 
-
-    return placeCaserne*nbCaserne + placeHabitation*nbHabitation + placeJardin*nbJardin + placeMarche*nbMarche + placeTemple*nbTemple;
+    return placeCaserne * nbCaserne + placeHabitation * nbHabitation + placeJardin * nbJardin + placeMarche * nbMarche + placeTemple * nbTemple;
 }

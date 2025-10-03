@@ -1,7 +1,8 @@
 #include "Tuile.h"
 #include "Hexagone.h"
 
-Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3) {
+Tuile::Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3)
+{
     hex1->setParent(this);
     hex2->setParent(this);
     hex3->setParent(this);

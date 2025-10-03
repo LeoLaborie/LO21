@@ -1,23 +1,25 @@
 #include "Joueur.h"
 
-
 Joueur::Joueur()
     : nbrPierres(0),
       nbrPoints(0),
-      plateau(this)       
-{};
-int Joueur::getNbrPierres(){
+      plateau(this) {};
+int Joueur::getNbrPierres()
+{
     return nbrPierres;
 }
 
-int Joueur::getNbrPoints(){
+int Joueur::getNbrPoints()
+{
     return nbrPoints;
 }
 
-void Joueur::setNbrPierres(int nbr){
+void Joueur::setNbrPierres(int nbr)
+{
     nbrPierres = nbr;
 }
 
-void Joueur::setNbrPoints(){
+void Joueur::setNbrPoints()
+{
     nbrPoints = getPlateau().calculerPoints();
 }

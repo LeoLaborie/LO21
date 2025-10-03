@@ -5,7 +5,7 @@
 #include "Plateau.h"
 #include "Tuile.h"
 
-class Partie; 
+class Partie;
 
 class Joueur
 {
@@ -16,14 +16,14 @@ private:
     Tuile tuileEnMain;
 
 public:
-    Joueur(); 
+    Joueur();
     void setNbrPierres(int);
     int getNbrPierres();
     void setNbrPoints();
-    Plateau& getPlateau() { return plateau; }
-    const Tuile& getTuileEnMain() const { return tuileEnMain; }
+    Plateau &getPlateau() { return plateau; }
+    const Tuile &getTuileEnMain() const { return tuileEnMain; }
     int getNbrPoints();
     void setTuileEnMain(const Tuile &t) { tuileEnMain = t; }
 };
 
-#endif 
+#endif

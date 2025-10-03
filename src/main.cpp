@@ -16,55 +16,73 @@
 using std::cout;
 using std::endl;
 
-struct C { int x, y, z; };
+struct C
+{
+    int x, y, z;
+};
 
-static std::vector<C> candidatsVoisinsAutour(const C& c, int rayon = 2) {
+static std::vector<C> candidatsVoisinsAutour(const C &c, int rayon = 2)
+{
     std::vector<C> res;
-    for (int dx = -rayon; dx <= rayon; ++dx) {
-        for (int dy = std::max(-rayon, -dx - rayon); dy <= std::min(rayon, -dx + rayon); ++dy) {
+    for (int dx = -rayon; dx <= rayon; ++dx)
+    {
+        for (int dy = std::max(-rayon, -dx - rayon); dy <= std::min(rayon, -dx + rayon); ++dy)
+        {
             int dz = -dx - dy;
-            if (dx == 0 && dy == 0 && dz == 0) continue;
+            if (dx == 0 && dy == 0 && dz == 0)
+                continue;
             res.push_back({c.x + dx, c.y + dy, c.z + dz});
         }
     }
     return res;
 }
 
-static std::vector<C> grillePetite(int r = 3) {
+static std::vector<C> grillePetite(int r = 3)
+{
     std::vector<C> res;
-    for (int x = -r; x <= r; ++x) {
-        for (int y = -r; y <= r; ++y) {
+    for (int x = -r; x <= r; ++x)
+    {
+        for (int y = -r; y <= r; ++y)
+        {
             int z = -x - y;
-            if (std::abs(z) > r) continue;
+            if (std::abs(z) > r)
+                continue;
             res.push_back({x, y, z});
         }
     }
     return res;
 }
 
-static void afficherEtatPlateau(const Plateau& p) {
+static void afficherEtatPlateau(const Plateau &p)
+{
     cout << "  Hexagones sur plateau: " << p.getHexagones().size() << "\n";
-    for (auto* h : p.getHexagones()) {
+    for (auto *h : p.getHexagones())
+    {
         cout << "    (" << h->getX() << "," << h->getY() << "," << h->getZ() << ")"
              << " voisins=" << h->getVoisins().size()
              << (h->getEstRecouvert() ? " [recouvert]" : "") << "\n";
     }
 }
 
-static bool essayerPlacerTuile(Joueur& j) {
-    Plateau& p = j.getPlateau();
-    const Tuile& t = j.getTuileEnMain();
+static bool essayerPlacerTuile(Joueur &j)
+{
+    Plateau &p = j.getPlateau();
+    const Tuile &t = j.getTuileEnMain();
 
     // 1) on balaie une grille autour de (0,0,0)
     auto grille = grillePetite(3);
 
     // 2) on teste plusieurs orientations (0,1,2 rotations)
     Tuile tuileMutable = t; // on copie pour pouvoir pivoter
-    for (int rot = 0; rot < 3; ++rot) {
-        if (rot > 0) tuileMutable.pivoterTuile();
+    for (int rot = 0; rot < 3; ++rot)
+    {
+        if (rot > 0)
+            tuileMutable.pivoterTuile();
 
-        for (const auto& c : grille) {
-            if (p.verifierPlacementTuile(c.x, c.y, c.z)) {
+        for (const auto &c : grille)
+        {
+            if (p.verifierPlacementTuile(c.x, c.y, c.z))
+            {
                 cout << "    -> placement OK en (" << c.x << "," << c.y << "," << c.z
                      << ") avec rotation=" << rot << "\n";
                 Tuile tuileAPlacer = tuileMutable; // copie de l’orientation courante
@@ -76,7 +94,8 @@ static bool essayerPlacerTuile(Joueur& j) {
     return false;
 }
 
-int main() {
+int main()
+{
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     cout << "===== DEMARRAGE PARTIE =====\n";
@@ -87,7 +106,7 @@ int main() {
     partie.setMaitreArchitecte(0); // joueur 0 maître architecte au départ (si différent, adapte)
 
     // On récupère le joueur courant pour vérifier que tout est bien initialisé
-    Joueur& j0 = partie.getJoueurMain();
+    Joueur &j0 = partie.getJoueurMain();
     j0.setNbrPierres(2); // donne un peu de marge pour piocher des tuiles non gratuites
     j0.setNbrPoints();   // initialise le score
 
@@ -100,38 +119,47 @@ int main() {
 
     // --- Boucle de manches
     int toursMax = 6; // ajuste si tu veux plus/moins long
-    for (int tour = 1; tour <= toursMax; ++tour) {
+    for (int tour = 1; tour <= toursMax; ++tour)
+    {
         cout << "========== TOUR " << tour << " ==========\n";
         cout << "Maitre architecte: J" << partie.getMaitreArchitecte() << "\n";
 
         // Chaque tour : deux joueurs jouent l’un après l’autre
-        for (int i = 0; i < partie.getNbrJoueurs(); ++i) {
-            Joueur& joueur = partie.getJoueurMain();
+        for (int i = 0; i < partie.getNbrJoueurs(); ++i)
+        {
+            Joueur &joueur = partie.getJoueurMain();
             cout << "-- Tour du joueur courant --\n";
             cout << "Pierres: " << joueur.getNbrPierres() << "\n";
             cout << "Points : " << joueur.getNbrPoints() << "\n";
 
             // Affiche le chantier
             cout << "Chantier (" << chantier.taille() << "): ";
-            for (int k = 0; k < chantier.taille(); ++k) cout << "#" << k << " ";
+            for (int k = 0; k < chantier.taille(); ++k)
+                cout << "#" << k << " ";
             cout << "\n";
 
-            if (chantier.taille() == 0) {
+            if (chantier.taille() == 0)
+            {
                 cout << "Plus de tuiles au chantier.\n";
                 break;
             }
 
             // Politique simple de pioche: si on a des pierres, on tente un index > 0, sinon l’index 0
             int choix = 0;
-            if (joueur.getNbrPierres() >= 1 && chantier.taille() >= 2) choix = 1;
-            if (!chantier.piocherTuile(choix, partie)) {
+            if (joueur.getNbrPierres() >= 1 && chantier.taille() >= 2)
+                choix = 1;
+            if (!chantier.piocherTuile(choix, partie))
+            {
                 cout << "Echec pioche (choix=" << choix << "). On tente 0...\n";
-                if (!chantier.piocherTuile(0, partie)) {
+                if (!chantier.piocherTuile(0, partie))
+                {
                     cout << "Echec pioche même sur 0: on passe.\n";
                     partie.setProchainJoueur();
                     continue;
                 }
-            } else {
+            }
+            else
+            {
                 cout << "Pioche OK: tuile #" << choix << " prise. Pierres restantes: "
                      << joueur.getNbrPierres() << "\n";
             }
@@ -139,9 +167,12 @@ int main() {
             // Essayer de poser la tuile sur son plateau
             cout << "Essai de pose...\n";
             bool pose = essayerPlacerTuile(joueur);
-            if (!pose) {
+            if (!pose)
+            {
                 cout << "Aucun placement valide trouvé -> tour perdu pour ce joueur.\n";
-            } else {
+            }
+            else
+            {
                 // Affiche l’état du plateau et met à jour le score
                 afficherEtatPlateau(joueur.getPlateau());
                 joueur.setNbrPoints();
