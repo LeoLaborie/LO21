@@ -182,20 +182,22 @@ int Plateau::calculerPoints() const {
     int nbHabitation=0;
     int nbMarche=0;
 
-    for (const auto* hex : listeHexagones) {
+    std::vector<const Quartier *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
+
+    for (const Hexagone* hex : listeHexagones) {
         if (hex->getEstRecouvert()) continue;
 
         if (hex->getEstRecouvert()) continue;
 
-        if (auto q = dynamic_cast<const Quartier*>(hex)) {
+        if (const Quartier* q = dynamic_cast<const Quartier*>(hex)) {
             if (q->getTypeQuartier()==TypeQuartier::Jardin) nbJardin+=q->getZ();
             
             if (q->getTypeQuartier()==TypeQuartier::Caserne){
-                if (q->getVoisins().size()<=3) nbCaserne+=q->getZ(); //si il a 4 voisins ou moins c'est qu'il est sur un bord
+                if (q->getVoisins().size()<=3) nbCaserne+=q->getZ(); //si il a 3 voisins ou moins c'est qu'il est sur un bord
             }
             
             if (q->getTypeQuartier()==TypeQuartier::Temple){
-                if (q->getVoisins().size()==5) nbTemple+=q->getZ(); 
+                if (q->getVoisins().size()==4) nbTemple+=q->getZ(); 
             }
             if (q->getTypeQuartier()==TypeQuartier::Marche){
                 for (const auto& voisin: q->getVoisins()){
@@ -206,11 +208,13 @@ int Plateau::calculerPoints() const {
                 nbMarche+=q->getZ();
 
             }
+            if(q->getTypeQuartier()==TypeQuartier::Habitation){
+                tabHabitation.push_back(q);                
 
-            //reste habitation plus compliqué
+            }
 
         }
-        if (auto p = dynamic_cast<const Place*>(hex)) {
+        if (const Place* p = dynamic_cast<const Place*>(hex)) {
             switch (p->getTypePlace()) {
                 case TypePlace::Habitation: placeHabitation += p->getMultiplicateur(); break;
                 case TypePlace::Marche:     placeMarche     += p->getMultiplicateur(); break;
@@ -221,5 +225,53 @@ int Plateau::calculerPoints() const {
             continue;
         }
     }
+    //On détermine le plus grand groupe d'habitations
+    std::vector<const Quartier*> groupeMaxHab; //le groupe d'habitation le plus grand, la taille est à 0 par défaut
+    std::vector<const Quartier*> habVisites;// liste des habitations déjà visités
+
+    for (const Quartier* hab :tabHabitation){
+
+        if (ContientPas(habVisites,hab)){
+
+            std::vector<const Quartier*> voisinsHabitation;// les voisins, que l'on va ajouter et supprimer au fur et à mesure
+            voisinsHabitation.push_back(hab);
+
+            habVisites.push_back(hab);
+
+            std::vector<const Quartier*> groupeHabitation;// le groupe d'habitation que l'on est en train de regarder
+            groupeHabitation.push_back(hab);
+
+            while(voisinsHabitation.size()){// on parcourt les voisins jusqu'à ce qu'il n'y en ait plus
+
+                const Quartier* habActuelle = voisinsHabitation.back();
+                voisinsHabitation.pop_back();
+
+                for(const Hexagone* voisin : habActuelle->getVoisins()){
+
+                    if (const Quartier* quartierVoisin = dynamic_cast<const Quartier*>(voisin)){
+                        // On vérifie que le voisin est un quartier (si la conversion marche, c'est le cas, sinon ça renvoie nullprt)
+
+                        if ((quartierVoisin->getTypeQuartier() == TypeQuartier::Habitation) && ContientPas(habVisites,quartierVoisin)){
+                            // On vérifie que le quartier voisin n'a pas déjà été visité et que c'est bien une habitation
+
+                            voisinsHabitation.push_back(quartierVoisin);
+                            groupeHabitation.push_back(quartierVoisin);
+                            habVisites.push_back(quartierVoisin);
+                        }
+                    }
+                }   
+            }
+
+            if (groupeHabitation.size() > groupeMaxHab.size()){ 
+                groupeMaxHab = groupeHabitation;
+            }
+        }
+    }
+
+    for (const Quartier* hab:groupeMaxHab){
+        nbHabitation += hab->getZ();
+    }
+
+
     return placeCaserne*nbCaserne + placeHabitation*nbHabitation + placeJardin*nbJardin + placeMarche*nbMarche + placeTemple*nbTemple;
 }
