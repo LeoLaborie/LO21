@@ -4,8 +4,8 @@
 void Partie::setNbrJoueurs(int nbr)
 {
     int nbpierre = 1;
-    if (nbr <= 0)
-        throw std::invalid_argument("nbrJoueurs doit etre > 0");
+    if (nbr <= 0 || nbr > 4)
+        throw std::invalid_argument("nbrJoueurs doit etre > 0 et inférieur à 4");
     nbrJoueurs = nbr;
     joueurs.assign(nbrJoueurs, Joueur{});
     for (auto &j : joueurs)
