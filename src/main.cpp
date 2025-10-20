@@ -13,14 +13,11 @@
 #include "Tuile.h"
 #include "Hexagone.h"
 
-using std::cout;
-using std::endl;
-
 int main()
 {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
-    cout << "===== DEMARRAGE PARTIE =====\n";
+    std::cout << "===== DEMARRAGE PARTIE =====\n";
 
     // --- Initialisation de la partie et des joueurs
     Partie partie;                 // si ton type n’a pas de ctor par défaut, remplace par Partie partie(nbrJoueurs);
@@ -37,32 +34,32 @@ int main()
     std::vector<Tuile> paquet = genererPaquet(TAILLE_CHANTIER, partie);
     Chantier chantier(paquet);
 
-    cout << "Paquet initial: " << chantier.taille() << " tuile(s)\n\n";
+    std::cout << "Paquet initial: " << chantier.taille() << " tuile(s)\n\n";
 
     // --- Boucle de manches
     int toursMax = 6; // ajuste si tu veux plus/moins long
     for (int tour = 1; tour <= toursMax; ++tour)
     {
-        cout << "========== TOUR " << tour << " ==========\n";
-        cout << "Maitre architecte: J" << partie.getMaitreArchitecte() << "\n";
+        std::cout << "========== TOUR " << tour << " ==========\n";
+        std::cout << "Maitre architecte: J" << partie.getMaitreArchitecte() << "\n";
 
         // Chaque tour : deux joueurs jouent l’un après l’autre
         for (int i = 0; i < partie.getNbrJoueurs(); ++i)
         {
             Joueur &joueur = partie.getJoueurMain();
-            cout << "-- Tour du joueur courant --\n";
-            cout << "Pierres: " << joueur.getNbrPierres() << "\n";
-            cout << "Points : " << joueur.getNbrPoints() << "\n";
+            std::cout << "-- Tour du joueur courant --\n";
+            std::cout << "Pierres: " << joueur.getNbrPierres() << "\n";
+            std::cout << "Points : " << joueur.getNbrPoints() << "\n";
 
             // Affiche le chantier
-            cout << "Chantier (" << chantier.taille() << "): ";
+            std::cout << "Chantier (" << chantier.taille() << "): ";
             for (int k = 0; k < chantier.taille(); ++k)
-                cout << "#" << k << " ";
-            cout << "\n";
+                std::cout << "#" << k << " ";
+            std::cout << "\n";
 
             if (chantier.taille() == 0)
             {
-                cout << "Plus de tuiles au chantier.\n";
+                std::cout << "Plus de tuiles au chantier.\n";
                 break;
             }
 
@@ -73,26 +70,26 @@ int main()
             Tuile *tuilePiochee = nullptr;
             if (!(tuilePiochee = chantier.piocherTuile(choix, partie)))
             {
-                cout << "Echec pioche (choix=" << choix << "). On tente 0...\n";
+                std::cout << "Echec pioche (choix=" << choix << "). On tente 0...\n";
                 if (!(tuilePiochee = chantier.piocherTuile(0, partie)))
                 {
-                    cout << "Echec pioche même sur 0: on passe.\n";
+                    std::cout << "Echec pioche même sur 0: on passe.\n";
                     partie.setProchainJoueur();
                     continue;
                 }
             }
             else
             {
-                cout << "Pioche OK: tuile #" << choix << " prise. Pierres restantes: "
+                std::cout << "Pioche OK: tuile #" << choix << " prise. Pierres restantes: "
                      << joueur.getNbrPierres() << "\n";
             }
 
             // Essayer de poser la tuile sur son plateau
-            cout << "Essai de pose...\n";
+            std::cout << "Essai de pose...\n";
             C *pose = joueur.getPlateau().essayerPlacerTuile(*tuilePiochee);
             if (!pose)
             {
-                cout << "Aucun placement valide trouvé -> tour perdu pour ce joueur.\n";
+                std::cout << "Aucun placement valide trouvé -> tour perdu pour ce joueur.\n";
             }
             else
             {
@@ -103,7 +100,7 @@ int main()
                 }
                 joueur.getPlateau().afficher();
                 joueur.setNbrPoints();
-                cout << "Points après pose: " << joueur.getNbrPoints() << "\n";
+                std::cout << "Points après pose: " << joueur.getNbrPoints() << "\n";
             }
 
             // Joueur suivant
@@ -112,17 +109,17 @@ int main()
 
         // Fin du tour global
         partie.tourTermine();
-        cout << "Fin du tour " << tour << ". Maitre architecte devient J"
+        std::cout << "Fin du tour " << tour << ". Maitre architecte devient J"
              << partie.getMaitreArchitecte() << "\n\n";
     }
 
     // --- Bilan final
-    cout << "===== FIN DE PARTIE =====\n";
+    std::cout << "===== FIN DE PARTIE =====\n";
     // Petit affichage des scores — ici on suppose 2 joueurs
     // Si tu as un getter pour accéder à tous les joueurs, remplace par une boucle.
     // Sinon, on se contente d’afficher le joueur en main (exemple illustratif).
-    cout << "Score joueur en main: " << partie.getJoueurMain().getNbrPoints() << "\n";
-    cout << "Taille paquet restant (si suivi par la Partie): " << partie.getTaillePaquet() << "\n";
+    std::cout << "Score joueur en main: " << partie.getJoueurMain().getNbrPoints() << "\n";
+    std::cout << "Taille paquet restant (si suivi par la Partie): " << partie.getTaillePaquet() << "\n";
 
     return 0;
 }
