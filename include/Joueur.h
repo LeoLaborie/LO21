@@ -5,8 +5,6 @@
 #include "Plateau.h"
 #include "Tuile.h"
 
-class Partie;
-
 class Joueur
 {
 private:

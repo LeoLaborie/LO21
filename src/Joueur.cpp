@@ -2,8 +2,7 @@
 
 Joueur::Joueur()
     : nbrPierres(0),
-      nbrPoints(0),
-      plateau(this) {};
+      nbrPoints(0) {};
 int Joueur::getNbrPierres()
 {
     return nbrPierres;

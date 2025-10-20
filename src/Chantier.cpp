@@ -4,14 +4,14 @@
 #include <algorithm>
 #include <iostream>
 
-bool Chantier::piocherTuile(int id, Partie &partie)
+Tuile* Chantier::piocherTuile(int id, Partie &partie)
 {
     Joueur &joueur = partie.getJoueurMain();
 
     if (id < 0 || id >= this->taille())
-        return false;
+        return nullptr;
     if (id > joueur.getNbrPierres())
-        return false;
+        return nullptr;
     joueur.setNbrPierres(joueur.getNbrPierres() - id);
     joueur.setTuileEnMain(tuilesChantier[id]);
     tuilesChantier.erase(tuilesChantier.begin() + id);
@@ -28,7 +28,7 @@ bool Chantier::piocherTuile(int id, Partie &partie)
             }
         }
     }
-    return true;
+    return &tuilesChantier[id];
 }
 
 std::vector<Tuile> genererPaquet(int taille, Partie &partie)

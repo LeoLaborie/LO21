@@ -16,84 +16,6 @@
 using std::cout;
 using std::endl;
 
-struct C
-{
-    int x, y, z;
-};
-
-static std::vector<C> candidatsVoisinsAutour(const C &c, int rayon = 2)
-{
-    std::vector<C> res;
-    for (int dx = -rayon; dx <= rayon; ++dx)
-    {
-        for (int dy = std::max(-rayon, -dx - rayon); dy <= std::min(rayon, -dx + rayon); ++dy)
-        {
-            int dz = -dx - dy;
-            if (dx == 0 && dy == 0 && dz == 0)
-                continue;
-            res.push_back({c.x + dx, c.y + dy, c.z + dz});
-        }
-    }
-    return res;
-}
-
-static std::vector<C> grillePetite(int r = 3)
-{
-    std::vector<C> res;
-    for (int x = -r; x <= r; ++x)
-    {
-        for (int y = -r; y <= r; ++y)
-        {
-            int z = -x - y;
-            if (std::abs(z) > r)
-                continue;
-            res.push_back({x, y, z});
-        }
-    }
-    return res;
-}
-
-static void afficherEtatPlateau(const Plateau &p)
-{
-    cout << "  Hexagones sur plateau: " << p.getHexagones().size() << "\n";
-    for (auto *h : p.getHexagones())
-    {
-        cout << "    (" << h->getX() << "," << h->getY() << "," << h->getZ() << ")"
-             << " voisins=" << h->getVoisins().size()
-             << (h->getEstRecouvert() ? " [recouvert]" : "") << "\n";
-    }
-}
-
-static bool essayerPlacerTuile(Joueur &j)
-{
-    Plateau &p = j.getPlateau();
-    const Tuile &t = j.getTuileEnMain();
-
-    // 1) on balaie une grille autour de (0,0,0)
-    auto grille = grillePetite(3);
-
-    // 2) on teste plusieurs orientations (0,1,2 rotations)
-    Tuile tuileMutable = t; // on copie pour pouvoir pivoter
-    for (int rot = 0; rot < 3; ++rot)
-    {
-        if (rot > 0)
-            tuileMutable.pivoterTuile();
-
-        for (const auto &c : grille)
-        {
-            if (p.verifierPlacementTuile(c.x, c.y, c.z))
-            {
-                cout << "    -> placement OK en (" << c.x << "," << c.y << "," << c.z
-                     << ") avec rotation=" << rot << "\n";
-                Tuile tuileAPlacer = tuileMutable; // copie de l’orientation courante
-                p.ajouterTuile(tuileAPlacer, c.x, c.y, c.z);
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 int main()
 {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
@@ -148,10 +70,11 @@ int main()
             int choix = 0;
             if (joueur.getNbrPierres() >= 1 && chantier.taille() >= 2)
                 choix = 1;
-            if (!chantier.piocherTuile(choix, partie))
+            Tuile *tuilePiochee = nullptr;
+            if (!(tuilePiochee = chantier.piocherTuile(choix, partie)))
             {
                 cout << "Echec pioche (choix=" << choix << "). On tente 0...\n";
-                if (!chantier.piocherTuile(0, partie))
+                if (!(tuilePiochee = chantier.piocherTuile(0, partie)))
                 {
                     cout << "Echec pioche même sur 0: on passe.\n";
                     partie.setProchainJoueur();
@@ -166,7 +89,7 @@ int main()
 
             // Essayer de poser la tuile sur son plateau
             cout << "Essai de pose...\n";
-            bool pose = essayerPlacerTuile(joueur);
+            C *pose = joueur.getPlateau().essayerPlacerTuile(*tuilePiochee);
             if (!pose)
             {
                 cout << "Aucun placement valide trouvé -> tour perdu pour ce joueur.\n";
@@ -174,7 +97,11 @@ int main()
             else
             {
                 // Affiche l’état du plateau et met à jour le score
-                afficherEtatPlateau(joueur.getPlateau());
+                if (joueur.getPlateau().ajouterTuile(*tuilePiochee, *pose))
+                {
+                    joueur.setNbrPierres(joueur.getNbrPierres() + 1);
+                }
+                joueur.getPlateau().afficher();
                 joueur.setNbrPoints();
                 cout << "Points après pose: " << joueur.getNbrPoints() << "\n";
             }

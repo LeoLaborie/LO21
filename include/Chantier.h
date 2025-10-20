@@ -17,7 +17,7 @@ public:
     int taille() const { return tuilesChantier.size(); }
     void ajouterTuile(const Tuile &t) { tuilesChantier.push_back(t); }
     const std::vector<Tuile> &getTuiles() const { return tuilesChantier; }
-    bool piocherTuile(int id, Partie &partie);
+    Tuile* piocherTuile(int id, Partie &partie);
 };
 std::vector<Tuile> genererPaquet(int taille, Partie &partie);
 #endif

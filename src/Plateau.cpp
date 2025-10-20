@@ -1,9 +1,6 @@
-#include <Plateau.h>
-#include <algorithm>
-#include <iostream>
-#include "Joueur.h"
+#include "Plateau.h"
 
-Plateau::Plateau(Joueur *j) : proprietaire(j)
+Plateau::Plateau()
 {
     listeTuiles.clear();
     listeHexagones = {
@@ -53,7 +50,7 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(int x, int y, int z) const
+bool Plateau::verifierPlacementTuile(C &c) const
 {
     std::vector<Tuile *> tuiles_en_dessous;
     bool surElever = false;
@@ -69,15 +66,15 @@ bool Plateau::verifierPlacementTuile(int x, int y, int z) const
         int z;
     };
     coord coords[3];
-    coords[0].x = x; // hex0
-    coords[0].y = y;
-    coords[0].z = z;
-    coords[1].x = x - 1; // hex1
-    coords[1].y = y + 1;
-    coords[1].z = z;
-    coords[2].x = x; // hex2
-    coords[2].y = y + 1;
-    coords[2].z = z;
+    coords[0].x = c.x; // hex0
+    coords[0].y = c.y;
+    coords[0].z = c.z;
+    coords[1].x = c.x - 1; // hex1
+    coords[1].y = c.y + 1;
+    coords[1].z = c.z;
+    coords[2].x = c.x;
+    coords[2].y = c.y + 1;
+    coords[2].z = c.z;
     for (const auto &h : coords)
     {
         bool supportTrouve = false;
@@ -132,51 +129,80 @@ bool Plateau::verifierPlacementTuile(int x, int y, int z) const
     return true;
 }
 
-void Plateau::ajouterTuile(Tuile &t, int x, int y, int z)
+C *Plateau::essayerPlacerTuile(Tuile &t)
 {
-    if (!verifierPlacementTuile(x, y, z))
+    // 1) on balaie une grille autour de (0,0,0)
+    auto grille = Plateau::grillePetite(3);
+
+    // 2) on teste plusieurs orientations (0,1,2 rotations)
+    Tuile tuileMutable = t; // on copie pour pouvoir pivoter
+    for (int rot = 0; rot < 3; ++rot)
+    {
+        if (rot > 0)
+            tuileMutable.pivoterTuile();
+
+        for (const auto &c : grille)
+        {
+            C tempC{c};
+            if (verifierPlacementTuile(tempC))
+            {
+                std::cout << "    -> placement OK en (" << c.x << "," << c.y << "," << c.z
+                          << ") avec rotation=" << rot << "\n";
+                Tuile tuileAPlacer = tuileMutable; // copie de l’orientation courante
+                return new C{c.x, c.y, c.z};
+            }
+        }
+    }
+    return nullptr;
+}
+
+bool Plateau::ajouterTuile(Tuile &t, C &c)
+{
+    bool res = false;
+    if (!verifierPlacementTuile(c))
     {
         std::cout << "Placement de tuile invalide." << std::endl;
-        return;
+        return false;
     }
-    if (z > 1)
+    if (c.z > 1)
     {
+        auto *h0 = t.getHexagones()[0];
+        auto *h1 = t.getHexagones()[1];
+        auto *h2 = t.getHexagones()[2];
+
+        h0->SetCoord(c.x, c.y, c.z);
+        h1->SetCoord(c.x - 1, c.y + 1, c.z);
+        h2->SetCoord(c.x, c.y + 1, c.z);
+        // Insérer la tuile dans le plateau
+        listeTuiles.push_back(t);
+        updateVoisins();
+
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
                       {
-        if (h->getX() == x && h->getY() == y  && !h->getEstRecouvert()) {
+        if (h->getX() == c.x && h->getY() == c.y  && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
+                res = true;
             }
         } });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
                       {
-        if (h->getX() == x - 1 && h->getY() == y + 1 && !h->getEstRecouvert()){
+        if (h->getX() == c.x - 1 && h->getY() == c.y + 1 && !h->getEstRecouvert()){
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
+                res = true;
             }
         } });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
                       {
-        if (h->getX() == x && h->getY() == y + 1 && !h->getEstRecouvert()) {
+        if (h->getX() == c.x && h->getY() == c.y + 1 && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                proprietaire->setNbrPierres(proprietaire->getNbrPierres()+1);
+                res = true;
             }
         } });
     }
-
-    auto *h0 = t.getHexagones()[0];
-    auto *h1 = t.getHexagones()[1];
-    auto *h2 = t.getHexagones()[2];
-
-    h0->SetCoord(x, y, z);
-    h1->SetCoord(x - 1, y + 1, z);
-    h2->SetCoord(x, y + 1, z);
-    // Insérer la tuile dans le plateau
-    listeTuiles.push_back(t);
-    updateVoisins();
+    return res;
 }
 
 int Plateau::calculerPoints() const
@@ -315,4 +341,31 @@ int Plateau::calculerPoints() const
     }
 
     return placeCaserne * nbCaserne + placeHabitation * nbHabitation + placeJardin * nbJardin + placeMarche * nbMarche + placeTemple * nbTemple;
+}
+
+void Plateau::afficher() const
+{
+    std::cout << "  Hexagones sur plateau: " << getHexagones().size() << "\n";
+    for (auto *h : getHexagones())
+    {
+        std::cout << "    (" << h->getX() << "," << h->getY() << "," << h->getZ() << ")"
+                  << " voisins=" << h->getVoisins().size()
+                  << (h->getEstRecouvert() ? " [recouvert]" : "") << "\n";
+    }
+}
+
+std::vector<C> Plateau::grillePetite(int r)
+{
+    std::vector<C> res;
+    for (int x = -r; x <= r; ++x)
+    {
+        for (int y = -r; y <= r; ++y)
+        {
+            int z = -x - y;
+            if (std::abs(z) > r)
+                continue;
+            res.push_back({x, y, z});
+        }
+    }
+    return res;
 }
