@@ -1,5 +1,6 @@
 #include "Partie.h"
-#include <stdexcept>
+
+void Partie::genererTuilesParties(){}
 
 void Partie::setNbrJoueurs(int nbr)
 {
@@ -16,7 +17,7 @@ void Partie::setNbrJoueurs(int nbr)
     mainJoueur = 0;
     maitreArchitecte = 0;
     nbrTours = 0;
-    this->setTaillePaquet(2 + nbrJoueurs);
+    taillepaquet = 1 + nbrJoueurs;
 }
 
 void Partie::tourTermine()
@@ -26,4 +27,22 @@ void Partie::tourTermine()
         maitreArchitecte = (maitreArchitecte + 1) % nbrJoueurs;
     }
     nbrTours++;
+}
+
+std::vector<Tuile> Partie::retirerPaquet(int taille)
+{
+    std::vector<Tuile> paquet;
+
+    // on applique une fonction random pour simuler les paquets mélangés
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(tuilesPartie.begin(), tuilesPartie.end(), g);
+
+    for (int i = 0; i < taille && i < (int)tuilesPartie.size(); ++i)
+    {
+        paquet.push_back(tuilesPartie[i]);
+        tuilesPartie.erase(tuilesPartie.begin() + i);
+    }
+
+    return paquet;
 }

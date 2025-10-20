@@ -2,8 +2,12 @@
 #define PARTIE_H
 
 #include <vector>
+#include <math.h>
+#include <stdexcept>
+#include <random>
 #include "Tuile.h"
 #include "Joueur.h"
+#include "Chantier.h"
 
 class Partie
 {
@@ -14,8 +18,11 @@ private:
     int nbrTours = 0;
     int taillepaquet = 0;
 
+    Chantier chantier;
     std::vector<Joueur> joueurs;
     std::vector<Tuile> tuilesPartie;
+
+    void genererTuilesParties();
 
 public:
     Partie() = default;
@@ -40,9 +47,11 @@ public:
 
     int getTaillePaquet() const { return taillepaquet; }
     void setTaillePaquet(int t) { taillepaquet = t; }
+    Chantier& getChantier() { return chantier; }
     std::vector<Tuile> &getTuilesDisponibles() { return tuilesPartie; }
 
     int getNbrTours() const { return nbrTours; }
+    std::vector<Tuile> retirerPaquet(int taille);
 };
 
 #endif

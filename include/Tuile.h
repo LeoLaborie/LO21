@@ -2,8 +2,7 @@
 #define TUILE_H
 
 #include <vector>
-
-class Hexagone;
+#include "Hexagone.h"
 
 class Tuile
 {
