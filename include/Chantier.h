@@ -14,7 +14,8 @@ public:
     ~Chantier() = default;
     int getTaille() const { return tuilesChantier.size(); }
     void ajouterTuile(const Tuile &t) { tuilesChantier.push_back(t); }
-    std::vector<Tuile> &getTuiles() { return tuilesChantier; }
+    const std::vector<Tuile> &getTuiles() const { return tuilesChantier; }
+    void retirerTuile(int id);
 };
 
 #endif

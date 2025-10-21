@@ -31,6 +31,6 @@ Tuile* Joueur::piocherTuile(int id, Chantier& chantier)
         return nullptr;
     setNbrPierres(getNbrPierres() - id);
     setTuileEnMain(chantier.getTuiles()[id]);
-    chantier.getTuiles().erase(chantier.getTuiles().begin() + id);
+    chantier.retirerTuile(id);
     return &tuileEnMain;
 }
