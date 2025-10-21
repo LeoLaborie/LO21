@@ -132,7 +132,7 @@ bool Plateau::verifierPlacementTuile(Position &p) const
 Position *Plateau::essayerPlacerTuile(Tuile &t)
 {
     // 1) on balaie une grille autour de (0,0,0)
-    auto grille = Plateau::grillePetite(3);
+    std::vector<Position> grille = grillePetite(3);
 
     // 2) on teste plusieurs orientations (0,1,2 rotations)
     Tuile tuileMutable = t; // on copie pour pouvoir pivoter
@@ -352,20 +352,4 @@ void Plateau::afficher() const
                   << " voisins=" << h->getVoisins().size()
                   << (h->getEstRecouvert() ? " [recouvert]" : "") << "\n";
     }
-}
-
-std::vector<Position> Plateau::grillePetite(int r)
-{
-    std::vector<Position> res;
-    for (int x = -r; x <= r; ++x)
-    {
-        for (int y = -r; y <= r; ++y)
-        {
-            int z = -x - y;
-            if (std::abs(z) > r)
-                continue;
-            res.push_back({x, y, z});
-        }
-    }
-    return res;
 }

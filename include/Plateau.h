@@ -7,6 +7,7 @@
 #include "Tuile.h"
 #include "Hexagone.h"
 #include "Position.h"
+#include "utils.h"
 
 class Plateau
 {
@@ -25,7 +26,6 @@ public:
     const std::vector<Hexagone *> &getHexagones() const { return listeHexagones; }
     int calculerPoints() const;
     void afficher() const;
-    static std::vector<Position> grillePetite(int r = 3);
 };
 
 #endif
