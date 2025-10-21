@@ -6,11 +6,7 @@
 #include <iostream>
 #include "Tuile.h"
 #include "Hexagone.h"
-
-struct C
-{
-    int x, y, z;
-};
+#include "Position.h"
 
 class Plateau
 {
@@ -21,15 +17,15 @@ private:
 public:
     explicit Plateau();
 
-    bool verifierPlacementTuile(C& c) const;
-    C* essayerPlacerTuile(Tuile &t);
-    bool ajouterTuile(Tuile &t, C& c);
+    bool verifierPlacementTuile(Position &p) const;
+    Position *essayerPlacerTuile(Tuile &t);
+    bool ajouterTuile(Tuile &t, Position &p);
     void updateVoisins();
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; }
     const std::vector<Hexagone *> &getHexagones() const { return listeHexagones; }
     int calculerPoints() const;
     void afficher() const;
-    static std::vector<C> grillePetite(int r = 3);
+    static std::vector<Position> grillePetite(int r = 3);
 };
 
 #endif
