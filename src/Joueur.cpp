@@ -22,3 +22,15 @@ void Joueur::setNbrPoints()
 {
     nbrPoints = getPlateau().calculerPoints();
 }
+
+Tuile* Joueur::piocherTuile(int id, Chantier& chantier)
+{
+    if (id < 0 || id >= chantier.getTaille())
+        return nullptr;
+    if (id > getNbrPierres())
+        return nullptr;
+    setNbrPierres(getNbrPierres() - id);
+    setTuileEnMain(chantier.getTuiles()[id]);
+    chantier.getTuiles().erase(chantier.getTuiles().begin() + id);
+    return &tuileEnMain;
+}

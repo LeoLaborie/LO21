@@ -1,9 +1,11 @@
 #ifndef JOUEUR_H
 #define JOUEUR_H
 
+#include <vector>
 #include <iostream>
 #include "Plateau.h"
 #include "Tuile.h"
+#include "Chantier.h"
 
 class Joueur
 {
@@ -22,6 +24,7 @@ public:
     const Tuile &getTuileEnMain() const { return tuileEnMain; }
     int getNbrPoints();
     void setTuileEnMain(const Tuile &t) { tuileEnMain = t; }
+    Tuile* piocherTuile(int id, Chantier& chantier);
 };
 
 #endif
