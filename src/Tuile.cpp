@@ -1,5 +1,4 @@
 #include "Tuile.h"
-#include "Hexagone.h"
 
 Tuile::Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3)
 {
