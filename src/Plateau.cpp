@@ -129,13 +129,13 @@ bool Plateau::verifierPlacementTuile(Position &p) const
     return true;
 }
 
-bool Plateau::ajouterTuile(Tuile &t, Position &p)
+int Plateau::placerTuile(Tuile &t, Position &p)
 {
-    bool res = false;
+    int res = 0;
     if (!verifierPlacementTuile(p))
     {
         std::cout << "Placement de tuile invalide." << std::endl;
-        return false;
+        return -1;
     }
     if (p.z > 1)
     {
@@ -155,7 +155,7 @@ bool Plateau::ajouterTuile(Tuile &t, Position &p)
         if (h->getX() == p.x && h->getY() == p.y  && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                res = true;
+                res++;
             }
         } });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
@@ -163,7 +163,7 @@ bool Plateau::ajouterTuile(Tuile &t, Position &p)
         if (h->getX() == p.x - 1 && h->getY() == p.y + 1 && !h->getEstRecouvert()){
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                res = true;
+                res++;
             }
         } });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
@@ -171,7 +171,7 @@ bool Plateau::ajouterTuile(Tuile &t, Position &p)
         if (h->getX() == p.x && h->getY() == p.y + 1 && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                res = true;
+                res++;
             }
         } });
     }

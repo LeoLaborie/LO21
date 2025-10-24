@@ -120,7 +120,7 @@ int main()
     //         else
     //         {
     //             // Affiche l’état du plateau et met à jour le score
-    //             if (joueur.getPlateau().ajouterTuile(*tuilePiochee, *pose))
+    //             if (joueur.getPlateau().placerTuile(*tuilePiochee, *pose))
     //             {
     //                 joueur.setNbrPierres(joueur.getNbrPierres() + 1);
     //             }
