@@ -20,12 +20,14 @@ private:
 
     Chantier chantier;
     std::vector<Joueur> joueurs;
-    std::vector<Tuile> tuilesPartie;
+    std::vector<std::vector<Tuile>> piles;
 
     void genererTuilesParties();
 
 public:
     Partie() = default;
+
+    void addTuileInChantierFromPiles();
 
     // Configuration des joueurs
     void setNbrJoueurs(int nbr);
@@ -48,7 +50,6 @@ public:
     int getTaillePaquet() const { return taillepaquet; }
     void setTaillePaquet(int t) { taillepaquet = t; }
     Chantier& getChantier() { return chantier; }
-    std::vector<Tuile> &getTuilesDisponibles() { return tuilesPartie; }
 
     int getNbrTours() const { return nbrTours; }
     std::vector<Tuile> retirerPaquet(int taille);
