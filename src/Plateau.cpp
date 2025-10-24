@@ -182,22 +182,88 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     return res;
 }
 
-int Plateau::calculerPoints() const
+int Plateau::calculerPoints() const{
+    return calculerPointsCaserne() + calculerPointsHabitation() + calculerPointsJardin() + calculerPointsMarche() + calculerPointsTemple();
+}
+
+int Plateau::calculerPointsCaserne() const
 {
-
-    int placeHabitation = 0;
-    int placeMarche = 0;
-    int placeTemple = 0;
     int placeCaserne = 0;
-    int placeJardin = 0;
-
-    int nbJardin = 0;
     int nbCaserne = 0;
-    int nbTemple = 0;
-    int nbHabitation = 0;
-    int nbMarche = 0;
+    
+    for (const Hexagone *hex : listeHexagones)
+    {
+        if (hex->getEstRecouvert())
+            continue;
 
-    std::vector<const Quartier *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
+        {
+            if (q->getTypeQuartier() == TypeQuartier::Caserne)
+            {
+                if (q->getVoisins().size() <= 3)
+                    nbCaserne += q->getZ(); // si il a 3 voisins ou moins p'est qu'il est sur un bord
+            }         
+        }
+        if (const Place *p = dynamic_cast<const Place *>(hex))
+        {
+            if(p->getTypePlace() == TypePlace::Caserne)
+                placeCaserne += p->getMultiplicateur();
+            
+        }
+    }
+
+    return placeCaserne * nbCaserne;
+}
+
+int Plateau::calculerPointsTemple() const{
+    /*
+    *Calcul Le nombre de points donnés par les temples (en comprenant les places et les varaiantes)
+    *
+    *@return Le nombre total de points
+    */
+    int placeTemple = 0;
+    int nbTemple = 0;
+
+     for (const Hexagone *hex : listeHexagones)
+    {
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
+        {
+            if (q->getTypeQuartier() == TypeQuartier::Temple)
+            {
+                if (q->getVoisins().size() == 6)
+                    nbTemple += q->getZ();
+            }
+        }
+        if (const Place *p = dynamic_cast<const Place *>(hex))
+        {
+            if(p->getTypePlace() == TypePlace::Temple)
+                placeTemple += p->getMultiplicateur();
+        }
+    }
+
+    return placeTemple * nbTemple;
+
+}
+
+int Plateau::calculerPointsJardin() const{
+
+    /*
+    *Calcul Le nombre de points donnés par les jardins (en comprenant les places et les varaiantes)
+    *
+    *@return Le nombre total de points
+    */
+
+    int placeJardin = 0;
+    int nbJardin = 0;
 
     for (const Hexagone *hex : listeHexagones)
     {
@@ -211,57 +277,97 @@ int Plateau::calculerPoints() const
         {
             if (q->getTypeQuartier() == TypeQuartier::Jardin)
                 nbJardin += q->getZ();
+        }
+        
+        if (const Place *p = dynamic_cast<const Place *>(hex))
+        {
+            if (p->getTypePlace() == TypePlace::Jardin)
+                placeJardin += p->getMultiplicateur();
+        }
 
-            if (q->getTypeQuartier() == TypeQuartier::Caserne)
-            {
-                if (q->getVoisins().size() <= 3)
-                    nbCaserne += q->getZ(); // si il a 3 voisins ou moins p'est qu'il est sur un bord
-            }
+    }
 
-            if (q->getTypeQuartier() == TypeQuartier::Temple)
-            {
-                if (q->getVoisins().size() == 4)
-                    nbTemple += q->getZ();
-            }
+    return placeJardin * nbJardin;
+}
+
+int Plateau::calculerPointsMarche() const{
+    /*
+    *Calcul Le nombre de points donnés par les marchés (en comprenant les places et les varaiantes)
+    *
+    *@return Le nombre total de points
+    */
+
+    int placeMarche = 0;
+    int nbMarche = 0;
+
+    for (const Hexagone *hex : listeHexagones)
+    {
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
+        {
             if (q->getTypeQuartier() == TypeQuartier::Marche)
             {
                 for (const auto &voisin : q->getVoisins())
-                {
-                    if (dynamic_cast<const Quartier *>(voisin)->getTypeQuartier() == TypeQuartier::Marche)
                     {
-                        continue;
+                        if (dynamic_cast<const Quartier *>(voisin)->getTypeQuartier() == TypeQuartier::Marche)
+                        {
+                            continue;
+                        }
                     }
-                }
-                nbMarche += q->getZ();
-            }
-            if (q->getTypeQuartier() == TypeQuartier::Habitation)
-            {
-                tabHabitation.push_back(q);
+                    nbMarche += q->getZ();
             }
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
-            switch (p->getTypePlace())
-            {
-            case TypePlace::Habitation:
-                placeHabitation += p->getMultiplicateur();
-                break;
-            case TypePlace::Marche:
+            if (p->getTypePlace() == TypePlace::Marche){
                 placeMarche += p->getMultiplicateur();
-                break;
-            case TypePlace::Temple:
-                placeTemple += p->getMultiplicateur();
-                break;
-            case TypePlace::Caserne:
-                placeCaserne += p->getMultiplicateur();
-                break;
-            case TypePlace::Jardin:
-                placeJardin += p->getMultiplicateur();
-                break;
             }
-            continue;
         }
     }
+
+    return placeMarche + nbMarche;
+
+}
+
+
+int Plateau::calculerPointsHabitation() const{
+    /*
+    *Calcul Le nombre de points donnés par les habitations (en comprenant les places et les varaiantes)
+    *
+    *@return Le nombre total de points
+    */
+    int placeHabitation = 0;
+    int nbHabitation = 0;
+
+    std::vector<const Quartier *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
+
+
+    for (const Hexagone *hex : listeHexagones)
+    {
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
+        {
+            if (q->getTypeQuartier() == TypeQuartier::Habitation)
+                {
+                    tabHabitation.push_back(q);
+                }
+        }
+        if (const Place *p = dynamic_cast<const Place *>(hex))
+        {
+            if (p->getTypePlace() == TypePlace::Habitation)
+            {
+                placeHabitation += p->getMultiplicateur();
+            }
+        }
+    }
+
     // On détermine le plus grand groupe d'habitations
     std::vector<const Quartier *> groupeMaxHab; // le groupe d'habitation le plus grand, la taille est à 0 par défaut
     std::vector<const Quartier *> habVisites;   // liste des habitations déjà visités
@@ -317,7 +423,8 @@ int Plateau::calculerPoints() const
         nbHabitation += hab->getZ();
     }
 
-    return placeCaserne * nbCaserne + placeHabitation * nbHabitation + placeJardin * nbJardin + placeMarche * nbMarche + placeTemple * nbTemple;
+    return placeHabitation * nbHabitation;
+
 }
 
 void Plateau::afficher() const

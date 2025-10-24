@@ -23,6 +23,11 @@ public:
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; }
     const std::vector<Hexagone *> &getHexagones() const { return listeHexagones; }
     int calculerPoints() const;
+    int calculerPointsHabitation() const;
+    int calculerPointsMarche() const;
+    int calculerPointsJardin() const;
+    int calculerPointsTemple() const;
+    int calculerPointsCaserne() const;
     void afficher() const;
 };
 
