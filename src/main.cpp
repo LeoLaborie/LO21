@@ -30,9 +30,10 @@ int main()
 
     // Préparation du paquet de tuiles
     //  --> Génération de toutes les tuiles de la partie
+    partie.genererTuilesParties();
 
     // Sortie d'une pile
-    std::vector<Tuile> paquet = partie.retirerPaquet(partie.getTaillePaquet() + 1);
+    std::vector<Tuile> paquet = partie.retirerPaquet();
 
     // Ajout des tuiles au chantier
     for (Tuile tuile : paquet){
