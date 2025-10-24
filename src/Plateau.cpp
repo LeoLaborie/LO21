@@ -365,7 +365,7 @@ int Plateau::calculerPointsHabitation() const{
     *@return Le nombre total de points
     */
     int placeHabitation = 0;
-    int pointsHabitation = 0;
+    int nbHabitation = 0;
 
     std::vector<const Quartier *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
 
@@ -443,10 +443,10 @@ int Plateau::calculerPointsHabitation() const{
 
     for (const Quartier *hab : groupeMaxHab)
     {
-        pointsHabitation += hab->getZ();
+        nbHabitation += hab->getZ();
     }
 
-    return placeHabitation * pointsHabitation;
+    return placeHabitation * nbHabitation;
 
 }
 
