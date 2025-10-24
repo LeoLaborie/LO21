@@ -174,23 +174,12 @@ void Partie::tourTermine()
     nbrTours++;
 }
 
-std::vector<Tuile> Partie::retirerPaquet(int taille)
+std::vector<Tuile> Partie::retirerPaquet()
 {
     std::vector<Tuile> paquet;
 
-    // // on applique une fonction random pour simuler les paquets mélangés
-    // std::random_device rd;
-    // std::mt19937 g(rd());
-    // std::shuffle(tuilesPartie.begin(), tuilesPartie.end(), g);
-
-    // for (int i = 0; i < taille && i < (int)tuilesPartie.size(); ++i)
-    // {
-    //     paquet.push_back(tuilesPartie[i]);
-    //     tuilesPartie.erase(tuilesPartie.begin() + i);
-    // }
-
-    // return paquet;
-
     paquet = piles.back();
     piles.pop_back();
+
+    return paquet;
 }

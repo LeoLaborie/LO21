@@ -129,40 +129,13 @@ bool Plateau::verifierPlacementTuile(Position &p) const
     return true;
 }
 
-Position *Plateau::essayerPlacerTuile(Tuile &t)
+int Plateau::placerTuile(Tuile &t, Position &p)
 {
-    // 1) on balaie une grille autour de (0,0,0)
-    std::vector<Position> grille = grillePetite(3);
-
-    // 2) on teste plusieurs orientations (0,1,2 rotations)
-    Tuile tuileMutable = t; // on copie pour pouvoir pivoter
-    for (int rot = 0; rot < 3; ++rot)
-    {
-        if (rot > 0)
-            tuileMutable.pivoterTuile();
-
-        for (const auto &p : grille)
-        {
-            Position tempP{p};
-            if (verifierPlacementTuile(tempP))
-            {
-                std::cout << "    -> placement OK en (" << p.x << "," << p.y << "," << p.z
-                          << ") avec rotation=" << rot << "\n";
-                Tuile tuileAPlacer = tuileMutable; // copie de l’orientation courante
-                return new Position{p.x, p.y, p.z};
-            }
-        }
-    }
-    return nullptr;
-}
-
-bool Plateau::ajouterTuile(Tuile &t, Position &p)
-{
-    bool res = false;
+    int res = 0;
     if (!verifierPlacementTuile(p))
     {
         std::cout << "Placement de tuile invalide." << std::endl;
-        return false;
+        return -1;
     }
     if (p.z > 1)
     {
@@ -182,7 +155,7 @@ bool Plateau::ajouterTuile(Tuile &t, Position &p)
         if (h->getX() == p.x && h->getY() == p.y  && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                res = true;
+                res++;
             }
         } });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
@@ -190,7 +163,7 @@ bool Plateau::ajouterTuile(Tuile &t, Position &p)
         if (h->getX() == p.x - 1 && h->getY() == p.y + 1 && !h->getEstRecouvert()){
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                res = true;
+                res++;
             }
         } });
         std::for_each(listeHexagones.begin(), listeHexagones.end(), [&](Hexagone *h)
@@ -198,7 +171,7 @@ bool Plateau::ajouterTuile(Tuile &t, Position &p)
         if (h->getX() == p.x && h->getY() == p.y + 1 && !h->getEstRecouvert()) {
             h->setEstRecouvert();
             if (dynamic_cast<const Carriere*>(h)){
-                res = true;
+                res++;
             }
         } });
     }

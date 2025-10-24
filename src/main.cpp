@@ -30,9 +30,10 @@ int main()
 
     // Préparation du paquet de tuiles
     //  --> Génération de toutes les tuiles de la partie
+    partie.genererTuilesParties();
 
     // Sortie d'une pile
-    std::vector<Tuile> paquet = partie.retirerPaquet(partie.getTaillePaquet() + 1);
+    std::vector<Tuile> paquet = partie.retirerPaquet();
 
     // Ajout des tuiles au chantier
     for (Tuile tuile : paquet){
@@ -119,7 +120,7 @@ int main()
     //         else
     //         {
     //             // Affiche l’état du plateau et met à jour le score
-    //             if (joueur.getPlateau().ajouterTuile(*tuilePiochee, *pose))
+    //             if (joueur.getPlateau().placerTuile(*tuilePiochee, *pose))
     //             {
     //                 joueur.setNbrPierres(joueur.getNbrPierres() + 1);
     //             }
