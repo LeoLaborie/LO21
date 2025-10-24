@@ -205,18 +205,88 @@ bool Plateau::ajouterTuile(Tuile &t, Position &p)
     return res;
 }
 
-int Plateau::calculerPoints() const
+int Plateau::calculerPoints() const{
+    return calculerPointsCaserne() + calculerPointsHabitation() + calculerPointsJardin() + calculerPointsMarche() + calculerPointsTemple();
+}
+
+int Plateau::calculerPointsCaserne() const
 {
-
-    
-    int placeTemple = 0;
     int placeCaserne = 0;
-    int placeJardin = 0;
-
-    int nbJardin = 0;
     int nbCaserne = 0;
-    int nbTemple = 0;
     
+    for (const Hexagone *hex : listeHexagones)
+    {
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
+        {
+            if (q->getTypeQuartier() == TypeQuartier::Caserne)
+            {
+                if (q->getVoisins().size() <= 3)
+                    nbCaserne += q->getZ(); // si il a 3 voisins ou moins p'est qu'il est sur un bord
+            }         
+        }
+        if (const Place *p = dynamic_cast<const Place *>(hex))
+        {
+            if(p->getTypePlace() == TypePlace::Caserne)
+                placeCaserne += p->getMultiplicateur();
+            
+        }
+    }
+
+    return placeCaserne * nbCaserne;
+}
+
+int Plateau::calculerPointsTemple() const{
+    /*
+    *Calcul Le nombre de points donnés par les temples (en comprenant les places et les varaiantes)
+    *
+    *@return Le nombre total de points
+    */
+    int placeTemple = 0;
+    int nbTemple = 0;
+
+     for (const Hexagone *hex : listeHexagones)
+    {
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (hex->getEstRecouvert())
+            continue;
+
+        if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
+        {
+            if (q->getTypeQuartier() == TypeQuartier::Temple)
+            {
+                if (q->getVoisins().size() == 6)
+                    nbTemple += q->getZ();
+            }
+        }
+        if (const Place *p = dynamic_cast<const Place *>(hex))
+        {
+            if(p->getTypePlace() == TypePlace::Temple)
+                placeTemple += p->getMultiplicateur();
+        }
+    }
+
+    return placeTemple * nbTemple;
+
+}
+
+int Plateau::calculerPointsJardin() const{
+
+    /*
+    *Calcul Le nombre de points donnés par les jardins (en comprenant les places et les varaiantes)
+    *
+    *@return Le nombre total de points
+    */
+
+    int placeJardin = 0;
+    int nbJardin = 0;
 
     for (const Hexagone *hex : listeHexagones)
     {
@@ -230,44 +300,20 @@ int Plateau::calculerPoints() const
         {
             if (q->getTypeQuartier() == TypeQuartier::Jardin)
                 nbJardin += q->getZ();
-
-            if (q->getTypeQuartier() == TypeQuartier::Caserne)
-            {
-                if (q->getVoisins().size() <= 3)
-                    nbCaserne += q->getZ(); // si il a 3 voisins ou moins p'est qu'il est sur un bord
-            }
-
-            if (q->getTypeQuartier() == TypeQuartier::Temple)
-            {
-                if (q->getVoisins().size() == 4)
-                    nbTemple += q->getZ();
-            }
-            
-            
         }
+        
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
-            switch (p->getTypePlace())
-            {
-            case TypePlace::Temple:
-                placeTemple += p->getMultiplicateur();
-                break;
-            case TypePlace::Caserne:
-                placeCaserne += p->getMultiplicateur();
-                break;
-            case TypePlace::Jardin:
+            if (p->getTypePlace() == TypePlace::Jardin)
                 placeJardin += p->getMultiplicateur();
-                break;
-            }
-            continue;
         }
+
     }
 
-
-    return placeCaserne * nbCaserne + placeJardin * nbJardin + placeTemple * nbTemple;
+    return placeJardin * nbJardin;
 }
 
-int Plateau::calculerPointsMarche(){
+int Plateau::calculerPointsMarche() const{
     /*
     *Calcul Le nombre de points donnés par les marchés (en comprenant les places et les varaiantes)
     *
@@ -307,7 +353,7 @@ int Plateau::calculerPointsMarche(){
         }
     }
 
-    return placeMarche + nbMarche
+    return placeMarche + nbMarche;
 
 }
 
