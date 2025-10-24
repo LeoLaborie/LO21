@@ -203,7 +203,7 @@ int Plateau::calculerPointsCaserne() const
         {
             if (q->getTypeQuartier() == TypeQuartier::Caserne)
             {
-                if (q->getVoisins().size() <= 3)
+                if (q->getVoisins().size() <= 5)
                     nbCaserne += q->getZ(); // si il a 3 voisins ou moins p'est qu'il est sur un bord
             }         
         }
