@@ -6,17 +6,19 @@
 #include "Plateau.h"
 #include "Tuile.h"
 #include "Chantier.h"
+#include "Partie.h"
 
 class Joueur
 {
+friend class Partie;
 private:
     int nbrPierres{};
     int nbrPoints{};
     Plateau plateau;
     Tuile tuileEnMain;
+    Joueur();// le joueur est créé au début de la partie, par la partie (composition)
 
 public:
-    Joueur();
     void setNbrPierres(int);
     int getNbrPierres();
     void setNbrPoints();

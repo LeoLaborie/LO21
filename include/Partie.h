@@ -24,8 +24,9 @@ private:
 
     void genererTuilesParties();
 
+
 public:
-    Partie() = default;
+    Partie() = default; // il faut gérer les variantes de taille de paquet dans le constructeur
 
     // Configuration des joueurs
     void setNbrJoueurs(int nbr);

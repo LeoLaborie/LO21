@@ -8,15 +8,24 @@
 #include "Hexagone.h"
 #include "Position.h"
 #include "utils.h"
+#include "Partie.h"
 
 class Plateau
 {
+friend class Partie;
 private:
     std::vector<Tuile> listeTuiles;
     std::vector<Hexagone *> listeHexagones;
 
+    bool varianteHabitation{0};
+    bool varianteMarche{0};
+    bool varianteTemple{0};
+    bool varianteCaserne{0};
+    bool varianteJardin{0};
+
+    explicit Plateau();// Les plateaux sont définis par le constructeur de Joueur
+    
 public:
-    explicit Plateau();
 
     bool verifierPlacementTuile(Position &p) const;
     Position *essayerPlacerTuile(Tuile &t);
@@ -28,6 +37,7 @@ public:
     int calculerPointsHabitation() const;
     int calculerPointsMarche() const;
     int calculerPointsJardin() const;
+    bool conditionVarianteJardin (const Quartier* q) const;
     int calculerPointsTemple() const;
     int calculerPointsCaserne() const;
     void afficher() const;
