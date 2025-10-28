@@ -65,7 +65,7 @@
 #define inverser_fond_texte()   printf("\033[%dm",INVERSER)
 
 #define afficher_texte(texte,coul_texte,coul_fond,effet)	texte_couleur(coul_texte);  \
-															texte_fond(coul_fond);    \
+															texte_fond(coul_fond);		\
 															texte_effet(effet);         \
 															printf("%s",texte);         \
 															texte_reset()

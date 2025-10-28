@@ -5,7 +5,12 @@ void Hexagone::afficher() const
     std::cout << "Hexagone(" << x << "," << y << "," << z << ")"
                 << (est_recouvert ? " [recouvert]" : "") << "\n";
     // Vérifie si c'est une Carrière, Quartier ou Place
-    if (auto quartier = dynamic_cast<const Quartier *>(this))
+    if (dynamic_cast<const Carriere *>(this))
+    {
+        texte_couleur(BLEU);
+        std::cout << "  Carrière\n";
+    }
+    else if (auto quartier = dynamic_cast<const Quartier *>(this))
     {
         std::cout << "  Quartier : ";
         switch (quartier->getTypeQuartier())
@@ -31,7 +36,6 @@ void Hexagone::afficher() const
                 std::cout << "Jardin\n";
                 break;
         }
-        texte_reset();
     }
     else if (auto place = dynamic_cast<const Place *>(this))
     {
@@ -59,6 +63,6 @@ void Hexagone::afficher() const
                 std::cout << "Jardin\n";
                 break;
         }
-        texte_reset();
     }
+    texte_reset();
 }
