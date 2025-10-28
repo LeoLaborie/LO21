@@ -2,6 +2,7 @@
 #define TUILE_H
 
 #include <vector>
+#include <iostream>
 #include "Hexagone.h"
 
 class Tuile
@@ -12,6 +13,8 @@ private:
 public:
     Tuile() = default;
     Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
+    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3, Hexagone *hex4);
+    void creerTuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
     const std::vector<Hexagone *> &getHexagones() const { return hex; }
 
     void pivoterTuile()
@@ -20,6 +23,12 @@ public:
         hex[0] = hex[1];
         hex[1] = hex[2];
         hex[2] = tmp;
+    }
+
+    void afficher() const {
+        for (const auto& h : hex) {
+            h->afficher();
+        }
     }
 };
 

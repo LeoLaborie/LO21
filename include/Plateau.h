@@ -9,6 +9,7 @@
 #include "Position.h"
 #include "utils.h"
 #include "Partie.h"
+#include "couleurs_console.h"
 
 class Plateau
 {
@@ -28,8 +29,7 @@ private:
 public:
 
     bool verifierPlacementTuile(Position &p) const;
-    Position *essayerPlacerTuile(Tuile &t);
-    bool ajouterTuile(Tuile &t, Position &p);
+    int placerTuile(Tuile &t, Position &p);
     void updateVoisins();
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; }
     const std::vector<Hexagone *> &getHexagones() const { return listeHexagones; }
@@ -40,7 +40,14 @@ public:
     bool conditionVarianteJardin (const Quartier* q) const;
     int calculerPointsTemple() const;
     int calculerPointsCaserne() const;
-    void afficher() const;
+    void afficher() const {
+        std::cout << "\nPlateau contient " << listeTuiles.size() << " tuiles :\n";
+        std::cout << " ----\n";
+        for (const auto& t : listeTuiles) {
+            t.afficher();
+            std::cout << " ----\n";
+        }
+    }
 };
 
 #endif

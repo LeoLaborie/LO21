@@ -34,3 +34,14 @@ Tuile* Joueur::piocherTuile(int id, Chantier& chantier)
     chantier.retirerTuile(id);
     return &tuileEnMain;
 }
+
+bool Joueur::placerTuile(Tuile &t, Position &p)
+{
+    int carrieresCouvertes = plateau.placerTuile(t, p);
+    if (carrieresCouvertes != -1)
+    {
+        setNbrPierres(getNbrPierres() + carrieresCouvertes);
+        setNbrPoints();
+    }
+    return carrieresCouvertes != -1;
+}
