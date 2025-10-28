@@ -155,6 +155,11 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
+    for (auto *h : t.getHexagones())
+    {
+        listeHexagones.push_back(h);
+    }
+
     updateVoisins();
 
     // Si on est en hauteur (z > 0), on recouvre ce qui est juste en dessous (z-1)
@@ -185,7 +190,8 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     return res;
 }
 
-int Plateau::calculerPoints() const{
+int Plateau::calculerPoints() const
+{
     return calculerPointsCaserne() + calculerPointsHabitation() + calculerPointsJardin() + calculerPointsMarche() + calculerPointsTemple();
 }
 
@@ -193,7 +199,7 @@ int Plateau::calculerPointsCaserne() const
 {
     int placeCaserne = 0;
     int nbCaserne = 0;
-    
+
     for (const Hexagone *hex : listeHexagones)
     {
         if (hex->getEstRecouvert())
@@ -208,29 +214,29 @@ int Plateau::calculerPointsCaserne() const
             {
                 if (q->getVoisins().size() <= 5)
                     nbCaserne += q->getZ(); // si il a 3 voisins ou moins p'est qu'il est sur un bord
-            }         
+            }
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
-            if(p->getTypePlace() == TypePlace::Caserne)
+            if (p->getTypePlace() == TypePlace::Caserne)
                 placeCaserne += p->getMultiplicateur();
-            
         }
     }
 
     return placeCaserne * nbCaserne;
 }
 
-int Plateau::calculerPointsTemple() const{
+int Plateau::calculerPointsTemple() const
+{
     /*
-    *Calcul Le nombre de points donnés par les temples (en comprenant les places et les varaiantes)
-    *
-    *@return Le nombre total de points
-    */
+     *Calcul Le nombre de points donnés par les temples (en comprenant les places et les varaiantes)
+     *
+     *@return Le nombre total de points
+     */
     int placeTemple = 0;
     int nbTemple = 0;
 
-     for (const Hexagone *hex : listeHexagones)
+    for (const Hexagone *hex : listeHexagones)
     {
         if (hex->getEstRecouvert())
             continue;
@@ -248,22 +254,22 @@ int Plateau::calculerPointsTemple() const{
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
-            if(p->getTypePlace() == TypePlace::Temple)
+            if (p->getTypePlace() == TypePlace::Temple)
                 placeTemple += p->getMultiplicateur();
         }
     }
 
     return placeTemple * nbTemple;
-
 }
 
-int Plateau::calculerPointsJardin() const{
+int Plateau::calculerPointsJardin() const
+{
 
     /*
-    *Calcul Le nombre de points donnés par les jardins (en comprenant les places et les varaiantes)
-    *
-    *@return Le nombre total de points
-    */
+     *Calcul Le nombre de points donnés par les jardins (en comprenant les places et les varaiantes)
+     *
+     *@return Le nombre total de points
+     */
 
     int placeJardin = 0;
     int nbJardin = 0;
@@ -281,24 +287,24 @@ int Plateau::calculerPointsJardin() const{
             if (q->getTypeQuartier() == TypeQuartier::Jardin)
                 nbJardin += q->getZ();
         }
-        
+
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
             if (p->getTypePlace() == TypePlace::Jardin)
                 placeJardin += p->getMultiplicateur();
         }
-
     }
 
     return placeJardin * nbJardin;
 }
 
-int Plateau::calculerPointsMarche() const{
+int Plateau::calculerPointsMarche() const
+{
     /*
-    *Calcul Le nombre de points donnés par les marchés (en comprenant les places et les varaiantes)
-    *
-    *@return Le nombre total de points
-    */
+     *Calcul Le nombre de points donnés par les marchés (en comprenant les places et les varaiantes)
+     *
+     *@return Le nombre total de points
+     */
 
     int placeMarche = 0;
     int nbMarche = 0;
@@ -316,39 +322,38 @@ int Plateau::calculerPointsMarche() const{
             if (q->getTypeQuartier() == TypeQuartier::Marche)
             {
                 for (const auto &voisin : q->getVoisins())
+                {
+                    if (dynamic_cast<const Quartier *>(voisin)->getTypeQuartier() == TypeQuartier::Marche)
                     {
-                        if (dynamic_cast<const Quartier *>(voisin)->getTypeQuartier() == TypeQuartier::Marche)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
-                    nbMarche += q->getZ();
+                }
+                nbMarche += q->getZ();
             }
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
-            if (p->getTypePlace() == TypePlace::Marche){
+            if (p->getTypePlace() == TypePlace::Marche)
+            {
                 placeMarche += p->getMultiplicateur();
             }
         }
     }
 
     return placeMarche + nbMarche;
-
 }
 
-
-int Plateau::calculerPointsHabitation() const{
+int Plateau::calculerPointsHabitation() const
+{
     /*
-    *Calcul Le nombre de points donnés par les habitations (en comprenant les places et les varaiantes)
-    *
-    *@return Le nombre total de points
-    */
+     *Calcul Le nombre de points donnés par les habitations (en comprenant les places et les varaiantes)
+     *
+     *@return Le nombre total de points
+     */
     int placeHabitation = 0;
     int nbHabitation = 0;
 
     std::vector<const Quartier *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
-
 
     for (const Hexagone *hex : listeHexagones)
     {
@@ -358,9 +363,9 @@ int Plateau::calculerPointsHabitation() const{
         if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
         {
             if (q->getTypeQuartier() == TypeQuartier::Habitation)
-                {
-                    tabHabitation.push_back(q);
-                }
+            {
+                tabHabitation.push_back(q);
+            }
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
@@ -427,5 +432,4 @@ int Plateau::calculerPointsHabitation() const{
     }
 
     return placeHabitation * nbHabitation;
-
 }
