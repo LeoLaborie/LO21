@@ -37,10 +37,12 @@ int main()
 
     partie.getChantier().afficher();
 
-    while (partie.getChantier().getTaille() > 1) {
+    while (partie.getChantier().getTaille() > 1)
+    {
         std::cout << "\n--- Nouveau tour de jeu ---\n";
-        Joueur& joueurCourant = partie.getJoueurMain();
-        if (joueurCourant.getNom().empty()) {
+        Joueur &joueurCourant = partie.getJoueurMain();
+        if (joueurCourant.getNom().empty())
+        {
             std::string nomJoueur;
             std::cout << "Entrez le nom du joueur " << (partie.getMainJoueur() + 1) << ": ";
             std::cin >> nomJoueur;
@@ -54,8 +56,30 @@ int main()
         // Affichage du chantier
         partie.getChantier().afficher();
 
-        // Ici, on pourrait ajouter la logique pour que le joueur choisisse une tuile,
-        // la place sur son plateau, etc.
+        // Choix de la tuile à piocher
+        int idTuile = -1;
+        while (partie.getChantier().getTaille() <= idTuile || idTuile < 0)
+        {
+            std::cout << "Entrez l'ID de la tuile à piocher : ";
+            std::cin >> idTuile;
+
+            if (idTuile > joueurCourant.getNbrPierres())
+            {
+                std::cout << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
+                idTuile = -1; // Réinitialiser pour redemander
+            }
+        }
+
+        Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier());
+        if (tuilePiochee)
+        {
+            std::cout << "Tuile piochée :\n";
+            tuilePiochee->afficher();
+        }
+        else
+        {
+            std::cout << "Erreur lors de la pioche de la tuile.\n";
+        }
 
         // Passage au joueur suivant
         partie.setProchainJoueur();
