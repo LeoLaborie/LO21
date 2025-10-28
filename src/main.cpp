@@ -147,8 +147,26 @@ int main()
 
     texte_couleur(ROUGE);
     texte_gras_on();
+    texte_clignote_on();
     std::cout << "===== FIN DE PARTIE =====\n";
 
     texte_reset();
+
+    texte_couleur(JAUNE);
+    std::cout << "\nScores finaux :\n";
+    for (int _i = 0; _i < partie.getNbrJoueurs(); ++_i)
+    {
+        Joueur &joueur = partie.getJoueurMain();
+        texte_gras_on();
+        std::cout << joueur.getNom();
+        texte_reset();
+        texte_couleur(JAUNE);
+        std::cout << " : " << joueur.getNbrPoints() << " points\n";
+        partie.setProchainJoueur();
+    }
+
+    texte_reset();
+    std::cout << std::endl;
+
     return 0;
 }
