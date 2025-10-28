@@ -7,46 +7,58 @@ void Hexagone::afficher() const
     // Vérifie si c'est une Carrière, Quartier ou Place
     if (auto quartier = dynamic_cast<const Quartier *>(this))
     {
-        std::cout << "  Type Quartier: ";
+        std::cout << "  Quartier : ";
         switch (quartier->getTypeQuartier())
         {
             case TypeQuartier::Habitation:
-                std::cout << " Habitation\n";
+                texte_couleur(CYAN);
+                std::cout << "Habitation\n";
                 break;
             case TypeQuartier::Marche:
-                std::cout << " Marché\n";
+                texte_couleur(JAUNE);
+                std::cout << "Marché\n";
                 break;
             case TypeQuartier::Temple:
-                std::cout << " Temple\n";
+                texte_couleur(MAGENTA);
+                std::cout << "Temple\n";
                 break;
             case TypeQuartier::Caserne:
-                std::cout << " Caserne\n";
+                texte_couleur(ROUGE);
+                std::cout << "Caserne\n";
                 break;
             case TypeQuartier::Jardin:
-                std::cout << " Jardin\n";
+                texte_couleur(VERT);
+                std::cout << "Jardin\n";
                 break;
         }
+        texte_reset();
     }
     else if (auto place = dynamic_cast<const Place *>(this))
     {
-        std::cout << "  Type Place: ";
+        std::cout << "  Place : ";
         switch (place->getTypePlace())
         {
             case TypePlace::Habitation:
-                std::cout << " Habitation\n";
+                texte_couleur(CYAN);
+                std::cout << "Habitation\n";
                 break;
             case TypePlace::Marche:
-                std::cout << " Marché\n";
+                texte_couleur(JAUNE);
+                std::cout << "Marché\n";
                 break;
             case TypePlace::Temple:
-                std::cout << " Temple\n";
+                texte_couleur(MAGENTA);
+                std::cout << "Temple\n";
                 break;
             case TypePlace::Caserne:
-                std::cout << " Caserne\n";
+                texte_couleur(ROUGE);
+                std::cout << "Caserne\n";
                 break;
             case TypePlace::Jardin:
-                std::cout << " Jardin\n";
+                texte_couleur(VERT);
+                std::cout << "Jardin\n";
                 break;
         }
+        texte_reset();
     }
 }

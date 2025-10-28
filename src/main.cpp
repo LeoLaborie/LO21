@@ -2,10 +2,14 @@
 #include <iostream>
 #include "Partie.h"
 #include "Position.h"
+#include "couleurs_console.h"
 
 int main()
 {
+    texte_couleur(ROUGE);
+    texte_gras_on();
     std::cout << "===== DEMARRAGE PARTIE =====\n";
+    texte_reset();
 
     Partie partie;
 
@@ -53,9 +57,20 @@ int main()
                 std::cout << "Entrez l'ID de la tuile à piocher : ";
                 std::cin >> idTuile;
 
-                if (idTuile > joueurCourant.getNbrPierres())
+                if (idTuile < 0 || idTuile >= partie.getChantier().getTaille())
                 {
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
+                    std::cout << "ID invalide. Veuillez réessayer.\n";
+                    texte_reset();
+                    idTuile = -1; // Réinitialiser pour redemander
+                }
+                else if (idTuile > joueurCourant.getNbrPierres())
+                {
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
                     std::cout << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
+                    texte_reset();
                     idTuile = -1; // Réinitialiser pour redemander
                 }
             }
@@ -64,7 +79,7 @@ int main()
             Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier());
             if (tuilePiochee)
             {
-                std::cout << "Tuile piochée :\n";
+                std::cout << "\nTuile piochée :\n";
                 tuilePiochee->afficher();
             }
             else
@@ -86,11 +101,17 @@ int main()
 
             if (placementTuile)
             {
-                std::cout << "Tuile placée avec succès.\n";
+                texte_couleur(JAUNE);
+                texte_gras_on();
+                std::cout << "\n Tuile placée avec succès.\n";
+                texte_reset();
             }
             else
             {
-                std::cout << "La tuile n'a pas été placée.\n";
+                texte_couleur(ROUGE);
+                texte_gras_on();
+                std::cout << "\n La tuile n'a pas été placée.\n";
+                texte_reset();
             }
 
             system("sleep 2");
@@ -100,7 +121,14 @@ int main()
             system("clear");
         }
 
-        std::cout << "\nIl reste une seule tuile dans le chantier. Le tour est terminé.\n";
+        std::cout << "\n ";
+
+        texte_couleur(JAUNE);
+        texte_gras_on();
+        texte_souligne_on();
+        cacher_curseur();
+
+        std::cout << "Il reste une seule tuile dans le chantier. Le tour est terminé.\n";
         partie.tourTermine();
 
         // Sortie d'une pile
@@ -111,10 +139,16 @@ int main()
             partie.getChantier().ajouterTuile(tuile);
         }
 
-        system("sleep 2");
+        afficher_curseur();
+        texte_reset();
+        system("sleep 4");
         system("clear");
     }
+
+    texte_couleur(ROUGE);
+    texte_gras_on();
     std::cout << "===== FIN DE PARTIE =====\n";
 
+    texte_reset();
     return 0;
 }

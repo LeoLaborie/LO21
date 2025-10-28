@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include "couleurs_console.h"
 
 class Tuile;
 

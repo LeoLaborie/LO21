@@ -137,7 +137,10 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 
     if (!verifierPlacementTuile(p))
     {
-        std::cout << "Placement de tuile invalide." << std::endl;
+        texte_couleur(ROUGE);
+        texte_gras_on();
+        std::cout << " Placement de tuile invalide." << std::endl;
+        texte_reset();
         return -1;
     }
 

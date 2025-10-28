@@ -7,6 +7,7 @@
 #include "Tuile.h"
 #include "Hexagone.h"
 #include "Position.h"
+#include "couleurs_console.h"
 
 class Plateau
 {

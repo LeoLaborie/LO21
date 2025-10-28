@@ -6,6 +6,7 @@
 #include "Plateau.h"
 #include "Tuile.h"
 #include "Chantier.h"
+#include "couleurs_console.h"
 
 class Joueur
 {
@@ -30,7 +31,9 @@ public:
     Tuile* piocherTuile(int id, Chantier& chantier);
     bool placerTuile(Tuile &t, Position &p);
     void afficher() const {
-        std::cout << "Nom : " << nom << ", Pierres : " << nbrPierres << ", Points : " << nbrPoints << "\n";
+        std::cout << " "; texte_couleur(ROUGE); texte_gras_on(); std::cout << nom; texte_reset();
+        std::cout << " | Pierres : "; texte_couleur(BLEU); std::cout << nbrPierres; texte_reset();
+        std::cout << ", Points : "; texte_couleur(JAUNE); std::cout << nbrPoints; texte_reset(); std::cout << "\n";
         plateau.afficher();
     }
 };
