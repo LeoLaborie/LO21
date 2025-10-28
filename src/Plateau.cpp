@@ -9,6 +9,9 @@ Plateau::Plateau()
         new Carriere(-1, 1, 0),
         new Carriere(0, -1, 0),
         new Carriere(1, 0, 0)};
+    
+    Tuile tuileDepart{listeHexagones[0], listeHexagones[1], listeHexagones[2], listeHexagones[3]};
+    listeTuiles.push_back(tuileDepart);
 
     updateVoisins();
 }

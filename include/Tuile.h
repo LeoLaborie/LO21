@@ -13,6 +13,7 @@ private:
 public:
     Tuile() = default;
     Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
+    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3, Hexagone *hex4);
     void creerTuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
     const std::vector<Hexagone *> &getHexagones() const { return hex; }
 
@@ -25,7 +26,6 @@ public:
     }
 
     void afficher() const {
-        std::cout << "Tuile :\n";
         for (const auto& h : hex) {
             h->afficher();
         }
