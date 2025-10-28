@@ -216,8 +216,11 @@ int Plateau::calculerPointsCaserne() const
             if (q->getTypeQuartier() == TypeQuartier::Caserne)
             {
                 if (q->getVoisins().size() <= 5)
-                    nbCaserne += q->getZ(); // si il a 3 voisins ou moins p'est qu'il est sur un bord
-            }
+                    nbCaserne += q->getZ(); // si il a 5 voisins ou moins p'est qu'il est sur un bord
+
+                if  (varianteCaserne && q->getVoisins().size() <= 3)
+                    nbCaserne += q->getZ(); // si la variante est activée et qu'il y a moins de 3 voisins ou moins, on doubles le nb de casernes
+            }         
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
         {
@@ -253,6 +256,9 @@ int Plateau::calculerPointsTemple() const
             {
                 if (q->getVoisins().size() == 6)
                     nbTemple += q->getZ();
+
+                if(varianteTemple && q->getZ() > 1)
+                    nbTemple += q->getZ(); // On double les points des temples si ils sont à une hauteur plus hate que 1
             }
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
@@ -265,8 +271,36 @@ int Plateau::calculerPointsTemple() const
     return placeTemple * nbTemple;
 }
 
-int Plateau::calculerPointsJardin() const
-{
+bool Plateau::conditionVarianteJardin (const Quartier* q) const{
+    bool conditionRemplie = 0;
+
+    std::vector<std::vector<int>> coVoisinsRelatifs = {{0, -1}, {1, -1}, {1, 0}, {0, 1}, {-1, 1}, {-1, 0}};
+    std::vector<std::vector<int>> coVoisinsVides = {};
+
+    // On trouve les coordonnées relatives vides
+    for (const auto h: listeHexagones){
+        for (const auto co : coVoisinsRelatifs){
+            if((h->getX()-co[0]) == q->getX() && (h->getY()-co[1]) == q->getY()){ // Ne pas hésiter à me redemander (Dimitri) 
+                                                                                 //si vous comprenez pas parce que même moi je suis pas sûr
+                coVoisinsVides.push_back(co);
+            }
+        }
+    }
+
+    for (const auto co: coVoisinsVides){
+        for (const auto h :listeHexagones){
+            if((h->getX()-co[0]) == q->getX() && (h->getY()-co[1]) == q->getY()){                                                                
+                coVoisinsVides.push_back(co);
+            }
+        }
+    }
+    
+
+
+    return conditionRemplie;
+}
+
+int Plateau::calculerPointsJardin() const{
 
     /*
      *Calcul Le nombre de points donnés par les jardins (en comprenant les places et les varaiantes)
@@ -288,6 +322,9 @@ int Plateau::calculerPointsJardin() const
         if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
         {
             if (q->getTypeQuartier() == TypeQuartier::Jardin)
+                nbJardin += q->getZ();
+            
+            if(varianteJardin && Plateau::conditionVarianteJardin(q))
                 nbJardin += q->getZ();
         }
 
@@ -311,6 +348,8 @@ int Plateau::calculerPointsMarche() const
 
     int placeMarche = 0;
     int nbMarche = 0;
+  
+    bool voisinMarche = 0;
 
     for (const Hexagone *hex : listeHexagones)
     {
@@ -322,16 +361,30 @@ int Plateau::calculerPointsMarche() const
 
         if (const Quartier *q = dynamic_cast<const Quartier *>(hex))
         {
+            voisinMarche = 0;
             if (q->getTypeQuartier() == TypeQuartier::Marche)
             {
                 for (const auto &voisin : q->getVoisins())
                 {
                     if (dynamic_cast<const Quartier *>(voisin)->getTypeQuartier() == TypeQuartier::Marche)
                     {
-                        continue;
+                        voisinMarche = 1;
                     }
                 }
+                if(voisinMarche) continue;
+                
                 nbMarche += q->getZ();
+
+                if (varianteMarche){
+
+                    for(const auto &voisin: q->getVoisins()){
+
+                        if (dynamic_cast<const Place *>(voisin)->getTypePlace() == TypePlace::Marche)
+                        {
+                            nbMarche += q->getZ();
+                        }
+                    }
+                }
             }
         }
         if (const Place *p = dynamic_cast<const Place *>(hex))
@@ -432,6 +485,10 @@ int Plateau::calculerPointsHabitation() const
     for (const Quartier *hab : groupeMaxHab)
     {
         nbHabitation += hab->getZ();
+    }
+
+    if (varianteHabitation && nbHabitation >= 10){
+        nbHabitation *= 2;
     }
 
     return placeHabitation * nbHabitation;

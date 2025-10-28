@@ -22,8 +22,9 @@ private:
     std::vector<Joueur> joueurs;
     std::vector<std::vector<Tuile>> piles;
 
+
 public:
-    Partie() = default;
+    Partie() = default; // il faut gérer les variantes de taille de paquet dans le constructeur
 
     void addTuileInChantierFromPiles();
 

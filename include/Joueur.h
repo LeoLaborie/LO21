@@ -7,18 +7,20 @@
 #include "Tuile.h"
 #include "Chantier.h"
 #include "couleurs_console.h"
+#include "Partie.h"
 
 class Joueur
 {
+friend class Partie;
 private:
     int nbrPierres{};
     int nbrPoints{};
     std::string nom = "";
     Plateau plateau;
     Tuile tuileEnMain;
+    Joueur();// le joueur est créé au début de la partie, par la partie (composition)
 
 public:
-    Joueur();
     void setNom(const std::string &n) { nom = n; }
     const std::string &getNom() const { return nom; }
     void setNbrPierres(int);
