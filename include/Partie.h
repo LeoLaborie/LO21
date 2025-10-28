@@ -54,6 +54,9 @@ public:
     int getNbrTours() const { return nbrTours; }
     std::vector<Tuile> retirerPaquet();
 
+    bool pilesRestantes() const { return !piles.empty(); }
+    int getNbrPiles() const { return piles.size(); }
+
     void genererTuilesParties();
 };
 

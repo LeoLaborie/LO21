@@ -22,90 +22,99 @@ int main()
     //  --> Génération de toutes les tuiles de la partie
     partie.genererTuilesParties();
 
-    // Sortie d'une pile
-    // std::vector<Tuile> paquet = partie.retirerPaquet();
-
-    // Ajout des tuiles au chantier
-    // for (Tuile tuile : paquet){
-    //     partie.getChantier().ajouterTuile(tuile);
-    // }
-
-    partie.getChantier().afficher();
-
-    // Tant qu'il reste plus d'une tuile dans le chantier
-    while (partie.getChantier().getTaille() > 1)
+    while (partie.pilesRestantes())
     {
-        system("clear");
-        std::cout << "\n--- Nouveau tour de jeu ---\n";
-        Joueur &joueurCourant = partie.getJoueurMain();
-        if (joueurCourant.getNom().empty())
+        std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
+        std::cout << "Il reste " << partie.getNbrPiles() << " piles de tuiles.\n\n";
+        // Tant qu'il reste plus d'une tuile dans le chantier
+        while (partie.getChantier().getTaille() > 1)
         {
-            std::string nomJoueur;
-            std::cout << "Entrez le nom du joueur " << (partie.getMainJoueur() + 1) << ": ";
-            std::cin >> nomJoueur;
-            joueurCourant.setNom(nomJoueur);
+            Joueur &joueurCourant = partie.getJoueurMain();
+            if (joueurCourant.getNom().empty())
+            {
+                std::string nomJoueur;
+                std::cout << "Nom du joueur " << (partie.getMainJoueur() + 1) << " : ";
+                std::cin >> nomJoueur;
+                joueurCourant.setNom(nomJoueur);
+                system("clear");
+            }
+            std::cout << "Au tour de :\n";
+
+            // Affichage du plateau du joueur
+            joueurCourant.afficher();
+
+            // Affichage du chantier
+            partie.getChantier().afficher();
+
+            // Choix de la tuile à piocher
+            int idTuile = -1;
+            while (partie.getChantier().getTaille() <= idTuile || idTuile < 0)
+            {
+                std::cout << "Entrez l'ID de la tuile à piocher : ";
+                std::cin >> idTuile;
+
+                if (idTuile > joueurCourant.getNbrPierres())
+                {
+                    std::cout << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
+                    idTuile = -1; // Réinitialiser pour redemander
+                }
+            }
+
+            // Pioche de la tuile
+            Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier());
+            if (tuilePiochee)
+            {
+                std::cout << "Tuile piochée :\n";
+                tuilePiochee->afficher();
+            }
+            else
+            {
+                std::cout << "Erreur lors de la pioche de la tuile.\n";
+            }
+
+            // Choix de la position pour placer la tuile
+            int x, y, z;
+            bool placementTuile = false;
+
+            while (!placementTuile)
+            {
+                std::cout << "Entrez les coordonnées (x y z) pour placer la tuile : ";
+                std::cin >> x >> y >> z;
+                Position pos{x, y, z};
+                placementTuile = joueurCourant.placerTuile(*tuilePiochee, pos);
+            }
+
+            if (placementTuile)
+            {
+                std::cout << "Tuile placée avec succès.\n";
+            }
+            else
+            {
+                std::cout << "La tuile n'a pas été placée.\n";
+            }
+
+            system("sleep 2");
+
+            // Passage au joueur suivant
+            partie.setProchainJoueur();
             system("clear");
         }
-        std::cout << "Au tour de :\n";
 
-        // Affichage du plateau du joueur
-        joueurCourant.afficher();
+        std::cout << "\nIl reste une seule tuile dans le chantier. Le tour est terminé.\n";
+        partie.tourTermine();
 
-        // Affichage du chantier
-        partie.getChantier().afficher();
+        // Sortie d'une pile
+        std::vector<Tuile> paquet = partie.retirerPaquet();
 
-        // Choix de la tuile à piocher
-        int idTuile = -1;
-        while (partie.getChantier().getTaille() <= idTuile || idTuile < 0)
-        {
-            std::cout << "Entrez l'ID de la tuile à piocher : ";
-            std::cin >> idTuile;
-
-            if (idTuile > joueurCourant.getNbrPierres())
-            {
-                std::cout << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
-                idTuile = -1; // Réinitialiser pour redemander
-            }
-        }
-
-        // Pioche de la tuile
-        Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier());
-        if (tuilePiochee)
-        {
-            std::cout << "Tuile piochée :\n";
-            tuilePiochee->afficher();
-        }
-        else
-        {
-            std::cout << "Erreur lors de la pioche de la tuile.\n";
-        }
-
-        // Choix de la position pour placer la tuile
-        int x, y, z;
-        bool placementTuile = false;
-
-        while (!placementTuile)
-        {
-            std::cout << "Entrez les coordonnées (x y z) pour placer la tuile : ";
-            std::cin >> x >> y >> z;
-            Position pos{x, y, z};
-            placementTuile = joueurCourant.placerTuile(*tuilePiochee, pos);
-        }
-
-        if (placementTuile)
-        {
-            std::cout << "Tuile placée avec succès.\n";
-        }
-        else
-        {
-            std::cout << "La tuile n'a pas été placée.\n";
+        // Ajout des tuiles au chantier
+        for (Tuile tuile : paquet){
+            partie.getChantier().ajouterTuile(tuile);
         }
 
         system("sleep 2");
-
-        // Passage au joueur suivant
-        partie.setProchainJoueur();
+        system("clear");
     }
+    std::cout << "===== FIN DE PARTIE =====\n";
 
     return 0;
 }
