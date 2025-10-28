@@ -12,11 +12,14 @@ class Joueur
 private:
     int nbrPierres{};
     int nbrPoints{};
+    std::string nom = "";
     Plateau plateau;
     Tuile tuileEnMain;
 
 public:
     Joueur();
+    void setNom(const std::string &n) { nom = n; }
+    const std::string &getNom() const { return nom; }
     void setNbrPierres(int);
     int getNbrPierres();
     void setNbrPoints();

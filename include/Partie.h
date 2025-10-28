@@ -45,6 +45,8 @@ public:
             mainJoueur = (mainJoueur + 1) % nbrJoueurs;
     }
 
+    int getMainJoueur() const { return mainJoueur; }
+
     int getTaillePaquet() const { return taillepaquet; }
     void setTaillePaquet(int t) { taillepaquet = t; }
     Chantier& getChantier() { return chantier; }

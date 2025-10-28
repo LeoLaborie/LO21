@@ -1,10 +1,5 @@
 // main.cpp — scénario de test complet
 #include <iostream>
-#include <vector>
-#include <tuple>
-#include <optional>
-#include <cstdlib>
-#include <ctime>
 
 #include "Partie.h"
 #include "Joueur.h"
@@ -44,10 +39,17 @@ int main()
 
     while (partie.getChantier().getTaille() > 1) {
         std::cout << "\n--- Nouveau tour de jeu ---\n";
-        // std::cout << "Joueur courant: " << partie.getJoueurMain().getNom() << "\n";
+        Joueur& joueurCourant = partie.getJoueurMain();
+        if (joueurCourant.getNom().empty()) {
+            std::string nomJoueur;
+            std::cout << "Entrez le nom du joueur " << (partie.getMainJoueur() + 1) << ": ";
+            std::cin >> nomJoueur;
+            joueurCourant.setNom(nomJoueur);
+        }
+        std::cout << "Joueur courant: " << joueurCourant.getNom() << "\n";
 
         // Affichage du plateau du joueur
-        partie.getJoueurMain().getPlateau().afficher();
+        joueurCourant.getPlateau().afficher();
 
         // Affichage du chantier
         partie.getChantier().afficher();
