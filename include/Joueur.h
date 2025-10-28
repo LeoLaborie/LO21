@@ -28,6 +28,7 @@ public:
     int getNbrPoints();
     void setTuileEnMain(const Tuile &t) { tuileEnMain = t; }
     Tuile* piocherTuile(int id, Chantier& chantier);
+    bool placerTuile(Tuile &t, Position &p);
     void afficher() const {
         std::cout << "Nom : " << nom << ", Pierres : " << nbrPierres << ", Points : " << nbrPoints << "\n";
         plateau.afficher();

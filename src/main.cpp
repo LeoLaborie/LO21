@@ -1,12 +1,7 @@
 // main.cpp — scénario de test complet
 #include <iostream>
-
 #include "Partie.h"
-#include "Joueur.h"
-#include "Plateau.h"
-#include "Chantier.h"
-#include "Tuile.h"
-#include "Hexagone.h"
+#include "Position.h"
 
 int main()
 {
@@ -37,8 +32,10 @@ int main()
 
     partie.getChantier().afficher();
 
+    // Tant qu'il reste plus d'une tuile dans le chantier
     while (partie.getChantier().getTaille() > 1)
     {
+        system("clear");
         std::cout << "\n--- Nouveau tour de jeu ---\n";
         Joueur &joueurCourant = partie.getJoueurMain();
         if (joueurCourant.getNom().empty())
@@ -47,6 +44,7 @@ int main()
             std::cout << "Entrez le nom du joueur " << (partie.getMainJoueur() + 1) << ": ";
             std::cin >> nomJoueur;
             joueurCourant.setNom(nomJoueur);
+            system("clear");
         }
         std::cout << "Au tour de :\n";
 
@@ -70,6 +68,7 @@ int main()
             }
         }
 
+        // Pioche de la tuile
         Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier());
         if (tuilePiochee)
         {
@@ -80,6 +79,29 @@ int main()
         {
             std::cout << "Erreur lors de la pioche de la tuile.\n";
         }
+
+        // Choix de la position pour placer la tuile
+        int x, y, z;
+        bool placementTuile = false;
+
+        while (!placementTuile)
+        {
+            std::cout << "Entrez les coordonnées (x y z) pour placer la tuile : ";
+            std::cin >> x >> y >> z;
+            Position pos{x, y, z};
+            placementTuile = joueurCourant.placerTuile(*tuilePiochee, pos);
+        }
+
+        if (placementTuile)
+        {
+            std::cout << "Tuile placée avec succès.\n";
+        }
+        else
+        {
+            std::cout << "La tuile n'a pas été placée.\n";
+        }
+
+        system("sleep 2");
 
         // Passage au joueur suivant
         partie.setProchainJoueur();
