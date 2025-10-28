@@ -31,9 +31,10 @@ public:
     int calculerPointsCaserne() const;
     void afficher() const {
         std::cout << "\nPlateau contient " << listeTuiles.size() << " tuiles :\n";
+        std::cout << " ----\n";
         for (const auto& t : listeTuiles) {
             t.afficher();
-            std::cout << "----\n";
+            std::cout << " ----\n";
         }
     }
 };
