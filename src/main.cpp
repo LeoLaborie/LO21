@@ -26,7 +26,7 @@ int main()
     //  --> Génération de toutes les tuiles de la partie
     partie.genererTuilesParties();
 
-    while (partie.pilesRestantes())
+    while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
         std::cout << "Il reste " << partie.getNbrPiles() << " piles de tuiles.\n\n";
