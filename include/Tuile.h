@@ -2,6 +2,7 @@
 #define TUILE_H
 
 #include <vector>
+#include <iostream>
 #include "Hexagone.h"
 
 class Tuile
@@ -21,6 +22,13 @@ public:
         hex[0] = hex[1];
         hex[1] = hex[2];
         hex[2] = tmp;
+    }
+
+    void afficher() const {
+        std::cout << "Tuile :\n";
+        for (const auto& h : hex) {
+            h->afficher();
+        }
     }
 };
 

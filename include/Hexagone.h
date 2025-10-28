@@ -2,6 +2,7 @@
 #define HEXAGONE_H
 
 #include <vector>
+#include <iostream>
 
 class Tuile;
 
@@ -39,6 +40,8 @@ public:
     Hexagone(int x_coord, int y_coord, int z_coord,
              Tuile *p = nullptr, std::vector<Hexagone *> v = {})
         : voisins(std::move(v)), x(x_coord), y(y_coord), z(z_coord), parent(p) {}
+
+    void afficher() const;
 };
 
 class Carriere : public Hexagone
