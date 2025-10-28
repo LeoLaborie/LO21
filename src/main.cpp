@@ -48,10 +48,10 @@ int main()
             std::cin >> nomJoueur;
             joueurCourant.setNom(nomJoueur);
         }
-        std::cout << "Joueur courant: " << joueurCourant.getNom() << "\n";
+        std::cout << "Au tour de :\n";
 
         // Affichage du plateau du joueur
-        joueurCourant.getPlateau().afficher();
+        joueurCourant.afficher();
 
         // Affichage du chantier
         partie.getChantier().afficher();
