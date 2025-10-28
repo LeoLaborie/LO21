@@ -6,17 +6,21 @@
 #include "Plateau.h"
 #include "Tuile.h"
 #include "Chantier.h"
+#include "couleurs_console.h"
 
 class Joueur
 {
 private:
     int nbrPierres{};
     int nbrPoints{};
+    std::string nom = "";
     Plateau plateau;
     Tuile tuileEnMain;
 
 public:
     Joueur();
+    void setNom(const std::string &n) { nom = n; }
+    const std::string &getNom() const { return nom; }
     void setNbrPierres(int);
     int getNbrPierres();
     void setNbrPoints();
@@ -25,6 +29,13 @@ public:
     int getNbrPoints();
     void setTuileEnMain(const Tuile &t) { tuileEnMain = t; }
     Tuile* piocherTuile(int id, Chantier& chantier);
+    bool placerTuile(Tuile &t, Position &p);
+    void afficher() const {
+        std::cout << " "; texte_couleur(ROUGE); texte_gras_on(); std::cout << nom; texte_reset();
+        std::cout << " | Pierres : "; texte_couleur(BLEU); std::cout << nbrPierres; texte_reset();
+        std::cout << ", Points : "; texte_couleur(JAUNE); std::cout << nbrPoints; texte_reset(); std::cout << "\n";
+        plateau.afficher();
+    }
 };
 
 #endif

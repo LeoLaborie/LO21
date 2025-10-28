@@ -7,6 +7,7 @@
 #include "Tuile.h"
 #include "Hexagone.h"
 #include "Position.h"
+#include "couleurs_console.h"
 
 class Plateau
 {
@@ -28,7 +29,14 @@ public:
     int calculerPointsJardin() const;
     int calculerPointsTemple() const;
     int calculerPointsCaserne() const;
-    void afficher() const;
+    void afficher() const {
+        std::cout << "\nPlateau contient " << listeTuiles.size() << " tuiles :\n";
+        std::cout << " ----\n";
+        for (const auto& t : listeTuiles) {
+            t.afficher();
+            std::cout << " ----\n";
+        }
+    }
 };
 
 #endif

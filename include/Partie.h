@@ -45,12 +45,17 @@ public:
             mainJoueur = (mainJoueur + 1) % nbrJoueurs;
     }
 
+    int getMainJoueur() const { return mainJoueur; }
+
     int getTaillePaquet() const { return taillepaquet; }
     void setTaillePaquet(int t) { taillepaquet = t; }
     Chantier& getChantier() { return chantier; }
 
     int getNbrTours() const { return nbrTours; }
     std::vector<Tuile> retirerPaquet();
+
+    bool pilesRestantes() const { return !piles.empty(); }
+    int getNbrPiles() const { return piles.size(); }
 
     void genererTuilesParties();
 };
