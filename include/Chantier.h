@@ -19,8 +19,7 @@ public:
     void retirerTuile(int id);
 
     void afficher() const {
-        std::cout << "\nChantier contient " << tuilesChantier.size() << " tuiles:\n";
-        std::cout << "----\n";
+        std::cout << "\nChantier contient " << tuilesChantier.size() << " tuiles :\n";
         for (const auto& t : tuilesChantier) {
             t.afficher();
             std::cout << "----\n";

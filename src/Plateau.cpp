@@ -426,14 +426,3 @@ int Plateau::calculerPointsHabitation() const{
     return placeHabitation * nbHabitation;
 
 }
-
-void Plateau::afficher() const
-{
-    std::cout << "  Hexagones sur plateau: " << getHexagones().size() << "\n";
-    for (auto *h : getHexagones())
-    {
-        std::cout << "    (" << h->getX() << "," << h->getY() << "," << h->getZ() << ")"
-                  << " voisins=" << h->getVoisins().size()
-                  << (h->getEstRecouvert() ? " [recouvert]" : "") << "\n";
-    }
-}

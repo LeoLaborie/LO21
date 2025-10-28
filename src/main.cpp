@@ -33,7 +33,7 @@ int main()
     partie.genererTuilesParties();
 
     // Sortie d'une pile
-    std::vector<Tuile> paquet = partie.retirerPaquet();
+    // std::vector<Tuile> paquet = partie.retirerPaquet();
 
     // Ajout des tuiles au chantier
     // for (Tuile tuile : paquet){
@@ -41,6 +41,23 @@ int main()
     // }
 
     partie.getChantier().afficher();
+
+    while (partie.getChantier().getTaille() > 1) {
+        std::cout << "\n--- Nouveau tour de jeu ---\n";
+        // std::cout << "Joueur courant: " << partie.getJoueurMain().getNom() << "\n";
+
+        // Affichage du plateau du joueur
+        partie.getJoueurMain().getPlateau().afficher();
+
+        // Affichage du chantier
+        partie.getChantier().afficher();
+
+        // Ici, on pourrait ajouter la logique pour que le joueur choisisse une tuile,
+        // la place sur son plateau, etc.
+
+        // Passage au joueur suivant
+        partie.setProchainJoueur();
+    }
 
     return 0;
 }
