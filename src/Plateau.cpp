@@ -353,6 +353,8 @@ int Plateau::calculerPointsMarche() const
 
     int placeMarche = 0;
     int nbMarche = 0;
+    const Place* placeVoisine;
+    const Quartier* quartierVoisin;
   
     bool voisinMarche = 0;
 
@@ -371,9 +373,13 @@ int Plateau::calculerPointsMarche() const
             {
                 for (const auto &voisin : q->getVoisins())
                 {
-                    if (dynamic_cast<const Quartier *>(voisin)->getTypeQuartier() == TypeQuartier::Marche)
-                    {
-                        voisinMarche = 1;
+                    quartierVoisin = dynamic_cast<const Quartier *>(voisin);
+
+                    if(quartierVoisin){
+                        if (quartierVoisin->getTypeQuartier() == TypeQuartier::Marche)
+                        {
+                            voisinMarche = 1;
+                        }
                     }
                 }
                 if(voisinMarche) continue;
@@ -383,10 +389,13 @@ int Plateau::calculerPointsMarche() const
                 if (varianteMarche){
 
                     for(const auto &voisin: q->getVoisins()){
+                        placeVoisine = dynamic_cast<const Place *>(voisin);
 
-                        if (dynamic_cast<const Place *>(voisin)->getTypePlace() == TypePlace::Marche)
-                        {
-                            nbMarche += q->getZ();
+                        if (placeVoisine){
+                            if (placeVoisine->getTypePlace() == TypePlace::Marche)
+                            {
+                                nbMarche += q->getZ();
+                            }
                         }
                     }
                 }
