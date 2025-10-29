@@ -278,18 +278,23 @@ bool Plateau::conditionVarianteJardin (const Quartier* q) const{
     std::vector<std::vector<int>> coVoisinsVides = {};
 
     // On trouve les coordonnées relatives vides
-    for (const auto h: listeHexagones){
-        for (const auto co : coVoisinsRelatifs){
-            if((h->getX()-co[0]) == q->getX() && (h->getY()-co[1]) == q->getY()){ // Ne pas hésiter à me redemander (Dimitri) 
-                                                                                 //si vous comprenez pas parce que même moi je suis pas sûr
+    for (const auto &h : listeHexagones)
+    {
+        for (const auto &co : coVoisinsRelatifs)
+        {
+            if ((h->getX() - co[0]) == q->getX() && (h->getY() - co[1]) == q->getY())
+            { // Ne pas hésiter à me redemander (Dimitri)
                 coVoisinsVides.push_back(co);
             }
         }
     }
 
-    for (const auto co: coVoisinsVides){
-        for (const auto h :listeHexagones){
-            if((h->getX()-co[0]) == q->getX() && (h->getY()-co[1]) == q->getY()){                                                                
+    for (const auto &co : coVoisinsVides)
+    {
+        for (const auto &h : listeHexagones)
+        {
+            if ((h->getX() - co[0]) == q->getX() && (h->getY() - co[1]) == q->getY())
+            {
                 coVoisinsVides.push_back(co);
             }
         }
