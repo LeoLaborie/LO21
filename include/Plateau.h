@@ -7,13 +7,17 @@
 #include "Tuile.h"
 #include "Hexagone.h"
 #include "Position.h"
-#include "Partie.h"
 #include "couleurs_console.h"
+
+// Déclarations anticipées pour l'amitié
+class Partie;
+class Joueur;
 
 class Plateau
 {
-friend class Partie;
-friend class Joueur;
+    friend class Partie;
+    friend class Joueur;
+
 private:
     std::vector<Tuile> listeTuiles;
     std::vector<Hexagone *> listeHexagones;
@@ -24,10 +28,9 @@ private:
     bool varianteCaserne{0};
     bool varianteJardin{0};
 
-    explicit Plateau();// Les plateaux sont définis par le constructeur de Joueur
-    
-public:
+    explicit Plateau(); // Les plateaux sont définis par le constructeur de Joueur
 
+public:
     bool verifierPlacementTuile(Position &p) const;
     int placerTuile(Tuile &t, Position &p);
     void updateVoisins();
@@ -37,13 +40,15 @@ public:
     int calculerPointsHabitation() const;
     int calculerPointsMarche() const;
     int calculerPointsJardin() const;
-    bool conditionVarianteJardin (const Quartier* q) const;
+    bool conditionVarianteJardin(const Quartier *q) const;
     int calculerPointsTemple() const;
     int calculerPointsCaserne() const;
-    void afficher() const {
+    void afficher() const
+    {
         std::cout << "\nPlateau contient " << listeTuiles.size() << " tuiles :\n";
         std::cout << " ----\n";
-        for (const auto& t : listeTuiles) {
+        for (const auto &t : listeTuiles)
+        {
             t.afficher();
             std::cout << " ----\n";
         }
