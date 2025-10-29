@@ -7,7 +7,6 @@
 #include "Tuile.h"
 #include "Hexagone.h"
 #include "Position.h"
-#include "utils.h"
 #include "Partie.h"
 #include "couleurs_console.h"
 
