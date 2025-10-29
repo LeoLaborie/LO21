@@ -14,6 +14,7 @@
 class Plateau
 {
 friend class Partie;
+friend class Joueur;
 private:
     std::vector<Tuile> listeTuiles;
     std::vector<Hexagone *> listeHexagones;
