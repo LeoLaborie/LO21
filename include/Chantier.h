@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include "Tuile.h"
+#include "couleurs_console.h"
 
 class Chantier
 {
@@ -21,8 +22,10 @@ public:
     void afficher() const {
         std::cout << "\nChantier contient " << tuilesChantier.size() << " tuiles :\n";
         for (size_t i = 0; i < tuilesChantier.size(); i++) {
-            std::cout << "\n --- " << i << " ---\n";
-            tuilesChantier[i].afficher();
+            texte_gras_on();
+            std::cout << "\n\t ---- " << i << " ----\n\n";
+            texte_reset();
+            tuilesChantier[i].afficher(true);
         }
         std::cout << std::endl;
     }

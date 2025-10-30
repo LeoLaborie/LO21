@@ -1,4 +1,4 @@
-// main.cpp — scénario de test complet
+// main.cpp
 #include <iostream>
 #include "Partie.h"
 #include "Position.h"
@@ -82,7 +82,7 @@ int main()
             if (tuilePiochee)
             {
                 std::cout << "\nTuile piochée :\n\n";
-                tuilePiochee->afficher();
+                tuilePiochee->afficher(true);
             }
             else
             {
@@ -95,6 +95,26 @@ int main()
 
             while (!placementTuile)
             {
+                bool modifTuile = true;
+
+                while (modifTuile)
+                {
+                    std::cout << "\nPivoter la tuile ? [o/n] : ";
+                    char reponse;
+                    std::cin >> reponse;
+                    if (reponse == 'o' || reponse == 'O')
+                    {
+                        tuilePiochee->pivoterTuile();
+                        std::cout << "\n--------------------------------\n";
+                        std::cout << "\nTuile après pivot :\n\n";
+                        tuilePiochee->afficher(true);
+                    }
+                    else if (reponse == 'n' || reponse == 'N')
+                    {
+                        modifTuile = false;
+                    }
+                }
+
                 std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
                 std::cin >> x >> y >> z;
                 Position pos{x, y, z};

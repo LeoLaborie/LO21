@@ -53,7 +53,7 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(Position &p) const
+bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
 {
     std::vector<Tuile *> tuiles_en_dessous;
     bool surElever = false;
@@ -69,10 +69,20 @@ bool Plateau::verifierPlacementTuile(Position &p) const
         int y;
         int z;
     };
+
     coord coords[3];
     coords[0] = {p.x, p.y, p.z};         // hex0
-    coords[1] = {p.x - 1, p.y + 1, p.z}; // hex1
-    coords[2] = {p.x, p.y + 1, p.z};     // hex2
+
+    if (t.estRetournee())
+    {
+        coords[1] = {p.x, p.y - 1, p.z}; // hex1
+        coords[2] = {p.x + 1, p.y - 1, p.z}; // hex2
+    }
+    else
+    {
+        coords[1] = {p.x - 1, p.y + 1, p.z}; // hex1
+        coords[2] = {p.x, p.y + 1, p.z};     // hex2
+    }
 
     for (const auto &h : coords)
     {
@@ -138,7 +148,7 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 {
     int res = 0;
 
-    if (!verifierPlacementTuile(p))
+    if (!verifierPlacementTuile(p, t))
     {
         texte_couleur(ROUGE);
         texte_gras_on();
@@ -153,8 +163,17 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     auto *h2 = t.getHexagones()[2];
 
     h0->setCoord(p.x, p.y, p.z);
-    h1->setCoord(p.x - 1, p.y + 1, p.z);
-    h2->setCoord(p.x, p.y + 1, p.z);
+
+    if (t.estRetournee())
+    {
+        h1->setCoord(p.x, p.y - 1, p.z);
+        h2->setCoord(p.x + 1, p.y - 1, p.z);
+    }
+    else
+    {
+        h1->setCoord(p.x - 1, p.y + 1, p.z);
+        h2->setCoord(p.x, p.y + 1, p.z);
+    }
 
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
