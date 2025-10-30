@@ -7,31 +7,31 @@
 
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
-    if (type == "placeBleue")
-        return new Place(0, 0, 0, TypePlace::Habitation, 1, &tuile);
-    else if (type == "placeJaune")
+    if (type == "HexagoneBleue")
+        return new Hexagone(0, 0, 0, TypeHex::PHabitation, 1, &tuile);
+    else if (type == "HexagoneJaune")
     {
         *marcheDejaPresent = true;
-        return new Place(0, 0, 0, TypePlace::Marche, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PMarche, 2, &tuile);
     }
-    else if (type == "placeRouge")
-        return new Place(0, 0, 0, TypePlace::Caserne, 2, &tuile);
-    else if (type == "placeViolette")
-        return new Place(0, 0, 0, TypePlace::Temple, 2, &tuile);
-    else if (type == "placeVerte")
-        return new Place(0, 0, 0, TypePlace::Jardin, 3, &tuile);
-    else if (type == "quartierBleu")
-        return new Quartier(0, 0, 0, TypeQuartier::Habitation, &tuile);
-    else if (type == "quartierJaune")
-        return new Quartier(0, 0, 0, TypeQuartier::Marche, &tuile);
-    else if (type == "quartierRouge")
-        return new Quartier(0, 0, 0, TypeQuartier::Caserne, &tuile);
-    else if (type == "quartierViolet")
-        return new Quartier(0, 0, 0, TypeQuartier::Temple, &tuile);
-    else if (type == "quartierVert")
-        return new Quartier(0, 0, 0, TypeQuartier::Jardin, &tuile);
+    else if (type == "HexagoneRouge")
+        return new Hexagone(0, 0, 0, TypeHex::PCaserne, 2, &tuile);
+    else if (type == "HexagoneViolette")
+        return new Hexagone(0, 0, 0, TypeHex::PTemple, 2, &tuile);
+    else if (type == "HexagoneVerte")
+        return new Hexagone(0, 0, 0, TypeHex::PJardin, 3, &tuile);
+    else if (type == "HexagoneBleu")
+        return new Hexagone(0, 0, 0, TypeHex::Habitation, 1, &tuile);
+    else if (type == "HexagoneJaune")
+        return new Hexagone(0, 0, 0, TypeHex::Marche, 1, &tuile);
+    else if (type == "HexagoneRouge")
+        return new Hexagone(0, 0, 0, TypeHex::Caserne, 1, &tuile);
+    else if (type == "HexagoneViolet")
+        return new Hexagone(0, 0, 0, TypeHex::Temple, 1,&tuile);
+    else if (type == "HexagoneVert")
+        return new Hexagone(0, 0, 0, TypeHex::Jardin, 1, &tuile);
     else if (type == "carriere")
-        return new Carriere(0, 0, 0, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Carriere, 1, &tuile);
 
     throw std::runtime_error("Type inconnu: " + type);
 }
@@ -55,7 +55,7 @@ std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent
     {
         if (quantite > 0)
         {
-            if (type == "placeJaune" && marcheDejaPresent)
+            if (type == "HexagoneJaune" && marcheDejaPresent)
                 continue; // Interdiction du 2e marché
             for (int i = 0; i < quantite; i++)
             {
@@ -81,13 +81,13 @@ void Partie::genererTuilesParties()
 {
     std::map<int, std::map<std::string, int>> cartes = {
         {2, {
-                {"placeBleue", 5}, {"placeJaune", 4}, {"placeRouge", 4}, {"placeViolette", 4}, {"placeVerte", 3}, {"quartierBleu", 18}, {"quartierJaune", 12}, {"quartierRouge", 10}, {"quartierViolet", 8}, {"quartierVert", 6}, {"carriere", 37} 
+                {"HexagoneBleue", 5}, {"HexagoneJaune", 4}, {"HexagoneRouge", 4}, {"HexagoneViolette", 4}, {"HexagoneVerte", 3}, {"HexagoneBleu", 18}, {"HexagoneJaune", 12}, {"HexagoneRouge", 10}, {"HexagoneViolet", 8}, {"HexagoneVert", 6}, {"carriere", 37} 
             }},
         {3, {
-                {"placeBleue", 6}, {"placeJaune", 5}, {"placeRouge", 5}, {"placeViolette", 5}, {"placeVerte", 4}, {"quartierBleu", 27}, {"quartierJaune", 16}, {"quartierRouge", 13}, {"quartierViolet", 10}, {"quartierVert", 7}, {"carriere", 49} 
+                {"HexagoneBleue", 6}, {"HexagoneJaune", 5}, {"HexagoneRouge", 5}, {"HexagoneViolette", 5}, {"HexagoneVerte", 4}, {"HexagoneBleu", 27}, {"HexagoneJaune", 16}, {"HexagoneRouge", 13}, {"HexagoneViolet", 10}, {"HexagoneVert", 7}, {"carriere", 49} 
             }},
         {4, {
-                {"placeBleue", 7}, {"placeJaune", 6}, {"placeRouge", 6}, {"placeViolette", 6}, {"placeVerte", 5}, {"quartierBleu", 36}, {"quartierJaune", 20}, {"quartierRouge", 16}, {"quartierViolet", 12}, {"quartierVert", 8}, {"carriere", 61} 
+                {"HexagoneBleue", 7}, {"HexagoneJaune", 6}, {"HexagoneRouge", 6}, {"HexagoneViolette", 6}, {"HexagoneVerte", 5}, {"HexagoneBleu", 36}, {"HexagoneJaune", 20}, {"HexagoneRouge", 16}, {"HexagoneViolet", 12}, {"HexagoneVert", 8}, {"carriere", 61} 
             }}};
 
     auto &stock = cartes[getNbrJoueurs()];

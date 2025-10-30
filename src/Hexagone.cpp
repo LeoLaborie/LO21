@@ -5,64 +5,58 @@ void Hexagone::afficher() const
     std::cout << "Hexagone(" << x << "," << y << "," << z << ")"
                 << (est_recouvert ? " [recouvert]" : "") << "\n";
     // Vérifie si c'est une Carrière, Quartier ou Place
-    if (dynamic_cast<const Carriere *>(this))
+    if (type_ == TypeHex::Carriere)
     {
         texte_couleur(BLEU);
         std::cout << "  Carrière\n";
     }
-    else if (auto quartier = dynamic_cast<const Quartier *>(this))
+    else if (this->isQuartier())
     {
         std::cout << "  Quartier : ";
-        switch (quartier->getTypeQuartier())
-        {
-            case TypeQuartier::Habitation:
-                texte_couleur(CYAN);
-                std::cout << "Habitation\n";
-                break;
-            case TypeQuartier::Marche:
-                texte_couleur(JAUNE);
-                std::cout << "Marché\n";
-                break;
-            case TypeQuartier::Temple:
-                texte_couleur(MAGENTA);
-                std::cout << "Temple\n";
-                break;
-            case TypeQuartier::Caserne:
-                texte_couleur(ROUGE);
-                std::cout << "Caserne\n";
-                break;
-            case TypeQuartier::Jardin:
-                texte_couleur(VERT);
-                std::cout << "Jardin\n";
-                break;
+        if (type_ == TypeHex::Habitation){
+            texte_couleur(CYAN);
+            std::cout << "Habitation\n";
+        }
+        if (type_ == TypeHex::Marche){
+            texte_couleur(JAUNE);
+            std::cout << "Marché\n";
+        }
+        if (type_ == TypeHex::Temple){
+            texte_couleur(MAGENTA);
+            std::cout << "Temple\n";
+        }
+        if (type_ == TypeHex::Caserne){
+            texte_couleur(ROUGE);
+            std::cout << "Caserne\n";
+        }
+        if (type_ ==  TypeHex::Jardin){
+            texte_couleur(VERT);
+            std::cout << "Jardin\n";
         }
     }
-    else if (auto place = dynamic_cast<const Place *>(this))
+    else if (this->isPlace())
     {
         std::cout << "  Place : ";
-        switch (place->getTypePlace())
-        {
-            case TypePlace::Habitation:
+        if (type_ == TypeHex::PHabitation){
                 texte_couleur(CYAN);
                 std::cout << "Habitation\n";
-                break;
-            case TypePlace::Marche:
+            }
+            if (type_ == TypeHex::PMarche){
                 texte_couleur(JAUNE);
                 std::cout << "Marché\n";
-                break;
-            case TypePlace::Temple:
+            }
+            if (type_ == TypeHex::PTemple){
                 texte_couleur(MAGENTA);
                 std::cout << "Temple\n";
-                break;
-            case TypePlace::Caserne:
+            }
+            if (type_ == TypeHex::PCaserne){
                 texte_couleur(ROUGE);
                 std::cout << "Caserne\n";
-                break;
-            case TypePlace::Jardin:
+            }
+            if (type_ ==  TypeHex::PJardin){
                 texte_couleur(VERT);
                 std::cout << "Jardin\n";
-                break;
-        }
+            }
     }
     texte_reset();
 }
