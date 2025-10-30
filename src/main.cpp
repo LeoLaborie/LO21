@@ -6,6 +6,8 @@
 
 int main()
 {
+    texte_reset();
+    afficher_curseur();
     texte_couleur(ROUGE);
     texte_gras_on();
     std::cout << "===== DEMARRAGE PARTIE =====\n";
@@ -131,18 +133,22 @@ int main()
         std::cout << "Il reste une seule tuile dans le chantier. Le tour est terminé.\n";
         partie.tourTermine();
 
-        // Sortie d'une pile
-        std::vector<Tuile> paquet = partie.retirerPaquet();
+        if (partie.pilesRestantes())
+        {
+            // Sortie d'une pile
+            std::vector<Tuile> paquet = partie.retirerPaquet();
 
-        // Ajout des tuiles au chantier
-        for (Tuile tuile : paquet){
-            partie.getChantier().ajouterTuile(tuile);
+            // Ajout des tuiles au chantier
+            for (Tuile tuile : paquet)
+            {
+                partie.getChantier().ajouterTuile(tuile);
+            }
         }
 
-        afficher_curseur();
         texte_reset();
         system("sleep 4");
         system("clear");
+        afficher_curseur();
     }
 
     texte_couleur(ROUGE);
