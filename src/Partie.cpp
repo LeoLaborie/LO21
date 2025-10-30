@@ -8,30 +8,30 @@
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
     if (type == "placeBleue")
-        return new Hexagone(0, 0, 0, TypeHex::PHabitation, 1, &tuile);
+        return new Place(0, 0, 0, TypePlace::Habitation, 1, &tuile);
     else if (type == "placeJaune")
     {
         *marcheDejaPresent = true;
-        return new Hexagone(0, 0, 0, TypeHex::PMarche, 2, &tuile);
+        return new Place(0, 0, 0, TypePlace::Marche, 2, &tuile);
     }
     else if (type == "placeRouge")
-        return new Hexagone(0, 0, 0, TypeHex::PCaserne, 2, &tuile);
+        return new Place(0, 0, 0, TypePlace::Caserne, 2, &tuile);
     else if (type == "placeViolette")
-        return new Hexagone(0, 0, 0, TypeHex::PTemple, 2, &tuile);
+        return new Place(0, 0, 0, TypePlace::Temple, 2, &tuile);
     else if (type == "placeVerte")
-        return new Hexagone(0, 0, 0, TypeHex::PJardin, 3, &tuile);
+        return new Place(0, 0, 0, TypePlace::Jardin, 3, &tuile);
     else if (type == "quartierBleu")
-        return new Hexagone(0, 0, 0, TypeHex::Habitation, 1, &tuile);
+        return new Quartier(0, 0, 0, TypeQuartier::Habitation, &tuile);
     else if (type == "quartierJaune")
-        return new Hexagone(0, 0, 0, TypeHex::Marche, 1, &tuile);
+        return new Quartier(0, 0, 0, TypeQuartier::Marche, &tuile);
     else if (type == "quartierRouge")
-        return new Hexagone(0, 0, 0, TypeHex::Caserne, 1, &tuile);
+        return new Quartier(0, 0, 0, TypeQuartier::Caserne, &tuile);
     else if (type == "quartierViolet")
-        return new Hexagone(0, 0, 0, TypeHex::Temple, 1, &tuile);
+        return new Quartier(0, 0, 0, TypeQuartier::Temple, &tuile);
     else if (type == "quartierVert")
-        return new Hexagone(0, 0, 0, TypeHex::Jardin, 1, &tuile);
+        return new Quartier(0, 0, 0, TypeQuartier::Jardin, &tuile);
     else if (type == "carriere")
-        return new Hexagone(0, 0, 0, TypeHex::Carriere, 1, &tuile);
+        return new Carriere(0, 0, 0, &tuile);
 
     throw std::runtime_error("Type inconnu: " + type);
 }
@@ -55,7 +55,7 @@ std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent
     {
         if (quantite > 0)
         {
-            if (type == "HexagoneJaune" && marcheDejaPresent)
+            if (type == "placeJaune" && marcheDejaPresent)
                 continue; // Interdiction du 2e marché
             for (int i = 0; i < quantite; i++)
             {
@@ -93,7 +93,28 @@ void Partie::genererTuilesParties()
     auto &stock = cartes[getNbrJoueurs()];
 
     int tuilesParPile = getNbrJoueurs() + 1;
-    int nombreDePiles = 12;
+    int nombreDePiles;
+    if(nbrJoueurs < 4){//Variante du nombre de piles en fonction du nombre de joueurs
+        int choix;
+        std::cout << "1: Voulez vous jouer avec les règles de base et n'avoir que 11 piles ? \n" << "2: Jouez avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles ? \n";
+        std::cin >> choix;
+        while (choix != 1 && choix != 2){
+            std::cout << "Choix invalide \n";
+            std::cout << "1: Voulez vous jouer avec les règles de base et n'avoir que 11 piles ? \n" << "2: Jouez avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles ? \n";
+            std::cin >> choix;
+        }
+        if(choix == 1){
+            nombreDePiles = 11;
+        }else{
+            if(nbrJoueurs == 3){
+                nombreDePiles = 15;
+            }else if(nbrJoueurs == 2){
+                nombreDePiles = 19;
+            }
+        }
+    }else{
+        nombreDePiles = 11;
+    }
 
     for (int i = 0; i < nombreDePiles; i++)
     {
