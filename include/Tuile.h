@@ -9,6 +9,7 @@ class Tuile
 {
 private:
     std::vector<Hexagone *> hex;
+    bool flip = false;
 
 public:
     Tuile() = default;
@@ -19,22 +20,45 @@ public:
 
     void pivoterTuile()
     {
-        Hexagone *tmp = hex[0];
-        hex[0] = hex[1];
-        hex[1] = hex[2];
-        hex[2] = tmp;
+        if (this->estRetournee())
+        {
+            Hexagone *tmp = hex[0];
+            hex[0] = hex[1];
+            hex[1] = tmp;
+        }
+        else
+        {
+            Hexagone *tmp = hex[0];
+            hex[0] = hex[2];
+            hex[2] = tmp;
+        }
+        flip = !flip;
     }
+
+    bool estRetournee() const { return flip; }
 
     void afficher(bool court = false) const
     {
         if (court)
         {
-            std::cout << "\t";
-            hex[0]->afficher(true);
-            std::cout << "\n";
-            hex[1]->afficher(true);
-            std::cout << " ";
-            hex[2]->afficher(true);
+            if (this->estRetournee())
+            {
+                hex[1]->afficher(true);
+                std::cout << " ";
+                hex[2]->afficher(true);
+                std::cout << "\n";
+                std::cout << "\t";
+                hex[0]->afficher(true);
+            }
+            else
+            {
+                std::cout << "\t";
+                hex[0]->afficher(true);
+                std::cout << "\n";
+                hex[1]->afficher(true);
+                std::cout << " ";
+                hex[2]->afficher(true);
+            }
             std::cout << "\n";
         }
         else

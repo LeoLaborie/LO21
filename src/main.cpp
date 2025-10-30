@@ -1,4 +1,4 @@
-// main.cpp — scénario de test complet
+// main.cpp
 #include <iostream>
 #include "Partie.h"
 #include "Position.h"
@@ -95,9 +95,9 @@ int main()
 
             while (!placementTuile)
             {
-                bool pivot = true;
+                bool modifTuile = true;
 
-                while (pivot)
+                while (modifTuile)
                 {
                     std::cout << "\nPivoter la tuile ? [o/n] : ";
                     char reponse;
@@ -111,7 +111,7 @@ int main()
                     }
                     else if (reponse == 'n' || reponse == 'N')
                     {
-                        pivot = false;
+                        modifTuile = false;
                     }
                 }
 
