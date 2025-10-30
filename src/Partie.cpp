@@ -8,30 +8,30 @@
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
     if (type == "placeBleue")
-        return new Place(0, 0, 0, TypePlace::Habitation, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PHabitation, 1, &tuile);
     else if (type == "placeJaune")
     {
         *marcheDejaPresent = true;
-        return new Place(0, 0, 0, TypePlace::Marche, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PMarche, 2, &tuile);
     }
     else if (type == "placeRouge")
-        return new Place(0, 0, 0, TypePlace::Caserne, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PCaserne, 2, &tuile);
     else if (type == "placeViolette")
-        return new Place(0, 0, 0, TypePlace::Temple, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PTemple, 2, &tuile);
     else if (type == "placeVerte")
-        return new Place(0, 0, 0, TypePlace::Jardin, 3, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PJardin, 3, &tuile);
     else if (type == "quartierBleu")
-        return new Quartier(0, 0, 0, TypeQuartier::Habitation, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Habitation, 1, &tuile);
     else if (type == "quartierJaune")
-        return new Quartier(0, 0, 0, TypeQuartier::Marche, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Marche, 1, &tuile);
     else if (type == "quartierRouge")
-        return new Quartier(0, 0, 0, TypeQuartier::Caserne, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Caserne, 1, &tuile);
     else if (type == "quartierViolet")
-        return new Quartier(0, 0, 0, TypeQuartier::Temple, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Temple, 1, &tuile);
     else if (type == "quartierVert")
-        return new Quartier(0, 0, 0, TypeQuartier::Jardin, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Jardin, 1, &tuile);
     else if (type == "carriere")
-        return new Carriere(0, 0, 0, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Carriere, 1, &tuile);
 
     throw std::runtime_error("Type inconnu: " + type);
 }
@@ -55,7 +55,7 @@ std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent
     {
         if (quantite > 0)
         {
-            if (type == "placeJaune" && marcheDejaPresent)
+            if (type == "HexagoneJaune" && marcheDejaPresent)
                 continue; // Interdiction du 2e marché
             for (int i = 0; i < quantite; i++)
             {
