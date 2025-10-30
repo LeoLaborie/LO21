@@ -7,28 +7,28 @@
 
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
-    if (type == "HexagoneBleue")
+    if (type == "placeBleue")
         return new Hexagone(0, 0, 0, TypeHex::PHabitation, 1, &tuile);
-    else if (type == "HexagoneJaune")
+    else if (type == "placeJaune")
     {
         *marcheDejaPresent = true;
         return new Hexagone(0, 0, 0, TypeHex::PMarche, 2, &tuile);
     }
-    else if (type == "HexagoneRouge")
+    else if (type == "placeRouge")
         return new Hexagone(0, 0, 0, TypeHex::PCaserne, 2, &tuile);
-    else if (type == "HexagoneViolette")
+    else if (type == "placeViolette")
         return new Hexagone(0, 0, 0, TypeHex::PTemple, 2, &tuile);
-    else if (type == "HexagoneVerte")
+    else if (type == "placeVerte")
         return new Hexagone(0, 0, 0, TypeHex::PJardin, 3, &tuile);
-    else if (type == "HexagoneBleu")
+    else if (type == "quartierBleu")
         return new Hexagone(0, 0, 0, TypeHex::Habitation, 1, &tuile);
-    else if (type == "HexagoneJaune")
+    else if (type == "quartierJaune")
         return new Hexagone(0, 0, 0, TypeHex::Marche, 1, &tuile);
-    else if (type == "HexagoneRouge")
+    else if (type == "quartierRouge")
         return new Hexagone(0, 0, 0, TypeHex::Caserne, 1, &tuile);
-    else if (type == "HexagoneViolet")
-        return new Hexagone(0, 0, 0, TypeHex::Temple, 1,&tuile);
-    else if (type == "HexagoneVert")
+    else if (type == "quartierViolet")
+        return new Hexagone(0, 0, 0, TypeHex::Temple, 1, &tuile);
+    else if (type == "quartierVert")
         return new Hexagone(0, 0, 0, TypeHex::Jardin, 1, &tuile);
     else if (type == "carriere")
         return new Hexagone(0, 0, 0, TypeHex::Carriere, 1, &tuile);
@@ -81,13 +81,13 @@ void Partie::genererTuilesParties()
 {
     std::map<int, std::map<std::string, int>> cartes = {
         {2, {
-                {"HexagoneBleue", 5}, {"HexagoneJaune", 4}, {"HexagoneRouge", 4}, {"HexagoneViolette", 4}, {"HexagoneVerte", 3}, {"HexagoneBleu", 18}, {"HexagoneJaune", 12}, {"HexagoneRouge", 10}, {"HexagoneViolet", 8}, {"HexagoneVert", 6}, {"carriere", 37} 
+                {"placeBleue", 5}, {"placeJaune", 4}, {"placeRouge", 4}, {"placeViolette", 4}, {"placeVerte", 3}, {"quartierBleu", 18}, {"quartierJaune", 12}, {"quartierRouge", 10}, {"quartierViolet", 8}, {"quartierVert", 6}, {"carriere", 37} 
             }},
         {3, {
-                {"HexagoneBleue", 6}, {"HexagoneJaune", 5}, {"HexagoneRouge", 5}, {"HexagoneViolette", 5}, {"HexagoneVerte", 4}, {"HexagoneBleu", 27}, {"HexagoneJaune", 16}, {"HexagoneRouge", 13}, {"HexagoneViolet", 10}, {"HexagoneVert", 7}, {"carriere", 49} 
+                {"placeBleue", 6}, {"placeJaune", 5}, {"placeRouge", 5}, {"placeViolette", 5}, {"placeVerte", 4}, {"quartierBleu", 27}, {"quartierJaune", 16}, {"quartierRouge", 13}, {"quartierViolet", 10}, {"quartierVert", 7}, {"carriere", 49} 
             }},
         {4, {
-                {"HexagoneBleue", 7}, {"HexagoneJaune", 6}, {"HexagoneRouge", 6}, {"HexagoneViolette", 6}, {"HexagoneVerte", 5}, {"HexagoneBleu", 36}, {"HexagoneJaune", 20}, {"HexagoneRouge", 16}, {"HexagoneViolet", 12}, {"HexagoneVert", 8}, {"carriere", 61} 
+                {"placeBleue", 7}, {"placeJaune", 6}, {"placeRouge", 6}, {"placeViolette", 6}, {"placeVerte", 5}, {"quartierBleu", 36}, {"quartierJaune", 20}, {"quartierRouge", 16}, {"quartierViolet", 12}, {"quartierVert", 8}, {"carriere", 61} 
             }}};
 
     auto &stock = cartes[getNbrJoueurs()];
