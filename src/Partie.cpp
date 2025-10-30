@@ -90,10 +90,28 @@ void Partie::genererTuilesParties()
                 {"placeBleue", 7}, {"placeJaune", 6}, {"placeRouge", 6}, {"placeViolette", 6}, {"placeVerte", 5}, {"quartierBleu", 36}, {"quartierJaune", 20}, {"quartierRouge", 16}, {"quartierViolet", 12}, {"quartierVert", 8}, {"carriere", 61} 
             }}};
 
-    auto &stock = cartes[getNbrJoueurs()];
+    std::map<std::string, int> *stock = &cartes[getNbrJoueurs()];
 
     int tuilesParPile = getNbrJoueurs() + 1;
     int nombreDePiles = 12;
+    if(nbrJoueurs < 4){//Variante du nombre de piles en fonction du nombre de joueurs
+        int choix;
+        std::cout << "1: Voulez vous jouer avec les règles de base et n'avoir que 11 piles ? \n" << "2: Jouez avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles ? \n";
+        std::cin >> choix;
+        while (choix != 1 && choix != 2){
+            std::cout << "Choix invalide \n";
+            std::cout << "1: Voulez vous jouer avec les règles de base et n'avoir que 11 piles ? \n" << "2: Jouez avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles ? \n";
+            std::cin >> choix;
+        }
+        if(choix == 2){
+            stock = &cartes[4];
+            if(nbrJoueurs == 3){
+                nombreDePiles = 15;
+            }else if(nbrJoueurs == 2){
+                nombreDePiles = 20;
+            }
+        }
+    }
 
     for (int i = 0; i < nombreDePiles; i++)
     {
@@ -106,7 +124,7 @@ void Partie::genererTuilesParties()
 
             for (int k = 0; k < 3; k++)
             {
-                std::string type = tirerCarte(stock, marcheDejaPresent);
+                std::string type = tirerCarte(*stock, marcheDejaPresent);
                 Hexagone *h = creerHexagoneDepuisType(type, tuile, &marcheDejaPresent);
                 hexas.push_back(h);
             }
@@ -125,7 +143,7 @@ void Partie::genererTuilesParties()
 
     for (int i = 0; i < 3; i++)
     {
-        std::string type = tirerCarte(stock, marcheDejaPresent);
+        std::string type = tirerCarte(*stock, marcheDejaPresent);
         Hexagone *h = creerHexagoneDepuisType(type, tuileBonus, &marcheDejaPresent);
         hexas.push_back(h);
     }
@@ -134,7 +152,7 @@ void Partie::genererTuilesParties()
     chantier.ajouterTuile(tuileBonus); // ajouté directement dans le chantier
 
     // Vérification : le stock doit être vide
-    for (auto &[type, quantite] : stock)
+    for (auto &[type, quantite] : *stock)
     {
         if (quantite != 0)
         {
