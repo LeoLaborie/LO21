@@ -40,7 +40,7 @@ public:
     int calculerPointsHabitation() const;
     int calculerPointsMarche() const;
     int calculerPointsJardin() const;
-    bool conditionVarianteJardin(const Quartier *q) const;
+    bool conditionVarianteJardin(const Hexagone* q) const;
     int calculerPointsTemple() const;
     int calculerPointsCaserne() const;
     void afficher() const
