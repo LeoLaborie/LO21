@@ -19,7 +19,6 @@ enum class TypeHex {
     PTemple,
     PCaserne,
     PJardin,
-    Depart,
     Carriere
 };
 
@@ -93,7 +92,6 @@ public:
         }
     }
     bool isCarriere() const { return type_ == TypeHex::Carriere; }
-    bool isDepart()   const { return type_ == TypeHex::Depart; }
 
     int  getMultiplicateur() const { return multiplicateur_; }
     void setMultiplicateur(int m)  { multiplicateur_ = m; }
