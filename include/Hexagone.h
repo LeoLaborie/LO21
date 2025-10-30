@@ -96,7 +96,7 @@ public:
     int  getMultiplicateur() const { return multiplicateur_; }
     void setMultiplicateur(int m)  { multiplicateur_ = m; }
 
-    void afficher() const;
+    void afficher(bool court = false) const;
 };
 
 #endif

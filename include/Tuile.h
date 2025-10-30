@@ -25,9 +25,24 @@ public:
         hex[2] = tmp;
     }
 
-    void afficher() const {
-        for (const auto& h : hex) {
-            h->afficher();
+    void afficher(bool court = false) const
+    {
+        if (court)
+        {
+            std::cout << "\t";
+            hex[0]->afficher(true);
+            std::cout << "\n";
+            hex[1]->afficher(true);
+            std::cout << " ";
+            hex[2]->afficher(true);
+            std::cout << "\n";
+        }
+        else
+        {
+            for (const auto &h : hex)
+            {
+                h->afficher();
+            }
         }
     }
 };
