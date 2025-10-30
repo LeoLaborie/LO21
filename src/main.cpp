@@ -95,6 +95,25 @@ int main()
 
             while (!placementTuile)
             {
+                bool pivot = true;
+
+                while (pivot)
+                {
+                    std::cout << "\nPivoter la tuile ? [o/n] : ";
+                    char reponse;
+                    std::cin >> reponse;
+                    if (reponse == 'o' || reponse == 'O')
+                    {
+                        tuilePiochee->pivoterTuile();
+                        std::cout << "\nTuile après pivot :\n\n";
+                        tuilePiochee->afficher();
+                    }
+                    else if (reponse == 'n' || reponse == 'N')
+                    {
+                        pivot = false;
+                    }
+                }
+
                 std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
                 std::cin >> x >> y >> z;
                 Position pos{x, y, z};
