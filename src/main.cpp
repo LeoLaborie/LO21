@@ -81,7 +81,7 @@ int main()
             Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier());
             if (tuilePiochee)
             {
-                std::cout << "\nTuile piochée :\n";
+                std::cout << "\nTuile piochée :\n\n";
                 tuilePiochee->afficher();
             }
             else
@@ -95,7 +95,7 @@ int main()
 
             while (!placementTuile)
             {
-                std::cout << "Entrez les coordonnées (x y z) pour placer la tuile : ";
+                std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
                 std::cin >> x >> y >> z;
                 Position pos{x, y, z};
                 placementTuile = joueurCourant.placerTuile(*tuilePiochee, pos);
@@ -159,12 +159,13 @@ int main()
     texte_reset();
 
     texte_couleur(JAUNE);
-    std::cout << "\nScores finaux :\n";
+    std::cout << "\n Scores finaux \n";
+    std::cout << "---------------\n";
     for (int _i = 0; _i < partie.getNbrJoueurs(); ++_i)
     {
         Joueur &joueur = partie.getJoueurMain();
         texte_gras_on();
-        std::cout << joueur.getNom();
+        std::cout << " " << joueur.getNom();
         texte_reset();
         texte_couleur(JAUNE);
         std::cout << " : " << joueur.getNbrPoints() << " points\n";
