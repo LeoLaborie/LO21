@@ -21,12 +21,27 @@ int main()
     partie.setNbrJoueurs(nbrJoueurs);
 
     // Préparation des joueurs
-    std::cout << partie.getNbrJoueurs() << " joueurs dans la partie.\n";
+    std::cout << partie.getNbrJoueurs() << " joueurs dans la partie.\n\n";
     partie.setMaitreArchitecte(0);
+
+    int choixVariante = 0;
+    std::cout << "Choisissez une variante de jeu : \n";
+    while (choixVariante != 1 && choixVariante != 2){
+        std::cout << " 1: Jouer avec les règles de base et n'avoir que 11 piles.\n";
+        std::cout << " 2: Jouer avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles.\n";
+        std::cout << "Votre choix : ";
+        std::cin >> choixVariante;
+        if (choixVariante != 1 && choixVariante != 2){
+            texte_couleur(ROUGE);
+            texte_gras_on();
+            std::cout << "Choix invalide.\n\n";
+            texte_reset();
+        }
+    }
 
     // Préparation du paquet de tuiles
     //  --> Génération de toutes les tuiles de la partie
-    partie.genererTuilesParties();
+    partie.genererTuilesParties(choixVariante == 2);
 
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {

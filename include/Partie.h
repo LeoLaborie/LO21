@@ -58,7 +58,7 @@ public:
     bool pilesRestantes() const { return !piles.empty(); }
     int getNbrPiles() const { return piles.size(); }
 
-    void genererTuilesParties();
+    void genererTuilesParties(bool fullTuiles = false);
 };
 
 #endif
