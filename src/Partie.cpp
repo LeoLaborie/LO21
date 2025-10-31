@@ -1,9 +1,4 @@
 #include "Partie.h"
-#include <map>
-#include <string>
-#include <vector>
-#include <stdexcept>
-#include <random>
 
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
@@ -77,7 +72,7 @@ std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent
     return choisi;
 }
 
-void Partie::genererTuilesParties()
+void Partie::genererTuilesParties(bool fullTuiles)
 {
     std::map<int, std::map<std::string, int>> cartes = {
         {2, {
@@ -95,15 +90,7 @@ void Partie::genererTuilesParties()
     int tuilesParPile = getNbrJoueurs() + 1;
     int nombreDePiles = 12;
     if(nbrJoueurs < 4){//Variante du nombre de piles en fonction du nombre de joueurs
-        int choix;
-        std::cout << "1: Voulez vous jouer avec les règles de base et n'avoir que 11 piles ? \n" << "2: Jouez avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles ? \n";
-        std::cin >> choix;
-        while (choix != 1 && choix != 2){
-            std::cout << "Choix invalide \n";
-            std::cout << "1: Voulez vous jouer avec les règles de base et n'avoir que 11 piles ? \n" << "2: Jouez avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles ? \n";
-            std::cin >> choix;
-        }
-        if(choix == 2){
+        if(fullTuiles){
             stock = &cartes[4];
             if(nbrJoueurs == 3){
                 nombreDePiles = 15;

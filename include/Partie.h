@@ -5,6 +5,8 @@
 #include <math.h>
 #include <stdexcept>
 #include <random>
+#include <map>
+#include <string>
 #include "Tuile.h"
 #include "Joueur.h"
 #include "Chantier.h"
@@ -58,7 +60,7 @@ public:
     bool pilesRestantes() const { return !piles.empty(); }
     int getNbrPiles() const { return piles.size(); }
 
-    void genererTuilesParties();
+    void genererTuilesParties(bool fullTuiles = false);
 };
 
 #endif
