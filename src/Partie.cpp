@@ -1,9 +1,4 @@
 #include "Partie.h"
-#include <map>
-#include <string>
-#include <vector>
-#include <stdexcept>
-#include <random>
 
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {

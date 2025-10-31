@@ -5,6 +5,8 @@
 #include <math.h>
 #include <stdexcept>
 #include <random>
+#include <map>
+#include <string>
 #include "Tuile.h"
 #include "Joueur.h"
 #include "Chantier.h"
