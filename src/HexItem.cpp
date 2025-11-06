@@ -46,18 +46,18 @@ HexItem::HexItem(const Hexagone* modele, double taille)
     QString imgPath;
     switch (modele->getType())
     {
-    case TypeHex::PHabitation: imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/PlaceHabitation.png"; break;
-    case TypeHex::PMarche:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/PlaceMarche.png"; break;
-    case TypeHex::PTemple:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/PlaceTemple.png"; break;
-    case TypeHex::PCaserne:    imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/placeCarserne.png"; break;
-    case TypeHex::PJardin:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/placeJardin.png"; break;
-    case TypeHex::Habitation:  imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Habitation.png"; break;
-    case TypeHex::Marche:      imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Marche.png"; break;
-    case TypeHex::Temple:      imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Temple.png"; break;
-    case TypeHex::Caserne:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Carserne.png"; break;
-    case TypeHex::Jardin:      imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Jardin.png"; break;
-    case TypeHex::Carriere:    imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Carriere.png"; break;
-    default:                   imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/placeHabitation.png"; break;
+    case TypeHex::PHabitation: imgPath = ":/img/PlaceHabitation.png"; break;
+    case TypeHex::PMarche:     imgPath = ":/img/PlaceMarche.png"; break;
+    case TypeHex::PTemple:     imgPath = ":/img/PlaceTemple.png"; break;
+    case TypeHex::PCaserne:    imgPath = ":/img/PlaceCarserne.png"; break;
+    case TypeHex::PJardin:     imgPath = ":/img/PlaceJardin.png"; break;
+    case TypeHex::Habitation:  imgPath = ":/img/Habitation.png"; break;
+    case TypeHex::Marche:      imgPath = ":/img/Marche.png"; break;
+    case TypeHex::Temple:      imgPath = ":/img/Temple.png"; break;
+    case TypeHex::Caserne:     imgPath = ":/img/Carserne.png"; break;
+    case TypeHex::Jardin:      imgPath = ":/img/Jardin.png"; break;
+    case TypeHex::Carriere:    imgPath = ":/img/Carriere.png"; break;
+    default:                   imgPath = ":/img/placeHabitation.png"; break;
     }
 
     QPixmap pix(imgPath);

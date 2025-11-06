@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     auto* scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
-    auto* h1 = new Hexagone( 0,  0,  0, TypeHex::Habitation);
+    auto* h1 = new Hexagone( 0,  0,  0, TypeHex::PHabitation);
     auto* h2 = new Hexagone(0, -1,  0, TypeHex::Carriere);
     auto* h3 = new Hexagone( -1, 1 , 0, TypeHex::Carriere);
     auto* h4 = new Hexagone( 1, 0, 0, TypeHex::Carriere);

@@ -31,7 +31,7 @@ private:
     explicit Plateau(); // Les plateaux sont définis par le constructeur de Joueur
 
 public:
-    bool verifierPlacementTuile(Position &p) const;
+    bool verifierPlacementTuile(Position& p, const Tuile& t) const;
     int placerTuile(Tuile &t, Position &p);
     void updateVoisins();
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; }

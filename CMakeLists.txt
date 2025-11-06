@@ -26,18 +26,12 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 # ============================================================
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_BINARY_DIR}   # ui_*, moc_*
-)
-
 # ============================================================
 # Récupération des fichiers
 # ============================================================
 file(GLOB_RECURSE LO21_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE LO21_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 file(GLOB_RECURSE LO21_FORMS   "${CMAKE_SOURCE_DIR}/ui/*.ui")
-
 
 # ============================================================
 # Définition de l’exécutable
@@ -46,6 +40,13 @@ add_executable(lo21
     ${LO21_SOURCES}
     ${LO21_HEADERS}
     ${LO21_FORMS}
+    resources.qrc           # <-- ajoute ton fichier de ressources ici
+)
+
+# Inclure les headers du projet
+target_include_directories(lo21 PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_BINARY_DIR}   # ui_*, moc_*
 )
 
 # ============================================================

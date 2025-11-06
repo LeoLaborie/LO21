@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/Carriere.png</file>
+        <file>img/Carserne.png</file>
+        <file>img/Habitation.png</file>
+        <file>img/Jardin.png</file>
+        <file>img/Marche.png</file>
+        <file>img/PlaceCarserne.png</file>
+        <file>img/PlaceHabitation.png</file>
+        <file>img/PlaceJardin.png</file>
+        <file>img/PlaceMarche.png</file>
+        <file>img/PlaceTemple.png</file>
+        <file>img/Temple.png</file>
+    </qresource>
+</RCC>

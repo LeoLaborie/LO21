@@ -53,57 +53,67 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(Position &p) const
+bool Plateau::verifierPlacementTuile(Position &p, const Tuile& t) const
 {
-    std::vector<Tuile *> tuiles_en_dessous;
+    // Récupère les deux offsets (dq,dr) de la tuile selon son orientation courante
+    int dq1, dr1, dq2, dr2;
+    t.getOffsets(dq1, dr1, dq2, dr2);
+
+    struct Coord { int x, y, z; };
+    Coord coords[3] = {
+        { p.x,             p.y,             p.z }, // ancre (hex0)
+        { p.x + dq1,       p.y + dr1,       p.z }, // hex1
+        { p.x + dq2,       p.y + dr2,       p.z }  // hex2
+    };
+
+    std::vector<Tuile*> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
-    int supports_par_hex = 0; // nouveau : pour vérifier qu’on pose bien sur 3 hexagones en hauteur
+    int  supports_par_hex = 0;
 
-    int dx[6] = {+1, +1, 0, -1, -1, 0};
-    int dy[6] = {0, -1, -1, 0, +1, +1};
+    // Voisinage axial (q,r)
+    int dx[6] = { +1, +1,  0, -1, -1,  0 };
+    int dy[6] = {  0, -1, -1,  0, +1, +1 };
 
-    struct coord
-    {
-        int x;
-        int y;
-        int z;
-    };
-    coord coords[3];
-    coords[0] = {p.x, p.y, p.z};         // hex0
-    coords[1] = {p.x - 1, p.y + 1, p.z}; // hex1
-    coords[2] = {p.x, p.y + 1, p.z};     // hex2
-
+    // Parcourt les 3 hex de la tuile à placer
     for (const auto &h : coords)
     {
         bool supportTrouve = false;
 
-        if (h.z > 0)
-            surElever = true;
+        if (h.z > 0) surElever = true;
 
         for (auto *hex_plateau : listeHexagones)
         {
-            // on vérifie si deux tuiles ne se superposent pas
-            if (h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && h.z == hex_plateau->getZ())
+            // 1) Interdiction de superposer au même niveau
+            if (h.x == hex_plateau->getX() &&
+                h.y == hex_plateau->getY() &&
+                h.z == hex_plateau->getZ())
+            {
                 return false;
+            }
 
-            // on récupère les tuiles en dessous si on est à un niveau supérieur à 0
-            // et on garde que les tuiles différentes
-            if (h.z > 0 && h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && (h.z - hex_plateau->getZ()) == 1)
+            // 2) Si on est en hauteur, chaque hex doit avoir un support direct (z-1)
+            if (h.z > 0 &&
+                h.x == hex_plateau->getX() &&
+                h.y == hex_plateau->getY() &&
+                (h.z - hex_plateau->getZ()) == 1)
             {
                 supportTrouve = true;
-                ++supports_par_hex; // on compte le support pour cet hexagone
+                ++supports_par_hex;
+
                 Tuile *parent = hex_plateau->getParent();
                 if (ContientPas(tuiles_en_dessous, parent))
                     tuiles_en_dessous.push_back(parent);
             }
 
-            // on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)
+            // 3) Au sol (z==0) : il faut toucher par le bord au moins une tuile au sol
             if (h.z == 0)
             {
                 for (int i = 0; i < 6; ++i)
                 {
-                    if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0)
+                    if (h.x + dx[i] == hex_plateau->getX() &&
+                        h.y + dy[i] == hex_plateau->getY() &&
+                        hex_plateau->getZ() == 0)
                     {
                         toucheParBord = true;
                         break;
@@ -113,22 +123,19 @@ bool Plateau::verifierPlacementTuile(Position &p) const
         }
 
         if (h.z > 0 && !supportTrouve)
-            return false; // chaque hex doit avoir son support direct
+            return false; // chaque hex posé en hauteur doit avoir son support direct
     }
 
     if (surElever)
     {
-        // on pose bien sur 3 hexagones (un support par hex) ET sur au moins 2 tuiles différentes
-        if (supports_par_hex != 3)
-            return false;
-        if (tuiles_en_dessous.size() < 2)
-            return false;
+        // En hauteur : exactement 3 supports (un par hex) et au moins 2 tuiles différentes en dessous
+        if (supports_par_hex != 3) return false;
+        if (tuiles_en_dessous.size() < 2) return false;
     }
     else
     {
-        // au sol, il faut toucher par le bord
-        if (!toucheParBord)
-            return false;
+        // Au sol : doit toucher le plateau par un bord
+        if (!toucheParBord) return false;
     }
 
     return true;
@@ -138,7 +145,8 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 {
     int res = 0;
 
-    if (!verifierPlacementTuile(p))
+    // Vérification avec l’orientation courante de la tuile
+    if (!verifierPlacementTuile(p, t))
     {
         texte_couleur(ROUGE);
         texte_gras_on();
@@ -147,25 +155,27 @@ int Plateau::placerTuile(Tuile &t, Position &p)
         return -1;
     }
 
-    // positionner la tuile (3 hexagones)
+    // Offsets courants (dq,dr) pour hex1 et hex2 autour de l’ancre
+    int dq1, dr1, dq2, dr2;
+    t.getOffsets(dq1, dr1, dq2, dr2);
+
+    // Positionner physiquement la tuile (les 3 hex)
     auto *h0 = t.getHexagones()[0];
     auto *h1 = t.getHexagones()[1];
     auto *h2 = t.getHexagones()[2];
 
-    h0->setCoord(p.x, p.y, p.z);
-    h1->setCoord(p.x - 1, p.y + 1, p.z);
-    h2->setCoord(p.x, p.y + 1, p.z);
+    h0->setCoord(p.x,           p.y,           p.z);
+    h1->setCoord(p.x + dq1,     p.y + dr1,     p.z);
+    h2->setCoord(p.x + dq2,     p.y + dr2,     p.z);
 
-    // Insérer la tuile dans le plateau
+    // Insérer la tuile et ses hex dans le plateau
     listeTuiles.push_back(t);
     for (auto *h : t.getHexagones())
-    {
         listeHexagones.push_back(h);
-    }
 
     updateVoisins();
 
-    // Si on est en hauteur (z > 0), on recouvre ce qui est juste en dessous (z-1)
+    // Si on pose en hauteur, on recouvre ce qui est juste en dessous (z-1)
     if (p.z > 0)
     {
         auto Recouvrir = [&](int x, int y)
@@ -178,20 +188,21 @@ int Plateau::placerTuile(Tuile &t, Position &p)
                     {
                         h->setEstRecouvert();
                         if (h->getType() == TypeHex::Carriere)
-                            ++res; // si on trouve une carrière en dessous, on signifie qu'on a recouvert une carrière en ajoutant 1 à la valeur de retour
+                            ++res; // Carrière recouverte → +1
                     }
                     break;
                 }
             }
         };
 
-        Recouvrir(p.x, p.y);
-        Recouvrir(p.x - 1, p.y + 1);
-        Recouvrir(p.x, p.y + 1);
+        Recouvrir(p.x,           p.y);
+        Recouvrir(p.x + dq1,     p.y + dr1);
+        Recouvrir(p.x + dq2,     p.y + dr2);
     }
 
     return res;
 }
+
 
 int Plateau::calculerPoints() const
 {
@@ -219,10 +230,10 @@ int Plateau::calculerPointsCaserne() const
                 nbCaserne += hex->getZ(); // si il a 5 voisins ou moins p'est qu'il est sur un bord
 
             if  (varianteCaserne && hex->getVoisins().size() <= 3)
-                nbCaserne += hex->getZ(); // si la variante est activée et qu'il y a moins de 3 voisins ou moins, on doubles le nb de casernes  
+                nbCaserne += hex->getZ(); // si la variante est activée et qu'il y a moins de 3 voisins ou moins, on doubles le nb de casernes
         }
         if(hex->getType() == TypeHex::PCaserne)
-                placeCaserne += hex->getMultiplicateur();
+            placeCaserne += hex->getMultiplicateur();
     }
 
     return placeCaserne * nbCaserne;
@@ -249,10 +260,10 @@ int Plateau::calculerPointsTemple() const
 
             if(varianteTemple && hex->getZ() > 1)
                 nbTemple += hex->getZ(); // On double les points des temples si ils sont à une hauteur plus hate que 1
-            
+
         }
         if(hex->getType() == TypeHex::PTemple)
-                placeTemple += hex->getMultiplicateur();
+            placeTemple += hex->getMultiplicateur();
     }
 
     return placeTemple * nbTemple;
@@ -286,7 +297,7 @@ bool Plateau::conditionVarianteJardin (const Hexagone* q) const{
             }
         }
     }
-    
+
 
 
     return conditionRemplie;
@@ -309,14 +320,14 @@ int Plateau::calculerPointsJardin() const{
             continue;
 
         if(hex->getType() == TypeHex::Jardin){
-                nbJardin += hex->getZ();
-            
+            nbJardin += hex->getZ();
+
             if(varianteJardin && Plateau::conditionVarianteJardin(hex))
                 nbJardin += hex->getZ();
         }
 
         if(hex->getType() == TypeHex::PJardin)
-                placeJardin += hex->getMultiplicateur();
+            placeJardin += hex->getMultiplicateur();
     }
 
     return placeJardin * nbJardin;
@@ -332,7 +343,7 @@ int Plateau::calculerPointsMarche() const
 
     int placeMarche = 0;
     int nbMarche = 0;
-  
+
     bool voisinMarche = 0;
 
     for (const Hexagone *hex : listeHexagones)
@@ -341,30 +352,30 @@ int Plateau::calculerPointsMarche() const
             continue;
 
         if(hex->getType() == TypeHex::Marche){
-                voisinMarche = 0;
-                for (const auto &voisin : hex->getVoisins())
+            voisinMarche = 0;
+            for (const auto &voisin : hex->getVoisins())
+            {
+                if(voisin->getType() == TypeHex::Marche)
                 {
-                    if(voisin->getType() == TypeHex::Marche)
-                        {
-                            voisinMarche = 1;
-                        }
-                    }
-                    if(!voisinMarche){
-                        nbMarche += hex->getZ();
-
-                        if (varianteMarche){
-
-                            for(const auto &voisin: hex->getVoisins()){
-
-                                if (voisin->getType() == TypeHex::PMarche){
-                                    nbMarche += hex->getZ();
-                                }
-                            }
-                        }
-                    }
+                    voisinMarche = 1;
+                }
             }
+            if(!voisinMarche){
+                nbMarche += hex->getZ();
+
+                if (varianteMarche){
+
+                    for(const auto &voisin: hex->getVoisins()){
+
+                        if (voisin->getType() == TypeHex::PMarche){
+                            nbMarche += hex->getZ();
+                        }
+                    }
+                }
+            }
+        }
         if (hex->getType() == TypeHex::PMarche){
-                placeMarche += hex->getMultiplicateur();
+            placeMarche += hex->getMultiplicateur();
         }
     }
 
@@ -394,8 +405,8 @@ int Plateau::calculerPointsHabitation() const
             }
         }
         if (hex->getType() == TypeHex::PHabitation){
-                placeHabitation += hex->getMultiplicateur();
-            
+            placeHabitation += hex->getMultiplicateur();
+
         }
     }
 
@@ -427,14 +438,14 @@ int Plateau::calculerPointsHabitation() const
                 {
 
                     if (voisin->getType() == TypeHex::Habitation && ContientPas(habVisites, voisin))
-                        {
-                            // On vérifie que le quartier voisin n'a pas déjà été visité et que p'est bien une habitation
+                    {
+                        // On vérifie que le quartier voisin n'a pas déjà été visité et que p'est bien une habitation
 
-                            voisinsHabitation.push_back(voisin);
-                            groupeHabitation.push_back(voisin);
-                            habVisites.push_back(voisin);
-                        }
-                    
+                        voisinsHabitation.push_back(voisin);
+                        groupeHabitation.push_back(voisin);
+                        habVisites.push_back(voisin);
+                    }
+
                 }
             }
 
