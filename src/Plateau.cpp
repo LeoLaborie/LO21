@@ -1,4 +1,5 @@
 #include "Plateau.h"
+#include <algorithm>
 
 Plateau::Plateau()
 {
@@ -70,19 +71,11 @@ bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
         int z;
     };
 
-    coord coords[3];
-    coords[0] = {p.x, p.y, p.z};         // hex0
-
-    if (t.estRetournee())
-    {
-        coords[1] = {p.x, p.y - 1, p.z}; // hex1
-        coords[2] = {p.x + 1, p.y - 1, p.z}; // hex2
-    }
-    else
-    {
-        coords[1] = {p.x - 1, p.y + 1, p.z}; // hex1
-        coords[2] = {p.x, p.y + 1, p.z};     // hex2
-    }
+    // coordonnées des hex à tester pour la tuile posée
+    std::vector<coord> coords;
+    coords.reserve(t.getHexagones().size());
+    for (const auto &o : t.getOffsets())
+        coords.push_back({p.x + o.q, p.y + o.r, p.z});
 
     for (const auto &h : coords)
     {
@@ -129,7 +122,7 @@ bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
     if (surElever)
     {
         // on pose bien sur 3 hexagones (un support par hex) ET sur au moins 2 tuiles différentes
-        if (supports_par_hex != 3)
+        if (supports_par_hex != (int)coords.size())
             return false;
         if (tuiles_en_dessous.size() < 2)
             return false;
@@ -158,21 +151,11 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     }
 
     // positionner la tuile (3 hexagones)
-    auto *h0 = t.getHexagones()[0];
-    auto *h1 = t.getHexagones()[1];
-    auto *h2 = t.getHexagones()[2];
-
-    h0->setCoord(p.x, p.y, p.z);
-
-    if (t.estRetournee())
+    for (size_t i = 0; i < t.getHexagones().size(); ++i)
     {
-        h1->setCoord(p.x, p.y - 1, p.z);
-        h2->setCoord(p.x + 1, p.y - 1, p.z);
-    }
-    else
-    {
-        h1->setCoord(p.x - 1, p.y + 1, p.z);
-        h2->setCoord(p.x, p.y + 1, p.z);
+        auto *h = t.getHexagones()[i];
+        const auto &o = t.getOffsets()[i];
+        h->setCoord(p.x + o.q, p.y + o.r, p.z);
     }
 
     // Insérer la tuile dans le plateau
@@ -204,9 +187,8 @@ int Plateau::placerTuile(Tuile &t, Position &p)
             }
         };
 
-        Recouvrir(p.x, p.y);
-        Recouvrir(p.x - 1, p.y + 1);
-        Recouvrir(p.x, p.y + 1);
+        for (const auto &o : t.getOffsets())
+            Recouvrir(p.x + o.q, p.y + o.r);
     }
 
     return res;
