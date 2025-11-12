@@ -1,4 +1,3 @@
-// main.cpp
 #include <iostream>
 #include "Partie.h"
 #include "Position.h"
@@ -47,6 +46,7 @@ int main()
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
         std::cout << "Il reste " << partie.getNbrPiles() << " piles de tuiles.\n\n";
+
         // Tant qu'il reste plus d'une tuile dans le chantier
         while (partie.getChantier().getTaille() > 1)
         {
@@ -80,7 +80,7 @@ int main()
                     texte_gras_on();
                     std::cout << "ID invalide. Veuillez réessayer.\n";
                     texte_reset();
-                    idTuile = -1; // Réinitialiser pour redemander
+                    idTuile = -1;
                 }
                 else if (idTuile > joueurCourant.getNbrPierres())
                 {
@@ -88,7 +88,7 @@ int main()
                     texte_gras_on();
                     std::cout << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
                     texte_reset();
-                    idTuile = -1; // Réinitialiser pour redemander
+                    idTuile = -1;
                 }
             }
 
@@ -97,58 +97,76 @@ int main()
             if (tuilePiochee)
             {
                 std::cout << "\nTuile piochée :\n\n";
-                tuilePiochee->afficher(true);
+                std::cout << *tuilePiochee; // operator<< respecte les offsets
             }
             else
             {
                 std::cout << "Erreur lors de la pioche de la tuile.\n";
             }
 
-            // Choix de la position pour placer la tuile
+            // --- On peut pivoter autant de fois qu'on veut AVANT de placer ---
+            if (tuilePiochee)
+            {
+                bool phaseRotation = true;
+                while (phaseRotation)
+                {
+                    std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile : ";
+                    char rep;
+                    std::cin >> rep;
+                    if (rep == 'o' || rep == 'O')
+                    {
+                        tuilePiochee->pivoterTuile();
+                        std::cout << "\nTuile après pivot :\n\n";
+                        std::cout << *tuilePiochee;
+                    }
+                    else if (rep == 'a' || rep == 'A')
+                    {
+                        std::cout << "\nAperçu tuile :\n\n";
+                        std::cout << *tuilePiochee;
+                    }
+                    else if (rep == 'p' || rep == 'P')
+                    {
+                        phaseRotation = false; // on passe à la phase de placement
+                    }
+                }
+            }
+
+            // Choix de la position pour placer la tuile (plus de rotation ici)
             int x, y, z;
             bool placementTuile = false;
 
             while (!placementTuile)
             {
-                bool modifTuile = true;
-
-                while (modifTuile)
-                {
-                    std::cout << "\nPivoter la tuile ? [o/n] : ";
-                    char reponse;
-                    std::cin >> reponse;
-                    if (reponse == 'o' || reponse == 'O')
-                    {
-                        tuilePiochee->pivoterTuile();
-                        std::cout << "\n--------------------------------\n";
-                        std::cout << "\nTuile après pivot :\n\n";
-                        tuilePiochee->afficher(true);
-                    }
-                    else if (reponse == 'n' || reponse == 'N')
-                    {
-                        modifTuile = false;
-                    }
-                }
-
                 std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
                 std::cin >> x >> y >> z;
                 Position pos{x, y, z};
-                placementTuile = joueurCourant.placerTuile(*tuilePiochee, pos);
-            }
 
-            if (placementTuile)
-            {
-                texte_couleur(JAUNE);
-                texte_gras_on();
-                std::cout << "\n Tuile placée avec succès.\n";
-                texte_reset();
-            }
-            else
-            {
-                texte_couleur(ROUGE);
-                texte_gras_on();
-                std::cout << "\n La tuile n'a pas été placée.\n";
-                texte_reset();
+                // Vérification avant tentative de placement
+                if (!joueurCourant.getPlateau().verifierPlacementTuile(pos, *tuilePiochee))
+                {
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
+                    std::cout << "Placement invalide : au sol il faut toucher un bord ; en hauteur, chaque hex doit être supporté (sur au moins 2 tuiles différentes).\n";
+                    texte_reset();
+                    continue;
+                }
+
+                placementTuile = joueurCourant.placerTuile(*tuilePiochee, pos);
+
+                if (placementTuile)
+                {
+                    texte_couleur(JAUNE);
+                    texte_gras_on();
+                    std::cout << "\n Tuile placée avec succès.\n";
+                    texte_reset();
+                }
+                else
+                {
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
+                    std::cout << "\n La tuile n'a pas été placée.\n";
+                    texte_reset();
+                }
             }
 
             system("sleep 2");

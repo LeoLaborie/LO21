@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <iostream>
+#include <map>
+#include <algorithm>
 #include "Hexagone.h"
 
 struct OffsetQR {
@@ -25,7 +27,6 @@ public:
     Tuile() = default;
     Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3);
     Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4);
-    void creerTuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3);
 
     const std::vector<Hexagone*>& getHexagones() const { return hex; }
     const std::vector<OffsetQR>&  getOffsets()   const { return offsets; }
@@ -40,13 +41,21 @@ public:
             for (auto& o : offsets) rotation60deg(o);
     }
 
-    void afficher(bool court = false) const {
-        if (court) {
-            for (const auto* h : hex) { h->afficher(true); std::cout << ' '; }
-            std::cout << "\n";
-        } else {
-            for (const auto* h : hex) h->afficher();
+    friend std::ostream& operator<<(std::ostream& os, const Tuile& t) {
+        if (t.hex.empty()) return os << "(tuile vide)\n";
+        std::map<int, std::vector<size_t>> rows;
+        for (size_t i = 0; i < t.offsets.size(); ++i)
+            rows[t.offsets[i].r].push_back(i);
+        for (auto& [r, idxs] : rows) {
+            std::sort(idxs.begin(), idxs.end(),
+                      [&](size_t a, size_t b){ return t.offsets[a].q < t.offsets[b].q; });
+            for (size_t k = 0; k < idxs.size(); ++k) {
+                t.hex[idxs[k]]->afficher(true);
+                if (k + 1 < idxs.size()) os << ' ';
+            }
+            os << '\n';
         }
+        return os;
     }
 };
 

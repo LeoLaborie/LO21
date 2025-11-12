@@ -25,7 +25,7 @@ public:
             texte_gras_on();
             std::cout << "\n\t ---- " << i << " ----\n\n";
             texte_reset();
-            tuilesChantier[i].afficher(true);
+            std::cout<<tuilesChantier[i];
         }
         std::cout << std::endl;
     }

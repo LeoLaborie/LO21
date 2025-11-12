@@ -49,8 +49,7 @@ public:
         std::cout << " ----\n";
         for (const auto &t : listeTuiles)
         {
-            t.afficher();
-            std::cout << " ----\n";
+            std::cout << t<<" ----\n";
         }
     }
 };
