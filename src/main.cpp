@@ -39,7 +39,6 @@ int main()
     }
 
     // Préparation du paquet de tuiles
-    //  --> Génération de toutes les tuiles de la partie
     partie.genererTuilesParties(choixVariante == 2);
 
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
@@ -131,7 +130,7 @@ int main()
                 }
             }
 
-            // Choix de la position pour placer la tuile (plus de rotation ici)
+            // Choix de la position pour placer la tuile 
             int x, y, z;
             bool placementTuile = false;
 
