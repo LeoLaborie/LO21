@@ -43,15 +43,14 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const Tuile& t) {
         if (t.hex.empty()) return os << "(tuile vide)\n";
-        std::map<int, std::vector<size_t>> rows;
+        std::map<int, std::vector<size_t>> lignes;
         for (size_t i = 0; i < t.offsets.size(); ++i)
-            rows[t.offsets[i].r].push_back(i);
-        for (auto& [r, idxs] : rows) {
-            std::sort(idxs.begin(), idxs.end(),
-                      [&](size_t a, size_t b){ return t.offsets[a].q < t.offsets[b].q; });
-            for (size_t k = 0; k < idxs.size(); ++k) {
-                t.hex[idxs[k]]->afficher(true);
-                if (k + 1 < idxs.size()) os << ' ';
+            lignes[t.offsets[i].r].push_back(i);
+        for (auto& [r, id] : lignes) {
+            std::sort(id.begin(), id.end(),[&](size_t a, size_t b){ return t.offsets[a].q < t.offsets[b].q; });
+            for (size_t k = 0; k < id.size(); ++k) {
+                t.hex[id[k]]->afficher(true);
+                if (k + 1 < id.size()) os << ' ';
             }
             os << '\n';
         }
