@@ -1,4 +1,5 @@
 #include "Plateau.h"
+#include <algorithm>
 
 Plateau::Plateau()
 {
@@ -18,6 +19,10 @@ Plateau::Plateau()
 
 void Plateau::updateVoisins()
 {
+    /*
+    *Met à jour les voisins d'une tuile
+    *@return void
+    */
     // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
     // Parcourir toutes les tuiles du plateau
     for (auto *&hexagone1 : listeHexagones)
@@ -53,12 +58,16 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
+bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
 {
+    /*
+    *Vérifie si une position est correct en fonction d'une tuile (surtout de sa rotation) et de sa nouvelle position théorique
+    *@return un bouléen sur la validité de la position passé en paramètre
+    */
     std::vector<Tuile *> tuiles_en_dessous;
     bool surElever = false;
-    bool toucheParBord = false;
-    int supports_par_hex = 0; // nouveau : pour vérifier qu’on pose bien sur 3 hexagones en hauteur
+    bool touchePar2Bord = false;
+    int supports_par_hex = 0; //  pour vérifier qu’on pose bien sur 3 hexagones en hauteur
 
     int dx[6] = {+1, +1, 0, -1, -1, 0};
     int dy[6] = {0, -1, -1, 0, +1, +1};
@@ -70,23 +79,18 @@ bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
         int z;
     };
 
-    coord coords[3];
-    coords[0] = {p.x, p.y, p.z};         // hex0
+    // coordonnées des hex à tester pour la tuile posée
+    std::vector<coord> coords;
+    coords.reserve(t.getHexagones().size());
+    for (const auto &o : t.getOffsets())
+        coords.push_back({p.x + o.q, p.y + o.r, p.z});
 
-    if (t.estRetournee())
-    {
-        coords[1] = {p.x, p.y - 1, p.z}; // hex1
-        coords[2] = {p.x + 1, p.y - 1, p.z}; // hex2
-    }
-    else
-    {
-        coords[1] = {p.x - 1, p.y + 1, p.z}; // hex1
-        coords[2] = {p.x, p.y + 1, p.z};     // hex2
-    }
+    int nbHexTouchantBord = 0; // nombre d'hexagones de la tuile qui touchent au moins un bord au niveau 0
 
     for (const auto &h : coords)
     {
         bool supportTrouve = false;
+        bool hexDejaComptePourBord = false; // pour ne compter chaque hex qu'une seule fois
 
         if (h.z > 0)
             surElever = true;
@@ -109,13 +113,16 @@ bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
             }
 
             // on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)
-            if (h.z == 0)
+            if (h.z == 0 && !hexDejaComptePourBord && hex_plateau->getZ() == 0)
             {
                 for (int i = 0; i < 6; ++i)
                 {
-                    if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0)
+                    if (h.x + dx[i] == hex_plateau->getX() &&
+                        h.y + dy[i] == hex_plateau->getY())
                     {
-                        toucheParBord = true;
+                        // cet hex de la tuile touche au moins un hex du plateau
+                        ++nbHexTouchantBord;
+                        hexDejaComptePourBord = true; // on ne le recomptera plus
                         break;
                     }
                 }
@@ -129,23 +136,101 @@ bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
     if (surElever)
     {
         // on pose bien sur 3 hexagones (un support par hex) ET sur au moins 2 tuiles différentes
-        if (supports_par_hex != 3)
+        if (supports_par_hex != (int)coords.size())
             return false;
         if (tuiles_en_dessous.size() < 2)
             return false;
     }
     else
     {
-        // au sol, il faut toucher par le bord
-        if (!toucheParBord)
+        // au sol, il faut toucher par 2 bords 
+        touchePar2Bord = (nbHexTouchantBord >= 2);
+        if (!touchePar2Bord)
             return false;
     }
 
     return true;
 }
 
+std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
+    /*
+    *Calcul toutes les positions légales en fonction d'une tuile (sa rotation)
+    *@return un vector contenant toutes les positions corrects
+    */
+    std::vector<Position> listeValide;
+    if (listeHexagones.empty()) return listeValide;
+
+
+    //on récupere le min et le max
+    int minX = listeHexagones[0]->getX();
+    int maxX = listeHexagones[0]->getX();
+    int minY = listeHexagones[0]->getY();
+    int maxY = listeHexagones[0]->getY();
+    int maxZ = listeHexagones[0]->getZ();
+
+    for (const auto *h : listeHexagones)
+    {
+        minX = std::min(minX, h->getX());
+        maxX = std::max(maxX, h->getX());
+        minY = std::min(minY, h->getY());
+        maxY = std::max(maxY, h->getY());
+        maxZ = std::max(maxZ, h->getZ());
+    }
+    int marge = 3;
+
+    //on se laisse de la marge >1 pour ne pas oublier des positions légales si on prend que 1
+    int minXTest = minX - marge;
+    int maxXTest = maxX + marge;
+    int minYTest = minY - marge;
+    int maxYTest = maxY + marge;
+    int minZTest = 0;
+    int maxZTest = maxZ + 1; 
+
+
+    //on parcours tt les positions possibles peu d'hexagones donc o(n³) ne pose pas de problème
+    for (int z = minZTest; z <= maxZTest; ++z)
+    {
+        for (int x = minXTest; x <= maxXTest; ++x)
+        {
+            for (int y = minYTest; y <= maxYTest; ++y)
+            {
+                Position p{x, y, z};
+                if (verifierPlacementTuile(p, t))
+                {
+                    listeValide.push_back(p);
+                }
+            }
+        }
+    }
+
+    return listeValide;
+}
+
+void Plateau::afficherPositionsLegales(const Tuile &t) const
+{
+    /*
+    *affiche toutes les positions légales possible pour une certaine tuile (surout de sa position en fonction des rotations)
+    *@return void
+    */
+    auto positions = getPositionsLegales(t);
+
+    std::cout << "Positions legales pour cette tuile (" 
+              << positions.size() << " possibilités) :" << std::endl;
+
+    for (const auto &p : positions)
+    {
+        std::cout << "  - (" << p.x << ", " << p.y << ", " << p.z << ")\n";
+    }
+}
+
+
 int Plateau::placerTuile(Tuile &t, Position &p)
 {
+    /*
+    *Place une tuile dans le plateau si son placement est correct
+    *@return Le nombre de carrière recouvert et -1 si placement incorrect 
+    */
+
     int res = 0;
 
     if (!verifierPlacementTuile(p, t))
@@ -158,21 +243,11 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     }
 
     // positionner la tuile (3 hexagones)
-    auto *h0 = t.getHexagones()[0];
-    auto *h1 = t.getHexagones()[1];
-    auto *h2 = t.getHexagones()[2];
-
-    h0->setCoord(p.x, p.y, p.z);
-
-    if (t.estRetournee())
+    for (size_t i = 0; i < t.getHexagones().size(); ++i)
     {
-        h1->setCoord(p.x, p.y - 1, p.z);
-        h2->setCoord(p.x + 1, p.y - 1, p.z);
-    }
-    else
-    {
-        h1->setCoord(p.x - 1, p.y + 1, p.z);
-        h2->setCoord(p.x, p.y + 1, p.z);
+        auto *h = t.getHexagones()[i];
+        const auto &o = t.getOffsets()[i];
+        h->setCoord(p.x + o.q, p.y + o.r, p.z);
     }
 
     // Insérer la tuile dans le plateau
@@ -204,9 +279,8 @@ int Plateau::placerTuile(Tuile &t, Position &p)
             }
         };
 
-        Recouvrir(p.x, p.y);
-        Recouvrir(p.x - 1, p.y + 1);
-        Recouvrir(p.x, p.y + 1);
+        for (const auto &o : t.getOffsets())
+            Recouvrir(p.x + o.q, p.y + o.r);
     }
 
     return res;
@@ -214,6 +288,10 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 
 int Plateau::calculerPoints() const
 {
+    /*
+    *Calcul le nombre de points total
+    *@return Le nombre total de points total
+    */
     return calculerPointsCaserne() + calculerPointsHabitation() + calculerPointsJardin() + calculerPointsMarche() + calculerPointsTemple();
 }
 
@@ -475,3 +553,18 @@ int Plateau::calculerPointsHabitation() const
 
     return placeHabitation * nbHabitation;
 }
+
+std::ostream& operator<<(std::ostream& os, const Plateau& p) 
+    {
+        /*
+        *Surchage l'operator << pour utiliser std::cout
+        *@return une référence ostream
+        */
+        os<< "\nPlateau contient " << p.listeTuiles.size() << " tuiles :\n";
+        os<< " ----\n";
+        for (const auto &t : p.listeTuiles)
+        {
+            std::cout << t<<" ----\n";
+        }
+        return os;
+    };

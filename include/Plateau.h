@@ -31,7 +31,7 @@ private:
     explicit Plateau(); // Les plateaux sont définis par le constructeur de Joueur
 
 public:
-    bool verifierPlacementTuile(Position &p, Tuile &t) const;
+    bool verifierPlacementTuile(const Position &p,const Tuile &t) const;
     int placerTuile(Tuile &t, Position &p);
     void updateVoisins();
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; }
@@ -43,16 +43,10 @@ public:
     bool conditionVarianteJardin(const Hexagone* q) const;
     int calculerPointsTemple() const;
     int calculerPointsCaserne() const;
-    void afficher() const
-    {
-        std::cout << "\nPlateau contient " << listeTuiles.size() << " tuiles :\n";
-        std::cout << " ----\n";
-        for (const auto &t : listeTuiles)
-        {
-            t.afficher();
-            std::cout << " ----\n";
-        }
-    }
-};
+    std::vector<Position>getPositionsLegales(const Tuile &t) const;
+    friend std::ostream& operator<<(std::ostream& os, const Plateau& p) ;
+    void afficherPositionsLegales(const Tuile &t) const;
 
+    
+};
 #endif

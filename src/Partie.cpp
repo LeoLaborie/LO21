@@ -115,8 +115,7 @@ void Partie::genererTuilesParties(bool fullTuiles)
                 Hexagone *h = creerHexagoneDepuisType(type, tuile, &marcheDejaPresent);
                 hexas.push_back(h);
             }
-
-            tuile.creerTuile(hexas[0], hexas[1], hexas[2]);
+            tuile= Tuile(hexas[0], hexas[1], hexas[2]);
             pile.push_back(tuile);
         }
         piles.push_back(pile);
@@ -135,7 +134,7 @@ void Partie::genererTuilesParties(bool fullTuiles)
         hexas.push_back(h);
     }
 
-    tuileBonus.creerTuile(hexas[0], hexas[1], hexas[2]);
+    tuileBonus=Tuile(hexas[0], hexas[1], hexas[2]);
     chantier.ajouterTuile(tuileBonus); // ajouté directement dans le chantier
 
     // Vérification : le stock doit être vide

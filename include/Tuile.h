@@ -3,71 +3,58 @@
 
 #include <vector>
 #include <iostream>
+#include <map>
+#include <algorithm>
 #include "Hexagone.h"
 
-class Tuile
-{
+struct OffsetQR {
+    int q;
+    int r;
+};
+
+inline void rotation60deg(OffsetQR& o) {
+    int q = o.q, r = o.r;
+    o.q = -r;
+    o.r = q + r;
+}
+
+class Tuile {
 private:
-    std::vector<Hexagone *> hex;
-    bool flip = false;
+    std::vector<Hexagone*> hex;
+    std::vector<OffsetQR> offsets;
 
 public:
     Tuile() = default;
-    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
-    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3, Hexagone *hex4);
-    void creerTuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
-    const std::vector<Hexagone *> &getHexagones() const { return hex; }
+    Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3);
+    Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4);
 
-    void pivoterTuile()
-    {
-        if (this->estRetournee())
-        {
-            Hexagone *tmp = hex[0];
-            hex[0] = hex[1];
-            hex[1] = tmp;
-        }
-        else
-        {
-            Hexagone *tmp = hex[0];
-            hex[0] = hex[2];
-            hex[2] = tmp;
-        }
-        flip = !flip;
+    const std::vector<Hexagone*>& getHexagones() const { return hex; }
+    const std::vector<OffsetQR>&  getOffsets()   const { return offsets; }
+
+    void pivoterTuile() {
+        for (auto& o : offsets) rotation60deg(o);
     }
 
-    bool estRetournee() const { return flip; }
+    void pivoterTuile(int k) {
+        k %= 6;
+        for (int i = 0; i < k; ++i)
+            for (auto& o : offsets) rotation60deg(o);
+    }
 
-    void afficher(bool court = false) const
-    {
-        if (court)
-        {
-            if (this->estRetournee())
-            {
-                hex[1]->afficher(true);
-                std::cout << " ";
-                hex[2]->afficher(true);
-                std::cout << "\n";
-                std::cout << "\t";
-                hex[0]->afficher(true);
+    friend std::ostream& operator<<(std::ostream& os, const Tuile& t) {
+        if (t.hex.empty()) return os << "(tuile vide)\n";
+        std::map<int, std::vector<size_t>> lignes;
+        for (size_t i = 0; i < t.offsets.size(); ++i)
+            lignes[t.offsets[i].r].push_back(i);
+        for (auto& [r, id] : lignes) {
+            std::sort(id.begin(), id.end(),[&](size_t a, size_t b){ return t.offsets[a].q < t.offsets[b].q; });
+            for (size_t k = 0; k < id.size(); ++k) {
+                t.hex[id[k]]->afficher(true);
+                if (k + 1 < id.size()) os << ' ';
             }
-            else
-            {
-                std::cout << "\t";
-                hex[0]->afficher(true);
-                std::cout << "\n";
-                hex[1]->afficher(true);
-                std::cout << " ";
-                hex[2]->afficher(true);
-            }
-            std::cout << "\n";
+            os << '\n';
         }
-        else
-        {
-            for (const auto &h : hex)
-            {
-                h->afficher();
-            }
-        }
+        return os;
     }
 };
 
