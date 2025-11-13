@@ -49,8 +49,7 @@ public:
         texte_couleur(JAUNE);
         std::cout << nbrPoints;
         texte_reset();
-        std::cout << "\n";
-        plateau.afficher();
+        std::cout << "\n"<<plateau<<std::endl;
     }
 };
 

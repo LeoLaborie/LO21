@@ -54,7 +54,7 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
+bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
 {
     std::vector<Tuile *> tuiles_en_dessous;
     bool surElever = false;
@@ -135,6 +135,55 @@ bool Plateau::verifierPlacementTuile(Position &p, Tuile &t) const
     }
 
     return true;
+}
+std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
+    std::vector<Position> listeValide;
+    if (listeHexagones.empty()) return listeValide;
+
+
+    //on récupere le min et le max
+    int minX = listeHexagones[0]->getX();
+    int maxX = listeHexagones[0]->getX();
+    int minY = listeHexagones[0]->getY();
+    int maxY = listeHexagones[0]->getY();
+    int maxZ = listeHexagones[0]->getZ();
+
+    for (const auto *h : listeHexagones)
+    {
+        minX = std::min(minX, h->getX());
+        maxX = std::max(maxX, h->getX());
+        minY = std::min(minY, h->getY());
+        maxY = std::max(maxY, h->getY());
+        maxZ = std::max(maxZ, h->getZ());
+    }
+    int marge = 3;
+
+    //on se laisse de la marge >1 pour ne pas oublier des positions légales si on prend que 1
+    int minXTest = minX - marge;
+    int maxXTest = maxX + marge;
+    int minYTest = minY - marge;
+    int maxYTest = maxY + marge;
+    int minZTest = 0;
+    int maxZTest = maxZ + 1; 
+
+
+    //on parcours tt les positions possibles peu d'hexagones donc o(n³) ne pose pas de problème
+    for (int z = minZTest; z <= maxZTest; ++z)
+    {
+        for (int x = minXTest; x <= maxXTest; ++x)
+        {
+            for (int y = minYTest; y <= maxYTest; ++y)
+            {
+                Position p{x, y, z};
+                if (verifierPlacementTuile(p, t))
+                {
+                    listeValide.push_back(p);
+                }
+            }
+        }
+    }
+
+    return listeValide;
 }
 
 int Plateau::placerTuile(Tuile &t, Position &p)
@@ -457,3 +506,14 @@ int Plateau::calculerPointsHabitation() const
 
     return placeHabitation * nbHabitation;
 }
+
+std::ostream& operator<<(std::ostream& os, const Plateau& p) 
+    {
+        os<< "\nPlateau contient " << p.listeTuiles.size() << " tuiles :\n";
+        os<< " ----\n";
+        for (const auto &t : p.listeTuiles)
+        {
+            std::cout << t<<" ----\n";
+        }
+        return os;
+    };
