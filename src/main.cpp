@@ -67,7 +67,7 @@ int main()
             std::cout << "Au tour de :\n";
 
             // Affichage du plateau du joueur
-            joueurCourant.afficher();
+            std::cout<<joueurCourant;
 
             // Affichage du chantier
             partie.getChantier().afficher();
