@@ -19,15 +19,16 @@ public:
     const std::vector<Tuile> &getTuiles() const { return tuilesChantier; }
     void retirerTuile(int id);
 
-    void afficher() const {
-        std::cout << "\nChantier contient " << tuilesChantier.size() << " tuiles :\n";
-        for (size_t i = 0; i < tuilesChantier.size(); i++) {
+    friend std::ostream& operator<<(std::ostream& os,const Chantier& c){
+        os << "\nChantier contient " << c.tuilesChantier.size() << " tuiles :\n";
+        for (size_t i = 0; i < c.tuilesChantier.size(); i++) {
             texte_gras_on();
-            std::cout << "\n\t ---- " << i << " ----\n\n";
+            os << "\n\t ---- " << i << " ----\n\n";
             texte_reset();
-            std::cout<<tuilesChantier[i];
+            os<<c.tuilesChantier[i];
         }
-        std::cout << std::endl;
+        os << std::endl;
+        return os;
     }
 };
 

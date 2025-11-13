@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>          
 #include "Partie.h"
 #include "Position.h"
 #include "couleurs_console.h"
@@ -11,19 +12,35 @@ int main()
     texte_gras_on();
     std::cout << "===== DEMARRAGE PARTIE =====\n";
     texte_reset();
-    std::cout << "Nombre de joueurs ? ";
+
     int nbrJoueurs;
-    std::cin >> nbrJoueurs;
+    std::cout << "Nombre de joueurs ? ";
+    while (!(std::cin >> nbrJoueurs) || nbrJoueurs <= 0) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        texte_couleur(ROUGE);
+        texte_gras_on();
+        std::cout << "Entrée invalide. Veuillez saisir un nombre de joueurs positif : ";
+        texte_reset();
+    }
 
     // Préparation des joueurs
-    std::cout << nbrJoueurs<<" joueurs dans la partie.\n\n";
+    std::cout << nbrJoueurs << " joueurs dans la partie.\n\n";
+
     int choixVariante = 0;
     std::cout << "Choisissez une variante de jeu : \n";
     while (choixVariante != 1 && choixVariante != 2){
         std::cout << " 1: Jouer avec les règles de base et n'avoir que 11 piles.\n";
         std::cout << " 2: Jouer avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles.\n";
         std::cout << "Votre choix : ";
-        std::cin >> choixVariante;
+
+        if (!(std::cin >> choixVariante)) {
+            // saisie non entière (ex: 't')
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            choixVariante = 0; // force à rester dans la boucle
+        }
+
         if (choixVariante != 1 && choixVariante != 2){
             texte_couleur(ROUGE);
             texte_gras_on();
@@ -31,12 +48,19 @@ int main()
             texte_reset();
         }
     }
+
     int choixVarianteScore = 0;
     while (choixVarianteScore != 1 && choixVarianteScore != 2){
         std::cout << " 1: Jouer avec les règles de score classique.\n";
-        std::cout << " 2: Jouer avec une variante des règle de score .\n";
+        std::cout << " 2: Jouer avec une variante des règle de score.\n";
         std::cout << "Votre choix : ";
-        std::cin >> choixVarianteScore;
+
+        if (!(std::cin >> choixVarianteScore)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            choixVarianteScore = 0;
+        }
+
         if (choixVarianteScore != 1 && choixVarianteScore != 2){
             texte_couleur(ROUGE);
             texte_gras_on();
@@ -44,9 +68,10 @@ int main()
             texte_reset();
         }
     }
+
     system("clear");
     std::vector<std::string> listePseudo;
-    for (int i=0;i<nbrJoueurs;i++){
+    for (int i = 0; i < nbrJoueurs; i++){
         std::string nomJoueur;
         std::cout << "Nom du joueur " << i+1 << " : ";
         std::cin >> nomJoueur;
@@ -54,7 +79,8 @@ int main()
         listePseudo.push_back(nomJoueur);
     }
     
-    Partie partie(nbrJoueurs,listePseudo,(choixVariante==2),(choixVarianteScore==2));
+    Partie partie(nbrJoueurs, listePseudo, (choixVariante==2), (choixVarianteScore==2));
+    std::cout<<partie.getChantier().getTaille()<<std::endl;
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -67,17 +93,21 @@ int main()
             std::cout << "Au tour de :\n";
 
             // Affichage du plateau du joueur
-            std::cout<<joueurCourant;
+            std::cout << joueurCourant;
 
             // Affichage du chantier
-            partie.getChantier().afficher();
+            std::cout<<partie.getChantier();
 
             // Choix de la tuile à piocher
             int idTuile = -1;
-            while (partie.getChantier().getTaille() <= idTuile || idTuile < 0)
+            while (true)
             {
                 std::cout << "Entrez l'ID de la tuile à piocher : ";
-                std::cin >> idTuile;
+                if (!(std::cin >> idTuile)) {
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    idTuile = -1;
+                }
 
                 if (idTuile < 0 || idTuile >= partie.getChantier().getTaille())
                 {
@@ -86,6 +116,7 @@ int main()
                     std::cout << "ID invalide. Veuillez réessayer.\n";
                     texte_reset();
                     idTuile = -1;
+                    continue;
                 }
                 else if (idTuile > joueurCourant.getNbrPierres())
                 {
@@ -94,7 +125,11 @@ int main()
                     std::cout << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
                     texte_reset();
                     idTuile = -1;
+                    continue;
                 }
+
+                // ici idTuile est valide
+                break;
             }
 
             // Pioche de la tuile
@@ -144,7 +179,16 @@ int main()
             while (!placementTuile)
             {
                 std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
-                std::cin >> x >> y >> z;
+                if (!(std::cin >> x >> y >> z)) {
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
+                    std::cout << "Coordonnées invalides. Veuillez entrer trois entiers.\n";
+                    texte_reset();
+                    continue;
+                }
+
                 Position pos{x, y, z};
 
                 // Vérification avant tentative de placement
@@ -153,7 +197,7 @@ int main()
                     texte_couleur(ROUGE);
                     texte_gras_on();
                     std::cout << "Placement invalide : au sol il faut toucher un bord ; en hauteur, chaque hex doit être supporté (sur au moins 2 tuiles différentes).\n";
-                    texte_reset();
+                    texte_reset();  
                     continue;
                 }
 
@@ -194,14 +238,7 @@ int main()
 
         if (partie.pilesRestantes())
         {
-            // Sortie d'une pile
-            std::vector<Tuile> paquet = partie.retirerPaquet();
-
-            // Ajout des tuiles au chantier
-            for (Tuile tuile : paquet)
-            {
-                partie.getChantier().ajouterTuile(tuile);
-            }
+            partie.addTuileInChantierFromPiles();
         }
 
         texte_reset();
