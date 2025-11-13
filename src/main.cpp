@@ -197,7 +197,7 @@ int main()
                     texte_couleur(ROUGE);
                     texte_gras_on();
                     std::cout << "Placement invalide : au sol il faut toucher un bord ; en hauteur, chaque hex doit être supporté (sur au moins 2 tuiles différentes).\n";
-                    texte_reset();
+                    texte_reset();  
                     continue;
                 }
 
@@ -238,14 +238,7 @@ int main()
 
         if (partie.pilesRestantes())
         {
-            // Sortie d'une pile
-            std::vector<Tuile> paquet = partie.retirerPaquet();
-
-            // Ajout des tuiles au chantier
-            for (Tuile tuile : paquet)
-            {
-                partie.getChantier().ajouterTuile(tuile);
-            }
+            partie.addTuileInChantierFromPiles();
         }
 
         texte_reset();

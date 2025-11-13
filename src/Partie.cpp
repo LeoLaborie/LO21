@@ -26,6 +26,7 @@ Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,bool varianteScore,
     taillepaquet = 1 + nbrJoueurs;
 
     genererTuilesParties(varianteFullTuile);
+
 }
 
 
@@ -64,10 +65,11 @@ void Partie::addTuileInChantierFromPiles()
 {
     std::vector<Tuile> pileActuel = piles.back();
     piles.pop_back();
-    for (int i = 0; i < nbrJoueurs + 1; i++) // nbrJoeurs + 1 = nombre de tuiles dans une pile
+    while (this->chantier.getTaille()<nbrJoueurs+1) // nbrJoeurs + 1 = nombre de tuiles dans une pile
     {
         chantier.ajouterTuile(pileActuel.back());
         pileActuel.pop_back();
+        
     }
 }
 
@@ -149,6 +151,22 @@ void Partie::genererTuilesParties(bool fullTuiles)
         }
         piles.push_back(pile);
     }
+
+    // Ajouter la tuile bonus faite des 3 dernières cartes du stock
+
+    Tuile tuileBonus;
+    std::vector<Hexagone *> hexas;
+    bool marcheDejaPresent = false;
+
+    for (int i = 0; i < 3; i++)
+    {
+        std::string type = tirerCarte(*stock, marcheDejaPresent);
+        Hexagone *h = creerHexagoneDepuisType(type, tuileBonus, &marcheDejaPresent);
+        hexas.push_back(h);
+    }
+
+    tuileBonus=Tuile(hexas[0], hexas[1], hexas[2]);
+
     // Vérification : le stock doit être vide
     for (auto &[type, quantite] : *stock)
     {
