@@ -2,12 +2,12 @@
 
 Joueur::Joueur(bool varianteScore,std::string nom): nbrPierres(0),nbrPoints(0),nom(nom),plateau(varianteScore) {};
 
-int Joueur::getNbrPierres()
+int Joueur::getNbrPierres() const
 {
     return nbrPierres;
 }
 
-int Joueur::getNbrPoints()
+int Joueur::getNbrPoints() const
 {
     return nbrPoints;
 }

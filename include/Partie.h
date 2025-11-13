@@ -25,32 +25,42 @@ private:
 
 
 public:
+    //constructeur et destructeur
     Partie(int nbJouer,std::vector<std::string>& pseudo,bool varianteScore,bool varianteFullTuile);
-    void addTuileInChantierFromPiles();
+    ~Partie() = default;
+
+
+    //getters
     int getNbrJoueurs() const { return nbrJoueurs; }
-
-    // Tour / maître architecte
-    void tourTermine();
-    void setMaitreArchitecte(int i) { maitreArchitecte = i % (nbrJoueurs > 0 ? nbrJoueurs : 1); }
     int getMaitreArchitecte() const { return maitreArchitecte; }
-
-    // Navigation des joueurs
     Joueur &getJoueurMain() { return joueurs.at(mainJoueur); }
     const Joueur &getJoueurMain() const { return joueurs.at(mainJoueur); }
+    int getMainJoueur() const { return mainJoueur; }
+    int getTaillePaquet() const { return taillepaquet; }
+    Chantier& getChantier() { return chantier; }
+    const Chantier& getChantier() const { return chantier; }
+    const std::vector<Joueur>& getJoueurs() const { return joueurs; }
+    const std::vector<std::vector<Tuile>>& getPile() const {return piles;};
+    int getNbrTours() const { return nbrTours; }
+    int getNbrPiles() const { return piles.size(); }
+
+    //setters
+    void setMaitreArchitecte(int i) { maitreArchitecte = i % (nbrJoueurs > 0 ? nbrJoueurs : 1); }    
     void setProchainJoueur()
     {
         if (nbrJoueurs)
             mainJoueur = (mainJoueur + 1) % nbrJoueurs;
     }
 
-    int getMainJoueur() const { return mainJoueur; }
-    int getTaillePaquet() const { return taillepaquet; }
-    Chantier& getChantier() { return chantier; }
-    int getNbrTours() const { return nbrTours; }
+    
+    
+    
+    //autres méthodes
     std::vector<Tuile> retirerPaquet();
-    bool pilesRestantes() const { return !piles.empty(); }
-    int getNbrPiles() const { return piles.size(); }
+    bool pilesRestantes() const { return !piles.empty(); }   
     void genererTuilesParties(bool fullTuiles = false);
+    void addTuileInChantierFromPiles();
+    void tourTermine();
 };
 
 #endif
