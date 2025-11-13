@@ -8,7 +8,6 @@ Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,bool varianteScore,
     nbrJoueurs = nbJouer;
 
     // creation des joueurs
-    int nbpierre = 1;
     joueurs.clear();
     joueurs.reserve(nbrJoueurs);
 
@@ -18,7 +17,6 @@ Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,bool varianteScore,
         Joueur j(varianteScore, pseudo[i]);
         j.setNbrPierres(i+1);
         joueurs.push_back(j); 
-        nbpierre++;
     }
 
     //initialisation des paramètres
