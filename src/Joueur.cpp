@@ -1,8 +1,7 @@
 #include "Joueur.h"
 
-Joueur::Joueur()
-    : nbrPierres(0),
-      nbrPoints(0) {};
+Joueur::Joueur(bool varianteScore,std::string nom): nbrPierres(0),nbrPoints(0),nom(nom),plateau(varianteScore) {};
+
 int Joueur::getNbrPierres()
 {
     return nbrPierres;

@@ -11,18 +11,12 @@ int main()
     texte_gras_on();
     std::cout << "===== DEMARRAGE PARTIE =====\n";
     texte_reset();
-
-    Partie partie;
-
     std::cout << "Nombre de joueurs ? ";
     int nbrJoueurs;
     std::cin >> nbrJoueurs;
-    partie.setNbrJoueurs(nbrJoueurs);
 
     // Préparation des joueurs
-    std::cout << partie.getNbrJoueurs() << " joueurs dans la partie.\n\n";
-    partie.setMaitreArchitecte(0);
-
+    std::cout << nbrJoueurs<<" joueurs dans la partie.\n\n";
     int choixVariante = 0;
     std::cout << "Choisissez une variante de jeu : \n";
     while (choixVariante != 1 && choixVariante != 2){
@@ -37,10 +31,30 @@ int main()
             texte_reset();
         }
     }
-
-    // Préparation du paquet de tuiles
-    partie.genererTuilesParties(choixVariante == 2);
-
+    int choixVarianteScore = 0;
+    while (choixVarianteScore != 1 && choixVarianteScore != 2){
+        std::cout << " 1: Jouer avec les règles de score classique.\n";
+        std::cout << " 2: Jouer avec une variante des règle de score .\n";
+        std::cout << "Votre choix : ";
+        std::cin >> choixVarianteScore;
+        if (choixVarianteScore != 1 && choixVarianteScore != 2){
+            texte_couleur(ROUGE);
+            texte_gras_on();
+            std::cout << "Choix invalide.\n\n";
+            texte_reset();
+        }
+    }
+    system("clear");
+    std::vector<std::string> listePseudo;
+    for (int i=0;i<nbrJoueurs;i++){
+        std::string nomJoueur;
+        std::cout << "Nom du joueur " << i+1 << " : ";
+        std::cin >> nomJoueur;
+        system("clear");
+        listePseudo.push_back(nomJoueur);
+    }
+    
+    Partie partie(nbrJoueurs,listePseudo,(choixVariante==2),(choixVarianteScore==2));
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -50,14 +64,6 @@ int main()
         while (partie.getChantier().getTaille() > 1)
         {
             Joueur &joueurCourant = partie.getJoueurMain();
-            if (joueurCourant.getNom().empty())
-            {
-                std::string nomJoueur;
-                std::cout << "Nom du joueur " << (partie.getMainJoueur() + 1) << " : ";
-                std::cin >> nomJoueur;
-                joueurCourant.setNom(nomJoueur);
-                system("clear");
-            }
             std::cout << "Au tour de :\n";
 
             // Affichage du plateau du joueur

@@ -21,15 +21,8 @@ class Plateau
 private:
     std::vector<Tuile> listeTuiles;
     std::vector<Hexagone *> listeHexagones;
-
-    bool varianteHabitation{0};
-    bool varianteMarche{0};
-    bool varianteTemple{0};
-    bool varianteCaserne{0};
-    bool varianteJardin{0};
-
-    explicit Plateau(); // Les plateaux sont définis par le constructeur de Joueur
-
+    bool varianteScore=false;
+    explicit Plateau(bool varianteScore); // Les plateaux sont définis par le constructeur de Joueur
 public:
     bool verifierPlacementTuile(const Position &p,const Tuile &t) const;
     int placerTuile(Tuile &t, Position &p);

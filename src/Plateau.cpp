@@ -1,7 +1,7 @@
 #include "Plateau.h"
 #include <algorithm>
 
-Plateau::Plateau()
+Plateau::Plateau(bool varianteScore) : varianteScore(varianteScore)
 {
     listeTuiles.clear();
     listeHexagones = {
@@ -315,7 +315,7 @@ int Plateau::calculerPointsCaserne() const
             if (hex->getVoisins().size() <= 5)
                 nbCaserne += hex->getZ(); // si il a 5 voisins ou moins p'est qu'il est sur un bord
 
-            if  (varianteCaserne && hex->getVoisins().size() <= 3)
+            if  (varianteScore && hex->getVoisins().size() <= 3)
                 nbCaserne += hex->getZ(); // si la variante est activée et qu'il y a moins de 3 voisins ou moins, on doubles le nb de casernes  
         }
         if(hex->getType() == TypeHex::PCaserne)
@@ -344,7 +344,7 @@ int Plateau::calculerPointsTemple() const
             if (hex->getVoisins().size() == 6)
                 nbTemple += hex->getZ();
 
-            if(varianteTemple && hex->getZ() > 1)
+            if(varianteScore && hex->getZ() > 1)
                 nbTemple += hex->getZ(); // On double les points des temples si ils sont à une hauteur plus hate que 1
             
         }
@@ -408,7 +408,7 @@ int Plateau::calculerPointsJardin() const{
         if(hex->getType() == TypeHex::Jardin){
                 nbJardin += hex->getZ();
             
-            if(varianteJardin && Plateau::conditionVarianteJardin(hex))
+            if(varianteScore && Plateau::conditionVarianteJardin(hex))
                 nbJardin += hex->getZ();
         }
 
@@ -449,7 +449,7 @@ int Plateau::calculerPointsMarche() const
                     if(!voisinMarche){
                         nbMarche += hex->getZ();
 
-                        if (varianteMarche){
+                        if (varianteScore){
 
                             for(const auto &voisin: hex->getVoisins()){
 
@@ -547,7 +547,7 @@ int Plateau::calculerPointsHabitation() const
         nbHabitation += hab->getZ();
     }
 
-    if (varianteHabitation && nbHabitation >= 10){
+    if (varianteScore && nbHabitation >= 10){
         nbHabitation *= 2;
     }
 
