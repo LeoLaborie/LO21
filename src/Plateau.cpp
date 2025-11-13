@@ -186,6 +186,20 @@ std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
     return listeValide;
 }
 
+void Plateau::afficherPositionsLegales(const Tuile &t) const
+{
+    auto positions = getPositionsLegales(t);
+
+    std::cout << "Positions legales pour cette tuile (" 
+              << positions.size() << " possibilités) :" << std::endl;
+
+    for (const auto &p : positions)
+    {
+        std::cout << "  - (" << p.x << ", " << p.y << ", " << p.z << ")\n";
+    }
+}
+
+
 int Plateau::placerTuile(Tuile &t, Position &p)
 {
     int res = 0;

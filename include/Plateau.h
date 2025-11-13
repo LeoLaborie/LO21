@@ -45,6 +45,8 @@ public:
     int calculerPointsCaserne() const;
     std::vector<Position>getPositionsLegales(const Tuile &t) const;
     friend std::ostream& operator<<(std::ostream& os, const Plateau& p) ;
+    void afficherPositionsLegales(const Tuile &t) const;
+
     
 };
 #endif

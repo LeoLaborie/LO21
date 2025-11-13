@@ -109,6 +109,7 @@ int main()
                 bool phaseRotation = true;
                 while (phaseRotation)
                 {
+                    joueurCourant.getPlateau().afficherPositionsLegales(joueurCourant.getTuileEnMain());
                     std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile : ";
                     char rep;
                     std::cin >> rep;
