@@ -1,5 +1,35 @@
 #include "Partie.h"
 
+Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,bool varianteScore, bool varianteFullTuile)
+{
+    if (nbJouer <= 0 || nbJouer > 4)
+        throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
+
+    nbrJoueurs = nbJouer;
+
+    // creation des joueurs
+    joueurs.clear();
+    joueurs.reserve(nbrJoueurs);
+
+    for (int i = 0; i < nbrJoueurs; ++i)
+    {
+        // ajout de chaque joueur dans la liste
+        Joueur j(varianteScore, pseudo[i]);
+        j.setNbrPierres(i+1);
+        joueurs.push_back(j); 
+    }
+
+    //initialisation des paramètres
+    mainJoueur = 0;
+    maitreArchitecte = 0;
+    nbrTours = 0;
+    taillepaquet = 1 + nbrJoueurs;
+
+    genererTuilesParties(varianteFullTuile);
+    addTuileInChantierFromPiles();
+}
+
+
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
     if (type == "placeBleue")
@@ -151,23 +181,6 @@ void Partie::genererTuilesParties(bool fullTuiles)
     addTuileInChantierFromPiles();
 }
 
-void Partie::setNbrJoueurs(int nbr)
-{
-    int nbpierre = 1;
-    if (nbr <= 0 || nbr > 4)
-        throw std::invalid_argument("nbrJoueurs doit etre > 0 et inférieur à 4");
-    nbrJoueurs = nbr;
-    joueurs.assign(nbrJoueurs, Joueur{});
-    for (auto &j : joueurs)
-    {
-        j.setNbrPierres(nbpierre);
-        nbpierre++;
-    }
-    mainJoueur = 0;
-    maitreArchitecte = 0;
-    nbrTours = 0;
-    taillepaquet = 1 + nbrJoueurs;
-}
 
 void Partie::tourTermine()
 {

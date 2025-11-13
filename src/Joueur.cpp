@@ -1,8 +1,7 @@
 #include "Joueur.h"
 
-Joueur::Joueur()
-    : nbrPierres(0),
-      nbrPoints(0) {};
+Joueur::Joueur(bool varianteScore,std::string nom): nbrPierres(0),nbrPoints(0),nom(nom),plateau(varianteScore) {};
+
 int Joueur::getNbrPierres()
 {
     return nbrPierres;
@@ -45,3 +44,21 @@ bool Joueur::placerTuile(Tuile &t, Position &p)
     }
     return carrieresCouvertes != -1;
 }
+std::ostream& operator<<(std::ostream &os,const Joueur& j)
+{
+    os << " ";
+    texte_couleur(ROUGE);
+    texte_gras_on();
+    os << j.nom;
+    texte_reset();
+    os << " | Pierres : ";
+    texte_couleur(BLEU);
+    os << j.nbrPierres;
+    texte_reset();
+    os << ", Points : ";
+    texte_couleur(JAUNE);
+    os<< j.nbrPoints;
+    texte_reset();
+    os << "\n"<<j.plateau<<std::endl;
+    return os;
+    }
