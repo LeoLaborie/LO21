@@ -13,9 +13,9 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4) {
     offsets.reserve(4);
     
     offsets.push_back({ 0, 0});   // le milieu
-    offsets.push_back({-1, 1});   // bas-gauche
-    offsets.push_back({ 0, 1});   // bas-centre
-    offsets.push_back({ 1, 1});   // bas-droit
+    offsets.push_back({0, -1});   // bas-gauche
+    offsets.push_back({ -1, 1});   // bas-centre
+    offsets.push_back({ 1, 0});   // bas-droit
 
 }
 
@@ -29,7 +29,7 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3) {
     
     offsets.clear(); offsets.reserve(3);
     offsets.push_back({ 0, 0});
-    offsets.push_back({-1, 1});
-    offsets.push_back({ 0, 1});
+    offsets.push_back({+1, -1});
+    offsets.push_back({ 0, -1});
 }
 
