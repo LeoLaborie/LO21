@@ -19,6 +19,10 @@ Plateau::Plateau()
 
 void Plateau::updateVoisins()
 {
+    /*
+    *Met à jour les voisins d'une tuile
+    *@return void
+    */
     // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
     // Parcourir toutes les tuiles du plateau
     for (auto *&hexagone1 : listeHexagones)
@@ -56,10 +60,14 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
 
 bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
 {
+    /*
+    *Vérifie si une position est correct en fonction d'une tuile (surtout de sa rotation) et de sa nouvelle position théorique
+    *@return un bouléen sur la validité de la position passé en paramètre
+    */
     std::vector<Tuile *> tuiles_en_dessous;
     bool surElever = false;
-    bool toucheParBord = false;
-    int supports_par_hex = 0; // nouveau : pour vérifier qu’on pose bien sur 3 hexagones en hauteur
+    bool touchePar2Bord = false;
+    int supports_par_hex = 0; //  pour vérifier qu’on pose bien sur 3 hexagones en hauteur
 
     int dx[6] = {+1, +1, 0, -1, -1, 0};
     int dy[6] = {0, -1, -1, 0, +1, +1};
@@ -106,10 +114,15 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
             {
                 for (int i = 0; i < 6; ++i)
                 {
+                    int compteur=0;
                     if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0)
                     {
-                        toucheParBord = true;
-                        break;
+                        compteur++;
+                        if (compteur>=2){
+                            touchePar2Bord=true;
+                            break;
+                        }
+                        
                     }
                 }
             }
@@ -129,14 +142,18 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     }
     else
     {
-        // au sol, il faut toucher par le bord
-        if (!toucheParBord)
+        // au sol, il faut toucher par 2 bords
+        if (!touchePar2Bord)
             return false;
     }
 
     return true;
 }
 std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
+    /*
+    *Calcul toutes les positions légales en fonction d'une tuile (sa rotation)
+    *@return un vector contenant toutes les positions corrects
+    */
     std::vector<Position> listeValide;
     if (listeHexagones.empty()) return listeValide;
 
@@ -188,6 +205,10 @@ std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
 
 void Plateau::afficherPositionsLegales(const Tuile &t) const
 {
+    /*
+    *affiche toutes les positions légales possible pour une certaine tuile (surout de sa position en fonction des rotations)
+    *@return void
+    */
     auto positions = getPositionsLegales(t);
 
     std::cout << "Positions legales pour cette tuile (" 
@@ -202,6 +223,11 @@ void Plateau::afficherPositionsLegales(const Tuile &t) const
 
 int Plateau::placerTuile(Tuile &t, Position &p)
 {
+    /*
+    *Place une tuile dans le plateau si son placement est correct
+    *@return Le nombre de carrière recouvert et -1 si placement incorrect 
+    */
+
     int res = 0;
 
     if (!verifierPlacementTuile(p, t))
@@ -259,6 +285,10 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 
 int Plateau::calculerPoints() const
 {
+    /*
+    *Calcul le nombre de points total
+    *@return Le nombre total de points total
+    */
     return calculerPointsCaserne() + calculerPointsHabitation() + calculerPointsJardin() + calculerPointsMarche() + calculerPointsTemple();
 }
 
@@ -523,6 +553,10 @@ int Plateau::calculerPointsHabitation() const
 
 std::ostream& operator<<(std::ostream& os, const Plateau& p) 
     {
+        /*
+        *Surchage l'operator << pour utiliser std::cout
+        *@return une référence ostream
+        */
         os<< "\nPlateau contient " << p.listeTuiles.size() << " tuiles :\n";
         os<< " ----\n";
         for (const auto &t : p.listeTuiles)
