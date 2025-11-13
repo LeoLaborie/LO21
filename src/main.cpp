@@ -80,6 +80,7 @@ int main()
     }
     
     Partie partie(nbrJoueurs, listePseudo, (choixVariante==2), (choixVarianteScore==2));
+    std::cout<<partie.getChantier().getTaille()<<std::endl;
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -95,7 +96,7 @@ int main()
             std::cout << joueurCourant;
 
             // Affichage du chantier
-            partie.getChantier().afficher();
+            std::cout<<partie.getChantier();
 
             // Choix de la tuile à piocher
             int idTuile = -1;
