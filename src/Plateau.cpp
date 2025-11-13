@@ -85,9 +85,12 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     for (const auto &o : t.getOffsets())
         coords.push_back({p.x + o.q, p.y + o.r, p.z});
 
+    int nbHexTouchantBord = 0; // nombre d'hexagones de la tuile qui touchent au moins un bord au niveau 0
+
     for (const auto &h : coords)
     {
         bool supportTrouve = false;
+        bool hexDejaComptePourBord = false; // pour ne compter chaque hex qu'une seule fois
 
         if (h.z > 0)
             surElever = true;
@@ -110,19 +113,17 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
             }
 
             // on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)
-            if (h.z == 0)
+            if (h.z == 0 && !hexDejaComptePourBord && hex_plateau->getZ() == 0)
             {
                 for (int i = 0; i < 6; ++i)
                 {
-                    int compteur=0;
-                    if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY() && hex_plateau->getZ() == 0)
+                    if (h.x + dx[i] == hex_plateau->getX() &&
+                        h.y + dy[i] == hex_plateau->getY())
                     {
-                        compteur++;
-                        if (compteur>=2){
-                            touchePar2Bord=true;
-                            break;
-                        }
-                        
+                        // cet hex de la tuile touche au moins un hex du plateau
+                        ++nbHexTouchantBord;
+                        hexDejaComptePourBord = true; // on ne le recomptera plus
+                        break;
                     }
                 }
             }
@@ -142,13 +143,15 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     }
     else
     {
-        // au sol, il faut toucher par 2 bords
+        // au sol, il faut toucher par 2 bords 
+        touchePar2Bord = (nbHexTouchantBord >= 2);
         if (!touchePar2Bord)
             return false;
     }
 
     return true;
 }
+
 std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
     /*
     *Calcul toutes les positions légales en fonction d'une tuile (sa rotation)
