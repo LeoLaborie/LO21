@@ -3,7 +3,7 @@
 #include "Partie.h"
 #include "Position.h"
 #include "couleurs_console.h"
-
+#include "Sauvegarde.h"
 int main()
 {
     texte_reset();
@@ -80,6 +80,7 @@ int main()
     }
     
     Partie partie(nbrJoueurs, listePseudo, (choixVariante==2), (choixVarianteScore==2));
+    sauvegarderPartie(partie);
     std::cout<<partie.getChantier().getTaille()<<std::endl;
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {

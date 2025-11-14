@@ -29,44 +29,40 @@ private:
     int x{}, y{}, z{};
     Tuile* parent{};
     bool est_recouvert = false;
-
     TypeHex type_ = TypeHex::Habitation;
     int multiplicateur_ = 1;
 
 public:
-    Hexagone(int x_coord, int y_coord, int z_coord,
-             TypeHex type,
-             int multiplicateur = 1,
-             Tuile* p = nullptr,
-             std::vector<Hexagone*> v = {})
-        : voisins(std::move(v)),
-        x(x_coord), y(y_coord), z(z_coord),
-        parent(p),
-        type_(type),
-        multiplicateur_(multiplicateur) {}
+    //constructeur / destructeur
+    Hexagone(int x_coord, int y_coord, int z_coord,TypeHex type,int multiplicateur = 1,
+        Tuile* p = nullptr,std::vector<Hexagone*> v = {})
+        : voisins(std::move(v)),x(x_coord), y(y_coord), z(z_coord),parent(p),type_(type),multiplicateur_(multiplicateur) {}
+    ~Hexagone() = default;
 
-    void setParent(Tuile* p) { parent = p; }
+    //getters
     Tuile* getParent() { return parent; }
-
-    void setVoisins(std::vector<Hexagone*> v) { voisins = std::move(v); }
-    void addVoisin(Hexagone* v) { voisins.push_back(v); }
+    const Tuile* getParent() const { return parent; }
     const std::vector<Hexagone*>& getVoisins() const { return voisins; }
-
     bool getEstRecouvert() const { return est_recouvert; }
-    void setEstRecouvert(bool v = true) { est_recouvert = v; }
-
-
     int getX() const { return x; }
     int getY() const { return y; }
     int getZ() const { return z; }
+    TypeHex getType() const { return type_; }
+    int  getMultiplicateur() const { return multiplicateur_; }
+
+    //setters
+    void setVoisins(std::vector<Hexagone*> v) { voisins = std::move(v); }
+    void setParent(Tuile* p) { parent = p; }
+    void setEstRecouvert(bool v = true) { est_recouvert = v; }
+    void setType(TypeHex t) { type_ = t; }
     void setCoord(int x_coord, int y_coord, int z_coord) {
         x = x_coord; y = y_coord; z = z_coord;
     }
+    void setMultiplicateur(int m)  { multiplicateur_ = m; }
 
 
-    TypeHex getType() const { return type_; }
-    void setType(TypeHex t) { type_ = t; }
-
+    //autres méthodes
+    void addVoisin(Hexagone* v) { voisins.push_back(v); }
     bool isPlace() const {
         switch (type_) {
         case TypeHex::PHabitation:
@@ -92,10 +88,6 @@ public:
         }
     }
     bool isCarriere() const { return type_ == TypeHex::Carriere; }
-
-    int  getMultiplicateur() const { return multiplicateur_; }
-    void setMultiplicateur(int m)  { multiplicateur_ = m; }
-
     void afficher(bool court = false) const;
 };
 

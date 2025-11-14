@@ -24,13 +24,17 @@ private:
     std::vector<OffsetQR> offsets;
 
 public:
+    //constructeurs et destructeurs
     Tuile() = default;
+    ~Tuile()=default;
     Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3);
     Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4);
 
+    //getters
     const std::vector<Hexagone*>& getHexagones() const { return hex; }
     const std::vector<OffsetQR>&  getOffsets()   const { return offsets; }
 
+    //manipulations de la tuile
     void pivoterTuile() {
         for (auto& o : offsets) rotation60deg(o);
     }
@@ -41,6 +45,7 @@ public:
             for (auto& o : offsets) rotation60deg(o);
     }
 
+    //surchage opérateur
     friend std::ostream& operator<<(std::ostream& os, const Tuile& t) {
         if (t.hex.empty()) return os << "(tuile vide)\n";
         std::map<int, std::vector<size_t>> lignes;

@@ -24,11 +24,14 @@ private:
     bool varianteScore=false;
     explicit Plateau(bool varianteScore); // Les plateaux sont définis par le constructeur de Joueur
 public:
-    bool verifierPlacementTuile(const Position &p,const Tuile &t) const;
-    int placerTuile(Tuile &t, Position &p);
-    void updateVoisins();
-    const std::vector<Tuile> &getTuiles() const { return listeTuiles; }
-    const std::vector<Hexagone *> &getHexagones() const { return listeHexagones; }
+    //getters
+    const std::vector<Tuile> &getTuiles() const { return listeTuiles; };
+    const std::vector<Hexagone *> &getHexagones() const { return listeHexagones; };
+    bool getVarianteScore() const {return varianteScore;};
+
+   
+    
+    //calcul des points
     int calculerPoints() const;
     int calculerPointsHabitation() const;
     int calculerPointsMarche() const;
@@ -36,10 +39,15 @@ public:
     bool conditionVarianteJardin(const Hexagone* q) const;
     int calculerPointsTemple() const;
     int calculerPointsCaserne() const;
-    std::vector<Position>getPositionsLegales(const Tuile &t) const;
-    friend std::ostream& operator<<(std::ostream& os, const Plateau& p) ;
-    void afficherPositionsLegales(const Tuile &t) const;
 
+    //gestion placement
+    std::vector<Position>getPositionsLegales(const Tuile &t) const;
+    void afficherPositionsLegales(const Tuile &t) const;
+    bool verifierPlacementTuile(const Position &p,const Tuile &t) const;
+    int placerTuile(Tuile &t, Position &p);
+    void updateVoisins();
     
+    //surchage operateurs
+    friend std::ostream& operator<<(std::ostream& os, const Plateau& p) ;
 };
 #endif

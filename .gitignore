@@ -42,5 +42,7 @@
 
 .vscode
 
+#sauvegarde
+.ratatata
 main
 /build/
