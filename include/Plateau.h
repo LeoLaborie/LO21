@@ -24,8 +24,9 @@ class Plateau
 
 private:
     std::vector<Tuile> listeTuiles;
-    bool varianteScore=false;
-    explicit Plateau(bool varianteScore); // Les plateaux sont définis par le constructeur de Joueur
+    bool variantesScores[4];
+    explicit Plateau(bool vs[4]); // Les plateaux sont définis par le constructeur de Joueur
+
 public:
     template<typename F>
     void pourChaqueHexagone(F f)
@@ -44,7 +45,7 @@ public:
     //getters
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; };
     
-    bool getVarianteScore() const {return varianteScore;};
+    const bool* getVarianteScores() const {return variantesScores;};
 
    
     
