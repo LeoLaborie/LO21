@@ -65,7 +65,7 @@ void Partie::addTuileInChantierFromPiles()
 {
     std::vector<Tuile> pileActuel = piles.back();
     piles.pop_back();
-    while (this->chantier.getTaille()<nbrJoueurs+1) // nbrJoeurs + 1 = nombre de tuiles dans une pile
+    for (int i=0;i<nbrJoueurs+1;i++)// nbrJoeurs + 1 = nombre de tuiles dans une pile
     {
         chantier.ajouterTuile(pileActuel.back());
         pileActuel.pop_back();
@@ -166,7 +166,7 @@ void Partie::genererTuilesParties(bool fullTuiles)
     }
 
     tuileBonus=Tuile(hexas[0], hexas[1], hexas[2]);
-
+    chantier.ajouterTuile(tuileBonus);
     // Vérification : le stock doit être vide
     for (auto &[type, quantite] : *stock)
     {
