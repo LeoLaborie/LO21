@@ -1,6 +1,6 @@
 #include "Partie.h"
 
-Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,bool varianteScore, bool varianteFullTuile)
+Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,const bool variantesScore[5], bool varianteFullTuile)
 {
     if (nbJouer <= 0 || nbJouer > 4)
         throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
@@ -14,7 +14,7 @@ Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,bool varianteScore,
     for (int i = 0; i < nbrJoueurs; ++i)
     {
         // ajout de chaque joueur dans la liste
-        Joueur j(varianteScore, pseudo[i]);
+        Joueur j(variantesScore, pseudo[i]);
         j.setNbrPierres(i+1);
         joueurs.push_back(j); 
     }

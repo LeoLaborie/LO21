@@ -24,8 +24,8 @@ class Plateau
 
 private:
     std::vector<Tuile> listeTuiles;
-    bool variantesScores[4];
-    explicit Plateau(bool vs[4]); // Les plateaux sont définis par le constructeur de Joueur
+    bool variantesScores[5];
+    explicit Plateau(const bool variantesScore[5]); // Les plateaux sont définis par le constructeur de Joueur
 
 public:
     template<typename F>

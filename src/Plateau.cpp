@@ -1,7 +1,7 @@
 #include "Plateau.h"
 #include <algorithm>
 
-Plateau::Plateau(bool vs[4])
+Plateau::Plateau(const bool vs[5])
 {
     for (int i=0;i<5;i++){
         variantesScores[i]=vs[i];

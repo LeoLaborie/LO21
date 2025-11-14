@@ -27,47 +27,59 @@ int main()
     // Préparation des joueurs
     std::cout << nbrJoueurs << " joueurs dans la partie.\n\n";
 
-    int choixVariante = 0;
+    int choixVarianteTuiles = 0;
     std::cout << "Choisissez une variante de jeu : \n";
-    while (choixVariante != 1 && choixVariante != 2){
+    while (choixVarianteTuiles != 1 && choixVarianteTuiles != 2){
         std::cout << " 1: Jouer avec les règles de base et n'avoir que 11 piles.\n";
         std::cout << " 2: Jouer avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles.\n";
         std::cout << "Votre choix : ";
 
-        if (!(std::cin >> choixVariante)) {
+        if (!(std::cin >> choixVarianteTuiles)) {
             // saisie non entière (ex: 't')
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            choixVariante = 0; // force à rester dans la boucle
+            choixVarianteTuiles = 0; // force à rester dans la boucle
         }
 
-        if (choixVariante != 1 && choixVariante != 2){
+        if (choixVarianteTuiles != 1 && choixVarianteTuiles != 2){
             texte_couleur(ROUGE);
             texte_gras_on();
             std::cout << "Choix invalide.\n\n";
             texte_reset();
         }
     }
+    const bool utiliserToutesLesTuiles = (choixVarianteTuiles == 2);
 
-    int choixVarianteScore = 0;
-    while (choixVarianteScore != 1 && choixVarianteScore != 2){
-        std::cout << " 1: Jouer avec les règles de score classique.\n";
-        std::cout << " 2: Jouer avec une variante des règle de score.\n";
-        std::cout << "Votre choix : ";
+    bool variantesScore[5] = {};
+    const char *nomsVariantes[5] = {"habitation", "marché", "caserne", "temple", "jardin"};
+    for (int i = 0; i < 5; ++i)
+    {
+        int choixVarianteScore = 0;
+        while (choixVarianteScore != 1 && choixVarianteScore != 2)
+        {
+            std::cout << "Variante pour les " << nomsVariantes[i] << " :\n";
+            std::cout << " 1: Jouer avec les règles de score classiques.\n";
+            std::cout << " 2: Jouer avec la variante de score.\n";
+            std::cout << "Votre choix : ";
 
-        if (!(std::cin >> choixVarianteScore)) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            choixVarianteScore = 0;
+            if (!(std::cin >> choixVarianteScore))
+            {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                choixVarianteScore = 0;
+            }
+
+            if (choixVarianteScore != 1 && choixVarianteScore != 2)
+            {
+                texte_couleur(ROUGE);
+                texte_gras_on();
+                std::cout << "Choix invalide.\n\n";
+                texte_reset();
+            }
         }
-
-        if (choixVarianteScore != 1 && choixVarianteScore != 2){
-            texte_couleur(ROUGE);
-            texte_gras_on();
-            std::cout << "Choix invalide.\n\n";
-            texte_reset();
-        }
+        variantesScore[i] = (choixVarianteScore == 2);
     }
+    
 
     system("clear");
     std::vector<std::string> listePseudo;
@@ -79,7 +91,7 @@ int main()
         listePseudo.push_back(nomJoueur);
     }
     
-    Partie partie(nbrJoueurs, listePseudo, (choixVariante==2), (choixVarianteScore==2));
+    Partie partie(nbrJoueurs, listePseudo, variantesScore, utiliserToutesLesTuiles);
     std::cout<<partie.getChantier().getTaille()<<std::endl;
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
