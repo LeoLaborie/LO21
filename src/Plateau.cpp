@@ -420,7 +420,6 @@ int Plateau::calculerPointsMarche() const
      *
      *@return Le nombre total de points
      */
-
     int placeMarche = 0;
     int nbMarche = 0;
   

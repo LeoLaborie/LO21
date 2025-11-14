@@ -34,7 +34,6 @@ public:
     int getNbrJoueurs() const { return nbrJoueurs; }
     int getMaitreArchitecte() const { return maitreArchitecte; }
     Joueur &getJoueurMain() { return joueurs.at(mainJoueur); }
-    const Joueur &getJoueurMain() const { return joueurs.at(mainJoueur); }
     int getMainJoueur() const { return mainJoueur; }
     int getTaillePaquet() const { return taillepaquet; }
     Chantier& getChantier() { return chantier; }
