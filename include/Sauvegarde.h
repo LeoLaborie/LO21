@@ -4,5 +4,5 @@
 #include "Partie.h"
 
 void sauvegarderPartie(const Partie& partie);
-
+bool charger(const std::string& nomSauvegarde);
 #endif

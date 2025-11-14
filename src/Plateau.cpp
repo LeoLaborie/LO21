@@ -1,17 +1,14 @@
 #include "Plateau.h"
 #include <algorithm>
 
-Plateau::Plateau(bool varianteScore) : varianteScore(varianteScore)
+Plateau::Plateau(const bool vs[5])
 {
+    for (int i=0;i<5;i++){
+        variantesScores[i]=vs[i];
+    }
     listeTuiles.clear();
-    listeHexagones = {
-        // Tuile de départ au niveau 0 (z = 0)
-        new Hexagone(0, 0, 0, TypeHex::PHabitation, 1),
-        new Hexagone(-1, 1, 0, TypeHex::Carriere),
-        new Hexagone(0, -1, 0, TypeHex::Carriere),
-        new Hexagone(1, 0, 0, TypeHex::Carriere)
-    };
-    Tuile tuileDepart{listeHexagones[0], listeHexagones[1], listeHexagones[2], listeHexagones[3]};
+    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation, 1), new Hexagone(-1, 1, 0, TypeHex::Carriere)
+        , new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
 
     updateVoisins();
@@ -25,9 +22,9 @@ void Plateau::updateVoisins()
     */
     // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
     // Parcourir toutes les tuiles du plateau
-    for (auto *&hexagone1 : listeHexagones)
+    pourChaqueHexagone([&](Hexagone* hexagone1)
     {
-        for (auto *&hexagone2 : listeHexagones)
+        pourChaqueHexagone([&](Hexagone* hexagone2)
         {
             int dx = hexagone1->getX() - hexagone2->getX();
             int dy = hexagone1->getY() - hexagone2->getY();
@@ -48,8 +45,8 @@ void Plateau::updateVoisins()
                     hexagone2->addVoisin(hexagone1);
                 }
             }
-        }
-    }
+        });
+    });
 }
 
 template <class T>
@@ -64,7 +61,7 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     *Vérifie si une position est correct en fonction d'une tuile (surtout de sa rotation) et de sa nouvelle position théorique
     *@return un bouléen sur la validité de la position passé en paramètre
     */
-    std::vector<Tuile *> tuiles_en_dessous;
+    std::vector<const Tuile *> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
     int supports_par_hex = 0; //  pour vérifier qu’on pose bien sur 3 hexagones en hauteur
@@ -89,15 +86,22 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     {
         bool supportTrouve = false;
         bool hexDejaComptePourBord = false; // pour ne compter chaque hex qu'une seule fois
+        bool superposition = false;
 
         if (h.z > 0)
             surElever = true;
 
-        for (auto *hex_plateau : listeHexagones)
+        pourChaqueHexagone([&](const Hexagone* hex_plateau)
         {
+            if (superposition)
+                return;
+
             // on vérifie si deux tuiles ne se superposent pas
             if (h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && h.z == hex_plateau->getZ())
-                return false;
+            {
+                superposition = true;
+                return;
+            }
 
             // on récupère les tuiles en dessous si on est à un niveau supérieur à 0
             // et on garde que les tuiles différentes
@@ -105,7 +109,7 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
             {
                 supportTrouve = true;
                 ++supports_par_hex; // on compte le support pour cet hexagone
-                Tuile *parent = hex_plateau->getParent();
+                const Tuile *parent = hex_plateau->getParent();
                 if (ContientPas(tuiles_en_dessous, parent))
                     tuiles_en_dessous.push_back(parent);
             }
@@ -119,11 +123,15 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
                         h.y + dy[i] == hex_plateau->getY())
                     {
                         toucheParBord=true;
+                        hexDejaComptePourBord = true;
                         break;
                     }
                 }
             }
-        }
+        });
+
+        if (superposition)
+            return false;
 
         if (h.z > 0 && !supportTrouve)
             return false; // chaque hex doit avoir son support direct
@@ -152,24 +160,24 @@ std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
     *@return un vector contenant toutes les positions corrects
     */
     std::vector<Position> listeValide;
-    if (listeHexagones.empty()) return listeValide;
+    if (listeTuiles.empty()) return listeValide;
 
 
     //on récupere le min et le max
-    int minX = listeHexagones[0]->getX();
-    int maxX = listeHexagones[0]->getX();
-    int minY = listeHexagones[0]->getY();
-    int maxY = listeHexagones[0]->getY();
-    int maxZ = listeHexagones[0]->getZ();
+    int minX = listeTuiles[0].getHexagones()[0]->getX();
+    int maxX = listeTuiles[0].getHexagones()[0]->getX();
+    int minY = listeTuiles[0].getHexagones()[0]->getY();
+    int maxY = listeTuiles[0].getHexagones()[0]->getY();
+    int maxZ = listeTuiles[0].getHexagones()[0]->getZ();
 
-    for (const auto *h : listeHexagones)
+    pourChaqueHexagone([&](const Hexagone* h)
     {
         minX = std::min(minX, h->getX());
         maxX = std::max(maxX, h->getX());
         minY = std::min(minY, h->getY());
         maxY = std::max(maxY, h->getY());
         maxZ = std::max(maxZ, h->getZ());
-    }
+    });
     int marge = 3;
 
     //on se laisse de la marge >1 pour ne pas oublier des positions légales si on prend que 1
@@ -246,11 +254,6 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
-    for (auto *h : t.getHexagones())
-    {
-        listeHexagones.push_back(h);
-    }
-
     updateVoisins();
 
     // Si on est en hauteur (z > 0), on recouvre ce qui est juste en dessous (z-1)
@@ -258,8 +261,12 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     {
         auto Recouvrir = [&](int x, int y)
         {
-            for (auto *h : listeHexagones)
+            bool traite = false;
+            pourChaqueHexagone([&](Hexagone* h)
             {
+                if (traite)
+                    return;
+
                 if (h->getX() == x && h->getY() == y && h->getZ() == p.z - 1)
                 {
                     if (!h->getEstRecouvert())
@@ -268,9 +275,9 @@ int Plateau::placerTuile(Tuile &t, Position &p)
                         if (h->getType() == TypeHex::Carriere)
                             ++res; // si on trouve une carrière en dessous, on signifie qu'on a recouvert une carrière en ajoutant 1 à la valeur de retour
                     }
-                    break;
+                    traite = true;
                 }
-            }
+            });
         };
 
         for (const auto &o : t.getOffsets())
@@ -298,10 +305,10 @@ int Plateau::calculerPointsCaserne() const
     int placeCaserne = 0;
     int nbCaserne = 0;
 
-    for (const Hexagone *hex : listeHexagones)
+    pourChaqueHexagone([&](const Hexagone *hex)
     {
         if (hex->getEstRecouvert())
-            continue;
+            return;
 
         if (hex->getType() == TypeHex::Caserne)
         {
@@ -309,12 +316,12 @@ int Plateau::calculerPointsCaserne() const
             if (hex->getVoisins().size() <= 5)
                 nbCaserne += hex->getZ(); // si il a 5 voisins ou moins p'est qu'il est sur un bord
 
-            if  (varianteScore && hex->getVoisins().size() <= 3)
+            if  (variantesScores[2] && hex->getVoisins().size() <= 3)
                 nbCaserne += hex->getZ(); // si la variante est activée et qu'il y a moins de 3 voisins ou moins, on doubles le nb de casernes  
         }
         if(hex->getType() == TypeHex::PCaserne)
                 placeCaserne += hex->getMultiplicateur();
-    }
+    });
 
     return placeCaserne * nbCaserne;
 }
@@ -329,22 +336,22 @@ int Plateau::calculerPointsTemple() const
     int placeTemple = 0;
     int nbTemple = 0;
 
-    for (const Hexagone *hex : listeHexagones)
+    pourChaqueHexagone([&](const Hexagone *hex)
     {
         if (hex->getEstRecouvert())
-            continue;
+            return;
 
         if(hex->getType() == TypeHex::Temple){
             if (hex->getVoisins().size() == 6)
                 nbTemple += hex->getZ();
 
-            if(varianteScore && hex->getZ() > 1)
+            if(variantesScores[3] && hex->getZ() > 1)
                 nbTemple += hex->getZ(); // On double les points des temples si ils sont à une hauteur plus hate que 1
             
         }
         if(hex->getType() == TypeHex::PTemple)
                 placeTemple += hex->getMultiplicateur();
-    }
+    });
 
     return placeTemple * nbTemple;
 }
@@ -356,7 +363,7 @@ bool Plateau::conditionVarianteJardin (const Hexagone* q) const{
     std::vector<std::vector<int>> coVoisinsVides = {};
 
     // On trouve les coordonnées relatives vides
-    for (const auto &h : listeHexagones)
+    pourChaqueHexagone([&](const Hexagone* h)
     {
         for (const auto &co : coVoisinsRelatifs)
         {
@@ -365,17 +372,17 @@ bool Plateau::conditionVarianteJardin (const Hexagone* q) const{
                 coVoisinsVides.push_back(co);
             }
         }
-    }
+    });
 
     for (const auto &co : coVoisinsVides)
     {
-        for (const auto &h : listeHexagones)
+        pourChaqueHexagone([&](const Hexagone* h)
         {
             if ((h->getX() - co[0]) == q->getX() && (h->getY() - co[1]) == q->getY())
             {
                 coVoisinsVides.push_back(co);
             }
-        }
+        });
     }
     
 
@@ -394,21 +401,21 @@ int Plateau::calculerPointsJardin() const{
     int placeJardin = 0;
     int nbJardin = 0;
 
-    for (const Hexagone *hex : listeHexagones)
+    pourChaqueHexagone([&](const Hexagone *hex)
     {
         if (hex->getEstRecouvert())
-            continue;
+            return;
 
         if(hex->getType() == TypeHex::Jardin){
                 nbJardin += hex->getZ();
             
-            if(varianteScore && Plateau::conditionVarianteJardin(hex))
+            if(variantesScores[4] && Plateau::conditionVarianteJardin(hex))
                 nbJardin += hex->getZ();
         }
 
         if(hex->getType() == TypeHex::PJardin)
                 placeJardin += hex->getMultiplicateur();
-    }
+    });
 
     return placeJardin * nbJardin;
 }
@@ -423,40 +430,42 @@ int Plateau::calculerPointsMarche() const
     int placeMarche = 0;
     int nbMarche = 0;
   
-    bool voisinMarche = 0;
+    bool voisinMarche = false;
 
-    for (const Hexagone *hex : listeHexagones)
+    pourChaqueHexagone([&](const Hexagone* hex)
     {
         if (hex->getEstRecouvert())
-            continue;
+            return;
 
         if(hex->getType() == TypeHex::Marche){
-                voisinMarche = 0;
-                for (const auto &voisin : hex->getVoisins())
+            voisinMarche = false;
+            for (const auto &voisin : hex->getVoisins())
+            {
+                if(voisin->getType() == TypeHex::Marche)
                 {
-                    if(voisin->getType() == TypeHex::Marche)
-                        {
-                            voisinMarche = 1;
-                        }
-                    }
-                    if(!voisinMarche){
-                        nbMarche += hex->getZ();
-
-                        if (varianteScore){
-
-                            for(const auto &voisin: hex->getVoisins()){
-
-                                if (voisin->getType() == TypeHex::PMarche){
-                                    nbMarche += hex->getZ();
-                                }
-                            }
-                        }
-                    }
+                    voisinMarche = true;
+                    break;
+                }
             }
-        if (hex->getType() == TypeHex::PMarche){
-                placeMarche += hex->getMultiplicateur();
+            if(!voisinMarche){
+                nbMarche += hex->getZ();
+
+                if (variantesScores[1]){
+
+                    for(const auto &voisin: hex->getVoisins()){
+
+                        if (voisin->getType() == TypeHex::PMarche){
+                            nbMarche += hex->getZ();
+                            break;
+                        }
+                    }
+                }
+            }
         }
-    }
+        if (hex->getType() == TypeHex::PMarche){
+            placeMarche += hex->getMultiplicateur();
+        }
+    });
 
     return placeMarche + nbMarche;
 }
@@ -473,10 +482,10 @@ int Plateau::calculerPointsHabitation() const
 
     std::vector<const Hexagone *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
 
-    for (const Hexagone *hex : listeHexagones)
+    pourChaqueHexagone([&](const Hexagone* hex)
     {
         if (hex->getEstRecouvert())
-            continue;
+            return;
 
         if (hex->getType() == TypeHex::Habitation){
             {
@@ -487,7 +496,7 @@ int Plateau::calculerPointsHabitation() const
                 placeHabitation += hex->getMultiplicateur();
             
         }
-    }
+    });
 
     // On détermine le plus grand groupe d'habitations
     std::vector<const Hexagone *> groupeMaxHab; // le groupe d'habitation le plus grand, la taille est à 0 par défaut
@@ -540,7 +549,7 @@ int Plateau::calculerPointsHabitation() const
         nbHabitation += hab->getZ();
     }
 
-    if (varianteScore && nbHabitation >= 10){
+    if (variantesScores[0] && nbHabitation >= 10){
         nbHabitation *= 2;
     }
 
@@ -560,4 +569,4 @@ std::ostream& operator<<(std::ostream& os, const Plateau& p)
             std::cout << t<<" ----\n";
         }
         return os;
-    };
+    }

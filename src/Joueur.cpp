@@ -1,6 +1,8 @@
 #include "Joueur.h"
+#include <utility>
 
-Joueur::Joueur(bool varianteScore,std::string nom): nbrPierres(0),nbrPoints(0),nom(nom),plateau(varianteScore) {};
+Joueur::Joueur(const bool variantesScore[5],std::string nom)
+    : nbrPierres(0), nbrPoints(0), nom(std::move(nom)), plateau(variantesScore) {}
 
 int Joueur::getNbrPierres() const
 {

@@ -26,7 +26,7 @@ private:
 
 public:
     //constructeur et destructeur
-    Partie(int nbJouer,std::vector<std::string>& pseudo,bool varianteScore,bool varianteFullTuile);
+    Partie(int nbJouer,std::vector<std::string>& pseudo,const bool variantesScore[5],bool varianteFullTuile);
     ~Partie() = default;
 
 

@@ -20,7 +20,7 @@ private:
     std::string nom = "";
     Plateau plateau;
     Tuile tuileEnMain;
-    explicit Joueur(bool varianteScore,std::string nom); // le joueur est créé au début de la partie, par la partie (composition)
+    explicit Joueur(const bool variantesScore[5],std::string nom); // le joueur est créé au début de la partie, par la partie (composition)
 
 public:
     //getters
