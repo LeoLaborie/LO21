@@ -66,7 +66,7 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     */
     std::vector<Tuile *> tuiles_en_dessous;
     bool surElever = false;
-    bool touchePar2Bord = false;
+    bool toucheParBord = false;
     int supports_par_hex = 0; //  pour vérifier qu’on pose bien sur 3 hexagones en hauteur
 
     int dx[6] = {+1, +1, 0, -1, -1, 0};
@@ -84,8 +84,6 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     coords.reserve(t.getHexagones().size());
     for (const auto &o : t.getOffsets())
         coords.push_back({p.x + o.q, p.y + o.r, p.z});
-
-    int nbHexTouchantBord = 0; // nombre d'hexagones de la tuile qui touchent au moins un bord au niveau 0
 
     for (const auto &h : coords)
     {
@@ -120,9 +118,7 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
                     if (h.x + dx[i] == hex_plateau->getX() &&
                         h.y + dy[i] == hex_plateau->getY())
                     {
-                        // cet hex de la tuile touche au moins un hex du plateau
-                        ++nbHexTouchantBord;
-                        hexDejaComptePourBord = true; // on ne le recomptera plus
+                        toucheParBord=true;
                         break;
                     }
                 }
@@ -143,9 +139,7 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     }
     else
     {
-        // au sol, il faut toucher par 2 bords 
-        touchePar2Bord = (nbHexTouchantBord >= 2);
-        if (!touchePar2Bord)
+        if (!toucheParBord)
             return false;
     }
 
