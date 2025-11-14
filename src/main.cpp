@@ -80,7 +80,6 @@ int main()
     }
     
     Partie partie(nbrJoueurs, listePseudo, (choixVariante==2), (choixVarianteScore==2));
-    sauvegarderPartie(partie);
     std::cout<<partie.getChantier().getTaille()<<std::endl;
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
@@ -152,7 +151,7 @@ int main()
                 while (phaseRotation)
                 {
                     joueurCourant.getPlateau().afficherPositionsLegales(joueurCourant.getTuileEnMain());
-                    std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile : ";
+                    std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile [a] | sauvegarder [s]: ";
                     char rep;
                     std::cin >> rep;
                     if (rep == 'o' || rep == 'O')
@@ -170,6 +169,10 @@ int main()
                     {
                         phaseRotation = false; // on passe à la phase de placement
                     }
+                    else if (rep == 's' || rep == 'S')
+                    {
+                       sauvegarderPartie(partie);
+                    }   
                 }
             }
 
