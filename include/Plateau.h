@@ -13,6 +13,10 @@
 class Partie;
 class Joueur;
 
+
+
+
+
 class Plateau
 {
     friend class Partie;
@@ -20,13 +24,26 @@ class Plateau
 
 private:
     std::vector<Tuile> listeTuiles;
-    std::vector<Hexagone *> listeHexagones;
     bool varianteScore=false;
     explicit Plateau(bool varianteScore); // Les plateaux sont définis par le constructeur de Joueur
 public:
+    template<typename F>
+    void pourChaqueHexagone(F f)
+    {
+        for (auto& tuile : listeTuiles)
+            for (auto& hex : tuile.getHexagones())
+                f(hex);
+    }
+    template<typename F>
+    void pourChaqueHexagone(F f) const
+    {
+        for (const auto& tuile : listeTuiles)
+            for (auto hex : tuile.getHexagones())
+                f(hex);
+    }
     //getters
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; };
-    const std::vector<Hexagone *> &getHexagones() const { return listeHexagones; };
+    
     bool getVarianteScore() const {return varianteScore;};
 
    

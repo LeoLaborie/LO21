@@ -72,17 +72,6 @@ void saveTuile(std::ostream& os, const Tuile& t)
 void savePlateau(std::ostream& os, const Plateau& plateau)
 {
     os << "Plateau {\n";
-
-    const auto& hexs = plateau.getHexagones();
-    os << "  hex_count=" << hexs.size() << "\n";
-    for (const auto* h : hexs)
-        saveHex(os, h);
-
-    const auto& tuiles = plateau.getTuiles();
-    os << "  tuile_count=" << tuiles.size() << "\n";
-    for (const auto& t : tuiles)
-        saveTuile(os, t);
-
     os << "}\n";
 }
 
@@ -91,7 +80,7 @@ void sauvegarderPartie(const Partie& p)
 {
     std::string date = getCurrentDateTime();
     std::string nom="saves/save_" + date + ".ratatata";
-    std::ofstream f(nom);
+    std::fstream f(nom, std::ios::out);
     chmod(nom.c_str(), 0444);
     if (!f)
     {
@@ -128,4 +117,23 @@ void sauvegarderPartie(const Partie& p)
     }
 
     std::cout << "Sauvegarde réalisée : saves/save_" << date << ".txt\n";
+}
+bool charger(const std::string& nomSauvegarde){
+    std::ifstream f(nomSauvegarde);
+    if (!f) {
+        std::cerr << "Impossible d’ouvrir la sauvegarde : " << nomSauvegarde << "\n";
+        return false;
+    }
+    std::string ligne;
+    std::map<std::string, std::string> data;
+    while (std::getline(f, ligne))
+    {
+        size_t pos = ligne.find('=');
+        if (pos == std::string::npos) continue;
+
+        std::string cle = ligne.substr(0, pos);
+        std::string valeur = ligne.substr(pos + 1);
+
+        data[cle] = valeur;
+    }
 }

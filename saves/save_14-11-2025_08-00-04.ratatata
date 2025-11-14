@@ -16,7 +16,7 @@ Joueur 0 {
 Plateau {
   hex_count=4
 Hexagone {
-  x=0
+  x=0std::map<std::string, std::string> data;
   y=0
   z=0
   type=PHabitation
