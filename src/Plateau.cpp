@@ -358,33 +358,55 @@ int Plateau::calculerPointsTemple() const
 
 bool Plateau::conditionVarianteJardin (const Hexagone* q) const{
     bool conditionRemplie = 0;
+    bool estVide, estLac=true;
 
     std::vector<std::vector<int>> coVoisinsRelatifs = {{0, -1}, {1, -1}, {1, 0}, {0, 1}, {-1, 1}, {-1, 0}};
+    std::vector<std::vector<int>> coVoisins = {};
     std::vector<std::vector<int>> coVoisinsVides = {};
 
-    // On trouve les coordonnées relatives vides
+    // On trouve les coordonnées relatives des voisins du jardin
     pourChaqueHexagone([&](const Hexagone* h)
     {
         for (const auto &co : coVoisinsRelatifs)
         {
-            if ((h->getX() - co[0]) == q->getX() && (h->getY() - co[1]) == q->getY())
+            if ((q->getX() + co[0]) == h->getX() && (q->getY() + co[1]) == h->getY())
             { // Ne pas hésiter à me redemander (Dimitri)
-                coVoisinsVides.push_back(co);
+                coVoisins.push_back(co);
             }
         }
     });
 
-    for (const auto &co : coVoisinsVides)
+    // On recupère les voisins vides du jardin par différence avec les coordonnées relatives de des voisins du jardin
+    for (const auto &cor : coVoisinsRelatifs)
     {
-        pourChaqueHexagone([&](const Hexagone* h)
-        {
-            if ((h->getX() - co[0]) == q->getX() && (h->getY() - co[1]) == q->getY())
-            {
-                coVoisinsVides.push_back(co);
+        estVide=true;
+        for(const auto &cov : coVoisins){
+            if (cor == cov){
+                estVide = false;
             }
-        });
+        }
+        if (estVide){
+            coVoisinsVides.push_back(cor);
+        }
     }
+
     
+    while(estLac && coVoisinsVides.size() > 0){
+        std::vector<int> vide = coVoisinsVides[0];
+        for (std::vector<int> co : coVoisinsRelatifs){ 
+            bool aVoisinNonVide = false;
+            pourChaqueHexagone([&](const Hexagone* h)
+            {
+                if (vide[0] + co[0] == h->getX() && vide[1] + co[1] == h->getY()){
+                    aVoisinNonVide = true;
+                }
+            });
+            if(!aVoisinNonVide){
+                estLac = false;
+            }
+        }
+        coVoisinsVides.erase(coVoisinsVides.begin());
+    }
 
 
     return conditionRemplie;
