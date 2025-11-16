@@ -19,6 +19,9 @@ private:
     int mainJoueur = 0;       // indice du joueur dont c’est le tour
     int nbrTours = 0;
     int taillepaquet = 0;
+
+    IllustreArchitecte* fauxJoueur;
+
     Chantier chantier;
     std::vector<Joueur> joueurs;
     std::vector<std::vector<Tuile>> piles;
@@ -60,6 +63,10 @@ public:
     void genererTuilesParties(bool fullTuiles = false);
     void addTuileInChantierFromPiles();
     void tourTermine();
+
+    bool fauxJoueurPresent()const {return fauxJoueur != nullptr;}
+    void creerFauxJoueur();
+    IllustreArchitecte* getFauxJoueur()const {return fauxJoueur;}
 };
 
 #endif
