@@ -26,6 +26,7 @@ private:
     std::vector<Tuile> listeTuiles;
     bool variantesScores[5];
     explicit Plateau(const bool variantesScore[5]); // Les plateaux sont définis par le constructeur de Joueur
+    explicit Plateau();
 
 public:
     template<typename F>
@@ -51,6 +52,7 @@ public:
     
     //calcul des points
     int calculerPoints() const;
+    int calculerPointsia(int& diff) const;
     int calculerPointsHabitation() const;
     int calculerPointsMarche() const;
     int calculerPointsJardin() const;
@@ -63,6 +65,7 @@ public:
     void afficherPositionsLegales(const Tuile &t) const;
     bool verifierPlacementTuile(const Position &p,const Tuile &t) const;
     int placerTuile(Tuile &t, Position &p);
+    int placerTuile(Tuile &t);
     void updateVoisins();
     
     //surchage operateurs

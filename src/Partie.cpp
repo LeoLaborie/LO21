@@ -6,6 +6,7 @@ Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,const bool variante
         throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
 
     nbrJoueurs = nbJouer;
+    fauxJoueur = nullptr;
 
     // creation des joueurs
     joueurs.clear();
@@ -19,6 +20,10 @@ Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,const bool variante
         joueurs.push_back(j); 
     }
 
+    if (nbrJoueurs == 1){
+        creerFauxJoueur();
+    }
+
     //initialisation des paramètres
     mainJoueur = 0;
     maitreArchitecte = 0;
@@ -27,6 +32,23 @@ Partie::Partie(int nbJouer, std::vector<std::string>& pseudo,const bool variante
 
     genererTuilesParties(varianteFullTuile);
 
+}
+
+void Partie::creerFauxJoueur(){
+    nbrJoueurs ++;
+        int difficulte;
+        std::cout<<"Choisissez le niveau de difficulté de l'Illustre Architecte (entre 1 et 3)\n";
+        std::cin>>difficulte;
+        while(difficulte>3 && difficulte<1){
+            texte_couleur(ROUGE);
+            texte_gras_on();
+            std::cout<<"Niveau de difficulté invalide\n";
+            texte_reset();
+            std::cin>>difficulte;
+        }
+        IllustreArchitecte* f = new IllustreArchitecte{difficulte};
+        f->setNbrPierres(2);
+        fauxJoueur = f;
 }
 
 

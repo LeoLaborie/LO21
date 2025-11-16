@@ -24,7 +24,7 @@ int main()
         texte_reset();
     }
 
-    // Préparation des joueurs
+    
     std::cout << nbrJoueurs << " joueurs dans la partie.\n\n";
 
     int choixVarianteTuiles = 0;
@@ -112,40 +112,10 @@ int main()
 
             // Choix de la tuile à piocher
             int idTuile = -1;
-            while (true)
-            {
-                std::cout << "Entrez l'ID de la tuile à piocher : ";
-                if (!(std::cin >> idTuile)) {
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    idTuile = -1;
-                }
-
-                if (idTuile < 0 || idTuile >= partie.getChantier().getTaille())
-                {
-                    texte_couleur(ROUGE);
-                    texte_gras_on();
-                    std::cout << "ID invalide. Veuillez réessayer.\n";
-                    texte_reset();
-                    idTuile = -1;
-                    continue;
-                }
-                else if (idTuile > joueurCourant.getNbrPierres())
-                {
-                    texte_couleur(ROUGE);
-                    texte_gras_on();
-                    std::cout << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
-                    texte_reset();
-                    idTuile = -1;
-                    continue;
-                }
-
-                // ici idTuile est valide
-                break;
-            }
+            idTuile = joueurCourant.choixTuile(partie.getChantier());
 
             // Pioche de la tuile
-            Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier());
+            Tuile *tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
             if (tuilePiochee)
             {
                 std::cout << "\nTuile piochée :\n\n";
@@ -235,7 +205,35 @@ int main()
                 }
             }
 
+
             system("sleep 2");
+
+            if (partie.fauxJoueurPresent()){
+                IllustreArchitecte* ia = partie.getFauxJoueur();
+
+                // Affichage du plateau du joueur
+                std::cout<<&ia;
+
+                // Affichage du chantier
+                std::cout<<partie.getChantier();
+
+                // Choix de la tuile à piocher
+                int idTuile = ia->choixTuile(partie.getChantier());
+
+                Tuile *tuilePiochee = ia->piocherTuile(idTuile, partie.getChantier());
+
+                if (tuilePiochee)
+                {
+                    std::cout << "\nTuile piochée :\n\n";
+                    std::cout<<tuilePiochee;
+                }
+                else
+                {
+                    std::cout << "Erreur lors de la pioche de la tuile.\n";
+                }
+
+                placementTuile = ia->placerTuile(*tuilePiochee);
+            }
 
             // Passage au joueur suivant
             partie.setProchainJoueur();

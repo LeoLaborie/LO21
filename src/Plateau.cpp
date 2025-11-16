@@ -14,6 +14,15 @@ Plateau::Plateau(const bool vs[5])
     updateVoisins();
 }
 
+Plateau::Plateau()
+{
+    listeTuiles.clear();
+    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation, 1), new Hexagone(-1, 1, 0, TypeHex::Carriere)
+        , new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
+    listeTuiles.push_back(tuileDepart);
+
+}
+
 void Plateau::updateVoisins()
 {
     /*
@@ -294,6 +303,74 @@ int Plateau::calculerPoints() const
     *@return Le nombre total de points total
     */
     return calculerPointsCaserne() + calculerPointsHabitation() + calculerPointsJardin() + calculerPointsMarche() + calculerPointsTemple();
+}
+
+int Plateau::placerTuile(Tuile &t){
+    listeTuiles.push_back(t);
+    return 1;
+}
+
+
+int Plateau::calculerPointsia(int& diff)const{
+    int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0;
+    int nbHabitation = 0, nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbCarriere=0;
+    int total = 0;
+
+    pourChaqueHexagone([&](const Hexagone *h)
+    {
+        switch (h->getType())
+        {
+        case TypeHex::Habitation :
+            nbHabitation ++;
+            break;
+        case TypeHex::Marche :
+            nbMarche ++;
+            break;
+        case TypeHex::Temple:
+            nbTemple ++;
+            break;
+        case TypeHex::Caserne :
+            nbCaserne ++;
+            break;
+        case TypeHex::Jardin :
+            nbJardin ++;
+            break;
+        case TypeHex::PHabitation :
+            PlaceHabitation += h->getMultiplicateur();
+            break;
+        case TypeHex::PMarche :
+            PlaceMarche += h->getMultiplicateur();
+            break;
+        case TypeHex::PCaserne :
+            PlaceCaserne += h->getMultiplicateur();
+            break;
+        case TypeHex::PTemple :
+            PlaceTemple += h->getMultiplicateur();
+            break;
+        case TypeHex::PJardin :
+            PlaceJardin += h->getMultiplicateur();
+            break;
+        case TypeHex::Carriere:
+            nbCarriere += 2;
+            break;
+        default:
+            break;
+        }
+
+    });
+    if (diff == 2){
+        total += nbCarriere;
+    }
+    if(diff == 3){
+        nbHabitation *= 2;
+        nbMarche *= 2;
+        nbCaserne *= 2;
+        nbTemple *= 2;
+        nbJardin *=2;
+    }
+    total += nbHabitation*PlaceHabitation + nbMarche*PlaceMarche + nbCaserne*PlaceCaserne  + nbTemple*PlaceTemple + nbJardin*PlaceJardin;
+    return total;
+
 }
 
 int Plateau::calculerPointsCaserne() const
