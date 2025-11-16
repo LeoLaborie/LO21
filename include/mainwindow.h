@@ -3,12 +3,8 @@
 
 #include <QMainWindow>
 #include <qapplication.h>
-#include <QWidget>
 
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
@@ -16,15 +12,6 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
-
-private slots:
-
-
-    void on_pushButton_clicked();
-
-private:
-    Ui::MainWindow* ui;
 };
 
-#endif // MAINWINDOW_H
+#endif
