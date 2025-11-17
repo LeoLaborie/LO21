@@ -61,6 +61,7 @@ private:
 
 public:
     void setNbrPoints() override;
+    using Joueur::piocherTuile;
     Tuile *piocherTuile(int id, Chantier &chantier);
     int choixTuile(const Chantier& chantier)override;
     bool placerTuile(Tuile &t);

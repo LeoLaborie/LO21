@@ -71,7 +71,14 @@ void saveTuile(std::ostream& os, const Tuile& t)
 
 void savePlateau(std::ostream& os, const Plateau& plateau)
 {
+    const auto& tuiles = plateau.getTuiles();
     os << "Plateau {\n";
+    os << "  nb_tuiles=" << tuiles.size() << "\n";
+    for (size_t i = 0; i < tuiles.size(); ++i)
+    {
+        os << "  tuile_" << i << "=\n";
+        saveTuile(os, tuiles[i]);
+    }
     os << "}\n";
 }
 
@@ -136,4 +143,5 @@ bool charger(const std::string& nomSauvegarde){
 
         data[cle] = valeur;
     }
+    return true;
 }

@@ -39,7 +39,7 @@ void Partie::creerFauxJoueur(){
         int difficulte;
         std::cout<<"Choisissez le niveau de difficulté de l'Illustre Architecte (entre 1 et 3)\n";
         std::cin>>difficulte;
-        while(difficulte>3 && difficulte<1){
+        while(difficulte>3 || difficulte<1){
             texte_couleur(ROUGE);
             texte_gras_on();
             std::cout<<"Niveau de difficulté invalide\n";
