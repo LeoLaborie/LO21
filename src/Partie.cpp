@@ -55,30 +55,30 @@ void Partie::creerFauxJoueur(){
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
     if (type == "placeBleue")
-        return new Hexagone(0, 0, 0, TypeHex::PHabitation, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PHabitation, &tuile);
     else if (type == "placeJaune")
     {
         *marcheDejaPresent = true;
-        return new Hexagone(0, 0, 0, TypeHex::PMarche, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PMarche, &tuile);
     }
     else if (type == "placeRouge")
-        return new Hexagone(0, 0, 0, TypeHex::PCaserne, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PCaserne,  &tuile);
     else if (type == "placeViolette")
-        return new Hexagone(0, 0, 0, TypeHex::PTemple, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PTemple,  &tuile);
     else if (type == "placeVerte")
-        return new Hexagone(0, 0, 0, TypeHex::PJardin, 3, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PJardin,&tuile);
     else if (type == "quartierBleu")
-        return new Hexagone(0, 0, 0, TypeHex::Habitation, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Habitation,&tuile);
     else if (type == "quartierJaune")
-        return new Hexagone(0, 0, 0, TypeHex::Marche, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Marche, &tuile);
     else if (type == "quartierRouge")
-        return new Hexagone(0, 0, 0, TypeHex::Caserne, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Caserne, &tuile);
     else if (type == "quartierViolet")
-        return new Hexagone(0, 0, 0, TypeHex::Temple, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Temple, &tuile);
     else if (type == "quartierVert")
-        return new Hexagone(0, 0, 0, TypeHex::Jardin, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Jardin, &tuile);
     else if (type == "carriere")
-        return new Hexagone(0, 0, 0, TypeHex::Carriere, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Carriere, &tuile);
 
     throw std::runtime_error("Type inconnu: " + type);
 }

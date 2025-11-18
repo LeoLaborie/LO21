@@ -1,5 +1,6 @@
 #include "Plateau.h"
 #include <algorithm>
+#include <unordered_map>
 
 Plateau::Plateau(const bool vs[5])
 {
@@ -7,7 +8,7 @@ Plateau::Plateau(const bool vs[5])
         variantesScores[i]=vs[i];
     }
     listeTuiles.clear();
-    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation, 1), new Hexagone(-1, 1, 0, TypeHex::Carriere)
+    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere)
         , new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
 
@@ -17,7 +18,7 @@ Plateau::Plateau(const bool vs[5])
 Plateau::Plateau()
 {
     listeTuiles.clear();
-    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation, 1), new Hexagone(-1, 1, 0, TypeHex::Carriere)
+    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere)
         , new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
 
@@ -296,20 +297,94 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     return res;
 }
 
-int Plateau::calculerPoints() const
-{
-    /*
-    *Calcul le nombre de points total
-    *@return Le nombre total de points total
-    */
-    return calculerPointsCaserne() + calculerPointsHabitation() + calculerPointsJardin() + calculerPointsMarche() + calculerPointsTemple();
-}
+
 
 int Plateau::placerTuile(Tuile &t){
     listeTuiles.push_back(t);
     return 1;
 }
 
+
+int Plateau::calculerPoints() const
+{
+    /*
+    *Calcul le nombre de points total
+    *@return Le nombre total de points total
+    */
+    int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0,
+     nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbHabitation;
+    int total = 0;
+    std::vector<SommetHab> grapheHabitation;
+    std::unordered_map<const Hexagone*, int> indexHabitation;
+    pourChaqueHexagone([&](const Hexagone *h)
+    {
+        switch (h->getType())
+        {
+        case TypeHex::Habitation : {
+            SommetHab current;
+            current.current = h;
+            current.dejaVisite = false;
+            grapheHabitation.push_back(current);
+            indexHabitation[h] = static_cast<int>(grapheHabitation.size() - 1);
+            break;
+        }
+        case TypeHex::Marche : {
+            nbMarche=calculerPointsMarche(h);
+            break;
+        }
+        case TypeHex::Temple: {
+            nbTemple=calculerPointsTemple(h);
+            break;
+        }
+        case TypeHex::Caserne : {
+            nbCaserne=calculerPointsCaserne(h);
+            break;
+        }
+        case TypeHex::Jardin : {
+            nbJardin=calculerPointsJardin(h);
+            break;
+        }
+        case TypeHex::PHabitation : {
+            PlaceHabitation ++ ;
+            break;
+        }
+        case TypeHex::PMarche : {
+            PlaceMarche += 2;
+            break;
+        }
+        case TypeHex::PCaserne : {
+            PlaceCaserne += 2;
+            break;
+        }
+        case TypeHex::PTemple : {
+            PlaceTemple += 2;
+            break;
+        }
+        case TypeHex::PJardin : {
+            PlaceJardin += 3;
+            break;
+        }
+        default:
+            break;
+        }
+
+    });
+    for (auto &sommet : grapheHabitation)
+    {
+        for (auto voisin : sommet.current->getVoisins())
+        {
+            auto it = indexHabitation.find(voisin);
+            if (it != indexHabitation.end())
+            {
+                sommet.voisins.push_back(it->second);
+            }
+        }
+    }
+    nbHabitation=calculerPointsHabitation(grapheHabitation);
+    total += nbHabitation*PlaceHabitation + nbMarche*PlaceMarche + nbCaserne*PlaceCaserne  + nbTemple*PlaceTemple + nbJardin*PlaceJardin;
+    return total;
+
+}
 
 int Plateau::calculerPointsia(int& diff)const{
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0;
@@ -336,19 +411,19 @@ int Plateau::calculerPointsia(int& diff)const{
             nbJardin ++;
             break;
         case TypeHex::PHabitation :
-            PlaceHabitation += h->getMultiplicateur();
+            PlaceHabitation ++;
             break;
         case TypeHex::PMarche :
-            PlaceMarche += h->getMultiplicateur();
+            PlaceMarche += 2;
             break;
         case TypeHex::PCaserne :
-            PlaceCaserne += h->getMultiplicateur();
+            PlaceCaserne += 2;
             break;
         case TypeHex::PTemple :
-            PlaceTemple += h->getMultiplicateur();
+            PlaceTemple += 2;
             break;
         case TypeHex::PJardin :
-            PlaceJardin += h->getMultiplicateur();
+            PlaceJardin += 3;
             break;
         case TypeHex::Carriere:
             nbCarriere += 2;
@@ -373,64 +448,116 @@ int Plateau::calculerPointsia(int& diff)const{
 
 }
 
-int Plateau::calculerPointsCaserne() const
+
+int Plateau::calculerPointsCaserne(const Hexagone* h) const
 {
     /*
-    *Calcul le nombre de points donner par les casernes (places et quartiers)
-    *@return Le nombre total de points
+    *Calcul le nombre de points donner par la carserne
+    *@return Le nombre de points
     */
-    int placeCaserne = 0;
-    int nbCaserne = 0;
-
-    pourChaqueHexagone([&](const Hexagone *hex)
-    {
-        if (hex->getEstRecouvert())
-            return;
-
-        if (hex->getType() == TypeHex::Caserne)
-        {
-
-            if (hex->getVoisins().size() <= 5)
-                nbCaserne += hex->getZ(); // si il a 5 voisins ou moins p'est qu'il est sur un bord
-
-            if  (variantesScores[2] && hex->getVoisins().size() <= 3)
-                nbCaserne += hex->getZ(); // si la variante est activée et qu'il y a moins de 3 voisins ou moins, on doubles le nb de casernes  
-        }
-        if(hex->getType() == TypeHex::PCaserne)
-                placeCaserne += hex->getMultiplicateur();
-    });
-
-    return placeCaserne * nbCaserne;
+    
+    int multi=1;
+    if  (variantesScores[2] && h->getVoisins().size() <= 3) multi=2;
+    return (h->getVoisins().size() <= 5) ? (h->getZ()+1)*multi : 0;
 }
 
-int Plateau::calculerPointsTemple() const
+int Plateau::calculerPointsTemple(const Hexagone* h) const
 {
     /*
-     *Calcul Le nombre de points donnés par les temples (en comprenant les places et les varaiantes)
+     *Calcul Le nombre de points donnés par le temple 
+     *
+     *@return Le nombre total de points apporté par le temple
+     */
+    int mult=1;
+    if (variantesScores[3] && h->getZ()>=1) mult=2;
+    return (h->getVoisins().size() == 6) ? (h->getZ()+1)*mult : 0;
+}
+
+
+int Plateau::calculerPointsJardin(const Hexagone* h) const{
+
+    /*
+     *Calcul Le nombre de points donnés par le jardin passé en paramètre
      *
      *@return Le nombre total de points
      */
-    int placeTemple = 0;
-    int nbTemple = 0;
+    return (h->getZ()+1)+conditionVarianteJardin(h)*variantesScores[4]*(h->getZ()+1);
+}
 
-    pourChaqueHexagone([&](const Hexagone *hex)
+int Plateau::calculerPointsMarche(const Hexagone* h) const
+{
+    /*
+     *Calcul Le nombre de points donnés par le marché
+     *
+     *@return Le nombre total de points apporté
+     */
+    int nbpoint=0;
+    bool voisinMarche=false;
+    for (const auto &voisin : h->getVoisins())
     {
-        if (hex->getEstRecouvert())
-            return;
-
-        if(hex->getType() == TypeHex::Temple){
-            if (hex->getVoisins().size() == 6)
-                nbTemple += hex->getZ();
-
-            if(variantesScores[3] && hex->getZ() > 1)
-                nbTemple += hex->getZ(); // On double les points des temples si ils sont à une hauteur plus hate que 1
-            
+        if(voisin->getType() == TypeHex::Marche)
+        {
+            voisinMarche = true;
+            break;
         }
-        if(hex->getType() == TypeHex::PTemple)
-                placeTemple += hex->getMultiplicateur();
-    });
+    }
+    if(!voisinMarche){
+        nbpoint += h->getZ();
 
-    return placeTemple * nbTemple;
+        if (variantesScores[1]){
+
+            for(const auto &voisin: h->getVoisins()){
+
+                if (voisin->getType() == TypeHex::PMarche){
+                    nbpoint += h->getZ();
+                    break;
+                }
+            }
+        }
+    }
+    return nbpoint;}
+
+int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const
+{
+    /*
+     *Calcul Le nombre de points donnés par les habitations 
+     *
+     *@return Le nombre total de points
+     */
+    int plusGrosQuartier = 0;
+    int scorePlusgrosQuartier=0;
+    for (std::size_t i = 0; i < grapheHabitation.size(); ++i)
+    {
+        if (grapheHabitation[i].dejaVisite)
+            continue;
+
+        int tailleQuartier = 0;
+        int scoreQuartier =0;
+        std::vector<std::size_t> aVisiter = {i};
+        grapheHabitation[i].dejaVisite = true;
+
+        while (!aVisiter.empty())
+        {
+            std::size_t currentIndex = aVisiter.back();
+            aVisiter.pop_back();
+            tailleQuartier+=1;
+            scoreQuartier += grapheHabitation[currentIndex].current->getZ() + 1;
+
+            for (int voisinIndex : grapheHabitation[currentIndex].voisins)
+            {
+                std::size_t voisin = voisinIndex;
+                if (!grapheHabitation[voisin].dejaVisite)
+                {
+                    grapheHabitation[voisin].dejaVisite = true;
+                    aVisiter.push_back(voisin);
+                }
+            }
+        }
+        plusGrosQuartier = std::max(plusGrosQuartier, tailleQuartier);
+        if (tailleQuartier==plusGrosQuartier && scorePlusgrosQuartier<scoreQuartier) scorePlusgrosQuartier=scoreQuartier;
+    }
+    if (scorePlusgrosQuartier>=10 && variantesScores[0]) scorePlusgrosQuartier*=2;
+    return scorePlusgrosQuartier;
 }
 
 bool Plateau::conditionVarianteJardin (const Hexagone* q) const{
@@ -487,172 +614,6 @@ bool Plateau::conditionVarianteJardin (const Hexagone* q) const{
 
 
     return conditionRemplie;
-}
-
-int Plateau::calculerPointsJardin() const{
-
-    /*
-     *Calcul Le nombre de points donnés par les jardins (en comprenant les places et les varaiantes)
-     *
-     *@return Le nombre total de points
-     */
-
-    int placeJardin = 0;
-    int nbJardin = 0;
-
-    pourChaqueHexagone([&](const Hexagone *hex)
-    {
-        if (hex->getEstRecouvert())
-            return;
-
-        if(hex->getType() == TypeHex::Jardin){
-                nbJardin += hex->getZ();
-            
-            if(variantesScores[4] && Plateau::conditionVarianteJardin(hex))
-                nbJardin += hex->getZ();
-        }
-
-        if(hex->getType() == TypeHex::PJardin)
-                placeJardin += hex->getMultiplicateur();
-    });
-
-    return placeJardin * nbJardin;
-}
-
-int Plateau::calculerPointsMarche() const
-{
-    /*
-     *Calcul Le nombre de points donnés par les marchés (en comprenant les places et les varaiantes)
-     *
-     *@return Le nombre total de points
-     */
-    int placeMarche = 0;
-    int nbMarche = 0;
-  
-    bool voisinMarche = false;
-
-    pourChaqueHexagone([&](const Hexagone* hex)
-    {
-        if (hex->getEstRecouvert())
-            return;
-
-        if(hex->getType() == TypeHex::Marche){
-            voisinMarche = false;
-            for (const auto &voisin : hex->getVoisins())
-            {
-                if(voisin->getType() == TypeHex::Marche)
-                {
-                    voisinMarche = true;
-                    break;
-                }
-            }
-            if(!voisinMarche){
-                nbMarche += hex->getZ();
-
-                if (variantesScores[1]){
-
-                    for(const auto &voisin: hex->getVoisins()){
-
-                        if (voisin->getType() == TypeHex::PMarche){
-                            nbMarche += hex->getZ();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        if (hex->getType() == TypeHex::PMarche){
-            placeMarche += hex->getMultiplicateur();
-        }
-    });
-
-    return placeMarche + nbMarche;
-}
-
-int Plateau::calculerPointsHabitation() const
-{
-    /*
-     *Calcul Le nombre de points donnés par les habitations (en comprenant les places et les varaiantes)
-     *
-     *@return Le nombre total de points
-     */
-    int placeHabitation = 0;
-    int nbHabitation = 0;
-
-    std::vector<const Hexagone *> tabHabitation; // pour stocker toutes les habitations, on détermine le plus grand groupe après
-
-    pourChaqueHexagone([&](const Hexagone* hex)
-    {
-        if (hex->getEstRecouvert())
-            return;
-
-        if (hex->getType() == TypeHex::Habitation){
-            {
-                tabHabitation.push_back(hex);
-            }
-        }
-        if (hex->getType() == TypeHex::PHabitation){
-                placeHabitation += hex->getMultiplicateur();
-            
-        }
-    });
-
-    // On détermine le plus grand groupe d'habitations
-    std::vector<const Hexagone *> groupeMaxHab; // le groupe d'habitation le plus grand, la taille est à 0 par défaut
-    std::vector<const Hexagone *> habVisites;   // liste des habitations déjà visités
-
-    for (const Hexagone *hab : tabHabitation)
-    {
-
-        if (ContientPas(habVisites, hab))
-        {
-
-            std::vector<const Hexagone *> voisinsHabitation; // les voisins, que l'on va ajouter et supprimer au fur et à mesure
-            voisinsHabitation.push_back(hab);
-
-            habVisites.push_back(hab);
-
-            std::vector<const Hexagone *> groupeHabitation; // le groupe d'habitation que l'on est en train de regarder
-            groupeHabitation.push_back(hab);
-
-            while (voisinsHabitation.size())
-            { // on parcourt les voisins jusqu'à ce qu'il n'y en ait plus
-
-                const Hexagone *habActuelle = voisinsHabitation.back();
-                voisinsHabitation.pop_back();
-
-                for (const Hexagone *voisin : habActuelle->getVoisins())
-                {
-
-                    if (voisin->getType() == TypeHex::Habitation && ContientPas(habVisites, voisin))
-                        {
-                            // On vérifie que le quartier voisin n'a pas déjà été visité et que p'est bien une habitation
-
-                            voisinsHabitation.push_back(voisin);
-                            groupeHabitation.push_back(voisin);
-                            habVisites.push_back(voisin);
-                        }
-                    
-                }
-            }
-
-            if (groupeHabitation.size() > groupeMaxHab.size())
-            {
-                groupeMaxHab = groupeHabitation;
-            }
-        }
-    }
-
-    for (const Hexagone *hab : groupeMaxHab)
-    {
-        nbHabitation += hab->getZ();
-    }
-
-    if (variantesScores[0] && nbHabitation >= 10){
-        nbHabitation *= 2;
-    }
-
-    return placeHabitation * nbHabitation;
 }
 
 std::ostream& operator<<(std::ostream& os, const Plateau& p) 

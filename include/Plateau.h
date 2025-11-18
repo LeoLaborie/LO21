@@ -13,8 +13,11 @@
 class Partie;
 class Joueur;
 
-
-
+struct SommetHab {    
+    const Hexagone * current;        
+    std::vector<size_t> voisins;   
+    bool dejaVisite = false;
+};
 
 
 class Plateau
@@ -53,12 +56,12 @@ public:
     //calcul des points
     int calculerPoints() const;
     int calculerPointsia(int& diff) const;
-    int calculerPointsHabitation() const;
-    int calculerPointsMarche() const;
-    int calculerPointsJardin() const;
+    int calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const;
+    int calculerPointsMarche(const Hexagone* h) const;
+    int calculerPointsJardin(const Hexagone* h) const;
     bool conditionVarianteJardin(const Hexagone* q) const;
-    int calculerPointsTemple() const;
-    int calculerPointsCaserne() const;
+    int calculerPointsTemple(const Hexagone* h) const;
+    int calculerPointsCaserne(const Hexagone* h) const;
 
     //gestion placement
     std::vector<Position>getPositionsLegales(const Tuile &t) const;
