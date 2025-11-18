@@ -42,7 +42,7 @@ public:
 
     //autres méthodes
     virtual Tuile *piocherTuile(int id, Chantier &chantier, IllustreArchitecte* fauxJoueur);
-    bool placerTuile(Tuile &t, Position &p);
+    void placerTuile(Tuile &t, Position &p);
     
     //surchages
     friend std::ostream& operator<<(std::ostream &os,const Joueur& j);
@@ -64,7 +64,7 @@ public:
     using Joueur::piocherTuile;
     Tuile *piocherTuile(int id, Chantier &chantier);
     int choixTuile(const Chantier& chantier)override;
-    bool placerTuile(Tuile &t);
+    void placerTuile(Tuile &t);
 
     int getdifficulte(){return difficulte;}
 

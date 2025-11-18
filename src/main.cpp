@@ -177,30 +177,19 @@ int main()
 
                 Position pos{x, y, z};
 
-                // Vérification avant tentative de placement
-                if (!joueurCourant.getPlateau().verifierPlacementTuile(pos, *tuilePiochee))
-                {
-                    texte_couleur(ROUGE);
-                    texte_gras_on();
-                    std::cout << "Placement invalide : au sol il faut toucher un bord ; en hauteur, chaque hex doit être supporté (sur au moins 2 tuiles différentes).\n";
-                    texte_reset();  
-                    continue;
-                }
-
-                placementTuile = joueurCourant.placerTuile(*tuilePiochee, pos);
-
-                if (placementTuile)
-                {
+                try {
+                    joueurCourant.placerTuile(*tuilePiochee, pos);
                     texte_couleur(JAUNE);
                     texte_gras_on();
                     std::cout << "\n Tuile placée avec succès.\n";
                     texte_reset();
+                    placementTuile = true;
                 }
-                else
-                {
+
+                catch (const std::invalid_argument& e) {
                     texte_couleur(ROUGE);
                     texte_gras_on();
-                    std::cout << "\n La tuile n'a pas été placée.\n";
+                    std::cout << e.what() << "\n";
                     texte_reset();
                 }
             }
@@ -232,7 +221,7 @@ int main()
                     std::cout << "Erreur lors de la pioche de la tuile.\n";
                 }
 
-                placementTuile = ia->placerTuile(*tuilePiochee);
+                ia->placerTuile(*tuilePiochee);
             }
 
             // Passage au joueur suivant

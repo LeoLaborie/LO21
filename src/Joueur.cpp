@@ -59,22 +59,24 @@ Tuile* IllustreArchitecte::piocherTuile(int id, Chantier& chantier){
     return &tuileEnMain;
 }
 
-bool Joueur::placerTuile(Tuile &t, Position &p)
+void Joueur::placerTuile(Tuile &t, Position &p)
 {
-    int carrieresCouvertes = plateau.placerTuile(t, p);
-    if (carrieresCouvertes != -1)
-    {
-        setNbrPierres(getNbrPierres() + carrieresCouvertes);
-        setNbrPoints();
+    try{
+        int carrieresCouvertes = plateau.placerTuile(t, p);
+        if (carrieresCouvertes != -1)
+        {
+            setNbrPierres(getNbrPierres() + carrieresCouvertes);
+            setNbrPoints();
+        }
     }
-    return carrieresCouvertes != -1;
+    catch (const std::invalid_argument& e){
+        throw e;
+    }
 }
 
-
-bool IllustreArchitecte::placerTuile(Tuile &t){
+void IllustreArchitecte::placerTuile(Tuile &t){
     plateau.placerTuile(t);
     setNbrPoints();
-    return true;
 }
 
 int Joueur::choixTuile(const Chantier& chantier){

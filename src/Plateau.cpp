@@ -242,17 +242,9 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     *Place une tuile dans le plateau si son placement est correct
     *@return Le nombre de carrière recouvert et -1 si placement incorrect 
     */
-
     int res = 0;
 
-    if (!verifierPlacementTuile(p, t))
-    {
-        texte_couleur(ROUGE);
-        texte_gras_on();
-        std::cout << " Placement de tuile invalide." << std::endl;
-        texte_reset();
-        return -1;
-    }
+    if (!verifierPlacementTuile(p, t)) throw std::invalid_argument("Placement de tuile invalide.");
 
     // positionner la tuile (3 hexagones)
     for (size_t i = 0; i < t.getHexagones().size(); ++i)
@@ -297,13 +289,10 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     return res;
 }
 
-
-
 int Plateau::placerTuile(Tuile &t){
     listeTuiles.push_back(t);
     return 1;
 }
-
 
 int Plateau::calculerPoints() const
 {
