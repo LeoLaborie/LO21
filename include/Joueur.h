@@ -47,6 +47,11 @@ public:
     // surchages
     friend std::ostream &operator<<(std::ostream &os, const Joueur &j);
 
+    /**
+     * @brief Permet au joueur de choisir une tuile dans le chantier
+     * @param chantier le chantier de la partie
+     * @return id de la Tuile choisie par le joueur
+     */
     virtual int choixTuile(const Chantier &chantier);
 };
 

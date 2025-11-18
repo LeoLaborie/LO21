@@ -84,11 +84,6 @@ void IllustreArchitecte::placerTuile(Tuile &t)
     setNbrPoints();
 }
 
-/**
- * @brief Permet au joueur de choisir une tuile dans le chantier
- * @param chantier le chantier de la partie
- * @return id de la Tuile choisie par le joueur
- */
 int Joueur::choixTuile(const Chantier &chantier)
 {
     int idTuile = -1;

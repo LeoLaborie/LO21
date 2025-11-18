@@ -22,9 +22,6 @@ Plateau::Plateau()
     listeTuiles.push_back(tuileDepart);
 }
 
-/**
- * @brief Met à jour les voisins de chaque hexagone du plateau
- */
 void Plateau::updateVoisins()
 {
     // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
@@ -59,12 +56,6 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-/**
- * @brief Vérifie si le placement d'une tuile à une position donnée est valide
- * @param p Position de placement
- * @param t Tuile à placer
- * @return true si le placement est valide, false sinon
- */
 bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 {
     std::vector<const Tuile *> tuiles_en_dessous;
@@ -158,11 +149,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 
     return true;
 }
-/**
- * @brief Calcule toutes les positions légales en fonction d'une tuile (sa rotation)
- * @param t Tuile à placer
- * @return Vecteur contenant toutes les positions correctes
- */
+
 std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const
 {
     std::vector<Position> listeValide;
@@ -212,10 +199,6 @@ std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const
     return listeValide;
 }
 
-/**
- * @brief Affiche toutes les positions légales possibles pour une certaine tuile
- * @param t Tuile à placer
- */
 void Plateau::afficherPositionsLegales(const Tuile &t) const
 {
     auto positions = getPositionsLegales(t);
@@ -229,13 +212,6 @@ void Plateau::afficherPositionsLegales(const Tuile &t) const
     }
 }
 
-/**
- * @brief Place une tuile à une position donnée sur le plateau
- * @param t Tuile à placer
- * @param p Position de placement
- * @return Nombre de carrières recouvertes
- * @throws std::invalid_argument si le placement est invalide
- */
 int Plateau::placerTuile(Tuile &t, Position &p)
 {
     int res = 0;
@@ -291,10 +267,6 @@ int Plateau::placerTuile(Tuile &t)
     return 1;
 }
 
-/**
- * @brief Calcule le nombre de points total
- * @return Nombre total de points total
- */
 int Plateau::calculerPoints() const
 {
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0,
@@ -443,10 +415,6 @@ int Plateau::calculerPointsia(int &diff) const
     return total;
 }
 
-/**
- * @brief Calcule le nombre de points apportés par la caserne
- * @return Nombre de points
- */
 int Plateau::calculerPointsCaserne(const Hexagone *h) const
 {
     int multi = 1;
@@ -455,10 +423,6 @@ int Plateau::calculerPointsCaserne(const Hexagone *h) const
     return (h->getVoisins().size() <= 5) ? (h->getZ() + 1) * multi : 0;
 }
 
-/**
- * @brief Calcule le nombre de points apportés par le temple
- * @return Nombre total de points apportés par le temple
- */
 int Plateau::calculerPointsTemple(const Hexagone *h) const
 {
     int mult = 1;
@@ -467,19 +431,11 @@ int Plateau::calculerPointsTemple(const Hexagone *h) const
     return (h->getVoisins().size() == 6) ? (h->getZ() + 1) * mult : 0;
 }
 
-/**
- * @brief Calcule le nombre de points apportés par le jardin
- * @return Nombre total de points apportés par le jardin
- */
 int Plateau::calculerPointsJardin(const Hexagone *h) const
 {
     return (h->getZ() + 1) + conditionVarianteJardin(h) * variantesScores[4] * (h->getZ() + 1);
 }
 
-/**
- * @brief Calcule le nombre de points donnés par le marché
- * @return Nombre total de points apportés par le marché
- */
 int Plateau::calculerPointsMarche(const Hexagone *h) const
 {
     int nbpoint = 0;
@@ -513,10 +469,6 @@ int Plateau::calculerPointsMarche(const Hexagone *h) const
     return nbpoint;
 }
 
-/**
- * @brief Calcule le nombre de points apportés par les habitations
- * @return Nombre total de points apportés par les habitations
- */
 int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const
 {
     int plusGrosQuartier = 0;
@@ -616,10 +568,6 @@ bool Plateau::conditionVarianteJardin(const Hexagone *q) const
     return conditionRemplie;
 }
 
-/**
- * @brief Surchage l'operator << pour utiliser std::cout
- * @return une référence ostream
- */
 std::ostream &operator<<(std::ostream &os, const Plateau &p)
 {
     os << "\nPlateau contient " << p.listeTuiles.size() << " tuiles :\n";
