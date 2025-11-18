@@ -45,7 +45,6 @@ void saveHex(std::ostream& os, const Hexagone* hex)
     os << "  y=" << hex->getY() << "\n";
     os << "  z=" << hex->getZ() << "\n";
     os << "  type=" << typeToString(hex->getType()) << "\n";
-    os << "  mult=" << hex->getMultiplicateur() << "\n";
     os << "  recouvert=" << hex->getEstRecouvert() << "\n";
     os << "}\n";
 }

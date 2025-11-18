@@ -30,13 +30,12 @@ private:
     Tuile* parent{};
     bool est_recouvert = false;
     TypeHex type_ = TypeHex::Habitation;
-    int multiplicateur_ = 1;
 
 public:
     //constructeur / destructeur
-    Hexagone(int x_coord, int y_coord, int z_coord,TypeHex type,int multiplicateur = 1,
+    Hexagone(int x_coord, int y_coord, int z_coord,TypeHex type,
         Tuile* p = nullptr,std::vector<Hexagone*> v = {})
-        : voisins(std::move(v)),x(x_coord), y(y_coord), z(z_coord),parent(p),type_(type),multiplicateur_(multiplicateur) {}
+        : voisins(std::move(v)),x(x_coord), y(y_coord), z(z_coord),parent(p),type_(type) {}
     ~Hexagone() = default;
 
     //getters
@@ -48,7 +47,6 @@ public:
     int getY() const { return y; }
     int getZ() const { return z; }
     TypeHex getType() const { return type_; }
-    int  getMultiplicateur() const { return multiplicateur_; }
 
     //setters
     void setVoisins(std::vector<Hexagone*> v) { voisins = std::move(v); }
@@ -58,7 +56,6 @@ public:
     void setCoord(int x_coord, int y_coord, int z_coord) {
         x = x_coord; y = y_coord; z = z_coord;
     }
-    void setMultiplicateur(int m)  { multiplicateur_ = m; }
 
 
     //autres méthodes
