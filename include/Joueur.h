@@ -12,6 +12,7 @@ class Partie;
 class IllustreArchitecte;
 
 /**
+ * @class Joueur
  * @brief Classe représentant un joueur humain
  */
 class Joueur
