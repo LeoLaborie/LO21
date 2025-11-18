@@ -1,17 +1,16 @@
 #include "Joueur.h"
 #include <utility>
-#include <limits>   
+#include <limits>
 
-Joueur::Joueur(const bool variantesScore[5],std::string nom)
+Joueur::Joueur(const bool variantesScore[5], std::string nom)
     : nbrPierres(0), nbrPoints(0), nom(std::move(nom)), plateau(variantesScore) {}
 
 Joueur::Joueur(std::string nom)
-    : nbrPierres(0), nbrPoints(0), nom(std::move(nom)), plateau(){}
-
+    : nbrPierres(0), nbrPoints(0), nom(std::move(nom)), plateau() {}
 
 IllustreArchitecte::IllustreArchitecte(int diff)
     : Joueur("Illustre Architecte"),
-      difficulte(diff){};
+      difficulte(diff) {};
 
 int Joueur::getNbrPierres() const
 {
@@ -33,18 +32,20 @@ void Joueur::setNbrPoints()
     nbrPoints = getPlateau().calculerPoints();
 }
 
-void IllustreArchitecte::setNbrPoints(){
+void IllustreArchitecte::setNbrPoints()
+{
     nbrPoints = getPlateau().calculerPoints();
 }
 
-Tuile* Joueur::piocherTuile(int id, Chantier& chantier, IllustreArchitecte* fauxJoueur)
+Tuile *Joueur::piocherTuile(int id, Chantier &chantier, IllustreArchitecte *fauxJoueur)
 {
     if (id < 0 || id >= chantier.getTaille())
         return nullptr;
     if (id > getNbrPierres())
         return nullptr;
     setNbrPierres(getNbrPierres() - id);
-    if(fauxJoueur){
+    if (fauxJoueur)
+    {
         fauxJoueur->setNbrPierres(fauxJoueur->getNbrPierres() + id);
     }
     setTuileEnMain(chantier.getTuiles()[id]);
@@ -52,7 +53,8 @@ Tuile* Joueur::piocherTuile(int id, Chantier& chantier, IllustreArchitecte* faux
     return &tuileEnMain;
 }
 
-Tuile* IllustreArchitecte::piocherTuile(int id, Chantier& chantier){
+Tuile *IllustreArchitecte::piocherTuile(int id, Chantier &chantier)
+{
     setNbrPierres(getNbrPierres() - id);
     setTuileEnMain(chantier.getTuiles()[id]);
     chantier.retirerTuile(id);
@@ -61,7 +63,8 @@ Tuile* IllustreArchitecte::piocherTuile(int id, Chantier& chantier){
 
 void Joueur::placerTuile(Tuile &t, Position &p)
 {
-    try{
+    try
+    {
         int carrieresCouvertes = plateau.placerTuile(t, p);
         if (carrieresCouvertes != -1)
         {
@@ -69,27 +72,31 @@ void Joueur::placerTuile(Tuile &t, Position &p)
             setNbrPoints();
         }
     }
-    catch (const std::invalid_argument& e){
+    catch (const std::invalid_argument &e)
+    {
         throw e;
     }
 }
 
-void IllustreArchitecte::placerTuile(Tuile &t){
+void IllustreArchitecte::placerTuile(Tuile &t)
+{
     plateau.placerTuile(t);
     setNbrPoints();
 }
 
-int Joueur::choixTuile(const Chantier& chantier){
+int Joueur::choixTuile(const Chantier &chantier)
+{
     /* Permet au joueur, que ce soit un vrai joueur ou le faux joueur, de piocher une tuile dans le chantier
-    *@param le chantier de la partie
-    *@return l'id de la Tuile qui a été pioché par le joueur
-    */
+     *@param le chantier de la partie
+     *@return l'id de la Tuile qui a été pioché par le joueur
+     */
     int idTuile = -1;
     while (chantier.getTaille() <= idTuile || idTuile < 0)
     {
         std::cout << "Entrez l'ID de la tuile à piocher : ";
 
-        if (!(std::cin >> idTuile)) {
+        if (!(std::cin >> idTuile))
+        {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             idTuile = -1;
@@ -114,27 +121,32 @@ int Joueur::choixTuile(const Chantier& chantier){
     return idTuile;
 }
 
-int IllustreArchitecte::choixTuile(const Chantier& chantier){
+int IllustreArchitecte::choixTuile(const Chantier &chantier)
+{
     int idTuile = -1;
     const std::vector<Tuile> &tuile = chantier.getTuiles();
     long unsigned int i = 0;
-    do {
-        for (const Hexagone *h: tuile[i].getHexagones()){
-            if((h->getType() == TypeHex::PHabitation || h->getType() == TypeHex::PCaserne ||
-            h->getType() == TypeHex::PTemple || h->getType() == TypeHex::PMarche || h->getType() == TypeHex::PJardin) 
-            && (getNbrPierres() < idTuile)){
+    do
+    {
+        for (const Hexagone *h : tuile[i].getHexagones())
+        {
+            if ((h->getType() == TypeHex::PHabitation || h->getType() == TypeHex::PCaserne ||
+                 h->getType() == TypeHex::PTemple || h->getType() == TypeHex::PMarche || h->getType() == TypeHex::PJardin) &&
+                (getNbrPierres() < idTuile))
+            {
                 idTuile = i;
             }
         }
         i++;
-    }while( i < tuile.size() && idTuile == -1);
-    if(idTuile == -1){
+    } while (i < tuile.size() && idTuile == -1);
+    if (idTuile == -1)
+    {
         idTuile = 0;
     }
     return idTuile;
 }
 
-std::ostream& operator<<(std::ostream &os,const Joueur& j)
+std::ostream &operator<<(std::ostream &os, const Joueur &j)
 {
     os << " ";
     texte_couleur(ROUGE);
@@ -147,8 +159,9 @@ std::ostream& operator<<(std::ostream &os,const Joueur& j)
     texte_reset();
     os << ", Points : ";
     texte_couleur(JAUNE);
-    os<< j.nbrPoints;
+    os << j.nbrPoints;
     texte_reset();
-    os << "\n"<<j.plateau<<std::endl;
+    os << "\n"
+       << j.plateau << std::endl;
     return os;
-    }
+}

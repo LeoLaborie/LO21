@@ -4,12 +4,12 @@
 
 Plateau::Plateau(const bool vs[5])
 {
-    for (int i=0;i<5;i++){
-        variantesScores[i]=vs[i];
+    for (int i = 0; i < 5; i++)
+    {
+        variantesScores[i] = vs[i];
     }
     listeTuiles.clear();
-    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere)
-        , new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
+    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
 
     updateVoisins();
@@ -18,24 +18,21 @@ Plateau::Plateau(const bool vs[5])
 Plateau::Plateau()
 {
     listeTuiles.clear();
-    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere)
-        , new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
+    Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
-
 }
 
 void Plateau::updateVoisins()
 {
     /*
-    *Met à jour les voisins d'une tuile
-    *@return void
-    */
+     *Met à jour les voisins d'une tuile
+     *@return void
+     */
     // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
     // Parcourir toutes les tuiles du plateau
-    pourChaqueHexagone([&](Hexagone* hexagone1)
-    {
-        pourChaqueHexagone([&](Hexagone* hexagone2)
-        {
+    pourChaqueHexagone([&](Hexagone *hexagone1)
+                       { pourChaqueHexagone([&](Hexagone *hexagone2)
+                                            {
             int dx = hexagone1->getX() - hexagone2->getX();
             int dy = hexagone1->getY() - hexagone2->getY();
 
@@ -54,9 +51,7 @@ void Plateau::updateVoisins()
                 {
                     hexagone2->addVoisin(hexagone1);
                 }
-            }
-        });
-    });
+            } }); });
 }
 
 template <class T>
@@ -65,12 +60,12 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
+bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 {
     /*
-    *Vérifie si une position est correct en fonction d'une tuile (surtout de sa rotation) et de sa nouvelle position théorique
-    *@return un bouléen sur la validité de la position passé en paramètre
-    */
+     *Vérifie si une position est correct en fonction d'une tuile (surtout de sa rotation) et de sa nouvelle position théorique
+     *@return un bouléen sur la validité de la position passé en paramètre
+     */
     std::vector<const Tuile *> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
@@ -101,8 +96,8 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
         if (h.z > 0)
             surElever = true;
 
-        pourChaqueHexagone([&](const Hexagone* hex_plateau)
-        {
+        pourChaqueHexagone([&](const Hexagone *hex_plateau)
+                           {
             if (superposition)
                 return;
 
@@ -137,8 +132,7 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
                         break;
                     }
                 }
-            }
-        });
+            } });
 
         if (superposition)
             return false;
@@ -164,42 +158,41 @@ bool Plateau::verifierPlacementTuile(const Position &p,const Tuile &t) const
     return true;
 }
 
-std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
+std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const
+{
     /*
-    *Calcul toutes les positions légales en fonction d'une tuile (sa rotation)
-    *@return un vector contenant toutes les positions corrects
-    */
+     *Calcul toutes les positions légales en fonction d'une tuile (sa rotation)
+     *@return un vector contenant toutes les positions corrects
+     */
     std::vector<Position> listeValide;
-    if (listeTuiles.empty()) return listeValide;
+    if (listeTuiles.empty())
+        return listeValide;
 
-
-    //on récupere le min et le max
+    // on récupere le min et le max
     int minX = listeTuiles[0].getHexagones()[0]->getX();
     int maxX = listeTuiles[0].getHexagones()[0]->getX();
     int minY = listeTuiles[0].getHexagones()[0]->getY();
     int maxY = listeTuiles[0].getHexagones()[0]->getY();
     int maxZ = listeTuiles[0].getHexagones()[0]->getZ();
 
-    pourChaqueHexagone([&](const Hexagone* h)
-    {
+    pourChaqueHexagone([&](const Hexagone *h)
+                       {
         minX = std::min(minX, h->getX());
         maxX = std::max(maxX, h->getX());
         minY = std::min(minY, h->getY());
         maxY = std::max(maxY, h->getY());
-        maxZ = std::max(maxZ, h->getZ());
-    });
+        maxZ = std::max(maxZ, h->getZ()); });
     int marge = 3;
 
-    //on se laisse de la marge >1 pour ne pas oublier des positions légales si on prend que 1
+    // on se laisse de la marge >1 pour ne pas oublier des positions légales si on prend que 1
     int minXTest = minX - marge;
     int maxXTest = maxX + marge;
     int minYTest = minY - marge;
     int maxYTest = maxY + marge;
     int minZTest = 0;
-    int maxZTest = maxZ + 1; 
+    int maxZTest = maxZ + 1;
 
-
-    //on parcours tt les positions possibles peu d'hexagones donc o(n³) ne pose pas de problème
+    // on parcours tt les positions possibles peu d'hexagones donc o(n³) ne pose pas de problème
     for (int z = minZTest; z <= maxZTest; ++z)
     {
         for (int x = minXTest; x <= maxXTest; ++x)
@@ -221,12 +214,12 @@ std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const{
 void Plateau::afficherPositionsLegales(const Tuile &t) const
 {
     /*
-    *affiche toutes les positions légales possible pour une certaine tuile (surout de sa position en fonction des rotations)
-    *@return void
-    */
+     *affiche toutes les positions légales possible pour une certaine tuile (surout de sa position en fonction des rotations)
+     *@return void
+     */
     auto positions = getPositionsLegales(t);
 
-    std::cout << "Positions legales pour cette tuile (" 
+    std::cout << "Positions legales pour cette tuile ("
               << positions.size() << " possibilités) :" << std::endl;
 
     for (const auto &p : positions)
@@ -235,16 +228,16 @@ void Plateau::afficherPositionsLegales(const Tuile &t) const
     }
 }
 
-
 int Plateau::placerTuile(Tuile &t, Position &p)
 {
     /*
-    *Place une tuile dans le plateau si son placement est correct
-    *@return Le nombre de carrière recouvert et -1 si placement incorrect 
-    */
+     *Place une tuile dans le plateau si son placement est correct
+     *@return Le nombre de carrière recouvert et -1 si placement incorrect
+     */
     int res = 0;
 
-    if (!verifierPlacementTuile(p, t)) throw std::invalid_argument("Placement de tuile invalide.");
+    if (!verifierPlacementTuile(p, t))
+        throw std::invalid_argument("Placement de tuile invalide.");
 
     // positionner la tuile (3 hexagones)
     for (size_t i = 0; i < t.getHexagones().size(); ++i)
@@ -264,8 +257,8 @@ int Plateau::placerTuile(Tuile &t, Position &p)
         auto Recouvrir = [&](int x, int y)
         {
             bool traite = false;
-            pourChaqueHexagone([&](Hexagone* h)
-            {
+            pourChaqueHexagone([&](Hexagone *h)
+                               {
                 if (traite)
                     return;
 
@@ -278,8 +271,7 @@ int Plateau::placerTuile(Tuile &t, Position &p)
                             ++res; // si on trouve une carrière en dessous, on signifie qu'on a recouvert une carrière en ajoutant 1 à la valeur de retour
                     }
                     traite = true;
-                }
-            });
+                } });
         };
 
         for (const auto &o : t.getOffsets())
@@ -289,7 +281,8 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     return res;
 }
 
-int Plateau::placerTuile(Tuile &t){
+int Plateau::placerTuile(Tuile &t)
+{
     listeTuiles.push_back(t);
     return 1;
 }
@@ -297,67 +290,76 @@ int Plateau::placerTuile(Tuile &t){
 int Plateau::calculerPoints() const
 {
     /*
-    *Calcul le nombre de points total
-    *@return Le nombre total de points total
-    */
+     *Calcul le nombre de points total
+     *@return Le nombre total de points total
+     */
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0,
-     nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbHabitation;
+        nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbHabitation;
     int total = 0;
     std::vector<SommetHab> grapheHabitation;
-    std::unordered_map<const Hexagone*, int> indexHabitation;
+    std::unordered_map<const Hexagone *, int> indexHabitation;
     pourChaqueHexagone([&](const Hexagone *h)
-    {
-        switch (h->getType())
-        {
-        case TypeHex::Habitation : {
-            SommetHab current;
-            current.current = h;
-            current.dejaVisite = false;
-            grapheHabitation.push_back(current);
-            indexHabitation[h] = static_cast<int>(grapheHabitation.size() - 1);
-            break;
-        }
-        case TypeHex::Marche : {
-            nbMarche=calculerPointsMarche(h);
-            break;
-        }
-        case TypeHex::Temple: {
-            nbTemple=calculerPointsTemple(h);
-            break;
-        }
-        case TypeHex::Caserne : {
-            nbCaserne=calculerPointsCaserne(h);
-            break;
-        }
-        case TypeHex::Jardin : {
-            nbJardin=calculerPointsJardin(h);
-            break;
-        }
-        case TypeHex::PHabitation : {
-            PlaceHabitation ++ ;
-            break;
-        }
-        case TypeHex::PMarche : {
-            PlaceMarche += 2;
-            break;
-        }
-        case TypeHex::PCaserne : {
-            PlaceCaserne += 2;
-            break;
-        }
-        case TypeHex::PTemple : {
-            PlaceTemple += 2;
-            break;
-        }
-        case TypeHex::PJardin : {
-            PlaceJardin += 3;
-            break;
-        }
-        default:
-            break;
-        }
-
-    });
+                       {
+                           switch (h->getType())
+                           {
+                           case TypeHex::Habitation:
+                           {
+                               SommetHab current;
+                               current.current = h;
+                               current.dejaVisite = false;
+                               grapheHabitation.push_back(current);
+                               indexHabitation[h] = static_cast<int>(grapheHabitation.size() - 1);
+                               break;
+                           }
+                           case TypeHex::Marche:
+                           {
+                               nbMarche = calculerPointsMarche(h);
+                               break;
+                           }
+                           case TypeHex::Temple:
+                           {
+                               nbTemple = calculerPointsTemple(h);
+                               break;
+                           }
+                           case TypeHex::Caserne:
+                           {
+                               nbCaserne = calculerPointsCaserne(h);
+                               break;
+                           }
+                           case TypeHex::Jardin:
+                           {
+                               nbJardin = calculerPointsJardin(h);
+                               break;
+                           }
+                           case TypeHex::PHabitation:
+                           {
+                               PlaceHabitation++;
+                               break;
+                           }
+                           case TypeHex::PMarche:
+                           {
+                               PlaceMarche += 2;
+                               break;
+                           }
+                           case TypeHex::PCaserne:
+                           {
+                               PlaceCaserne += 2;
+                               break;
+                           }
+                           case TypeHex::PTemple:
+                           {
+                               PlaceTemple += 2;
+                               break;
+                           }
+                           case TypeHex::PJardin:
+                           {
+                               PlaceJardin += 3;
+                               break;
+                           }
+                           default:
+                               break;
+                           }
+                       });
     for (auto &sommet : grapheHabitation)
     {
         for (auto voisin : sommet.current->getVoisins())
@@ -369,159 +371,165 @@ int Plateau::calculerPoints() const
             }
         }
     }
-    nbHabitation=calculerPointsHabitation(grapheHabitation);
-    total += nbHabitation*PlaceHabitation + nbMarche*PlaceMarche + nbCaserne*PlaceCaserne  + nbTemple*PlaceTemple + nbJardin*PlaceJardin;
+    nbHabitation = calculerPointsHabitation(grapheHabitation);
+    total += nbHabitation * PlaceHabitation + nbMarche * PlaceMarche + nbCaserne * PlaceCaserne + nbTemple * PlaceTemple + nbJardin * PlaceJardin;
     return total;
-
 }
 
-int Plateau::calculerPointsia(int& diff)const{
+int Plateau::calculerPointsia(int &diff) const
+{
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0;
-    int nbHabitation = 0, nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbCarriere=0;
+    int nbHabitation = 0, nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbCarriere = 0;
     int total = 0;
 
     pourChaqueHexagone([&](const Hexagone *h)
+                       {
+                           switch (h->getType())
+                           {
+                           case TypeHex::Habitation:
+                               nbHabitation++;
+                               break;
+                           case TypeHex::Marche:
+                               nbMarche++;
+                               break;
+                           case TypeHex::Temple:
+                               nbTemple++;
+                               break;
+                           case TypeHex::Caserne:
+                               nbCaserne++;
+                               break;
+                           case TypeHex::Jardin:
+                               nbJardin++;
+                               break;
+                           case TypeHex::PHabitation:
+                               PlaceHabitation++;
+                               break;
+                           case TypeHex::PMarche:
+                               PlaceMarche += 2;
+                               break;
+                           case TypeHex::PCaserne:
+                               PlaceCaserne += 2;
+                               break;
+                           case TypeHex::PTemple:
+                               PlaceTemple += 2;
+                               break;
+                           case TypeHex::PJardin:
+                               PlaceJardin += 3;
+                               break;
+                           case TypeHex::Carriere:
+                               nbCarriere += 2;
+                               break;
+                           default:
+                               break;
+                           }
+                       });
+    if (diff == 2)
     {
-        switch (h->getType())
-        {
-        case TypeHex::Habitation :
-            nbHabitation ++;
-            break;
-        case TypeHex::Marche :
-            nbMarche ++;
-            break;
-        case TypeHex::Temple:
-            nbTemple ++;
-            break;
-        case TypeHex::Caserne :
-            nbCaserne ++;
-            break;
-        case TypeHex::Jardin :
-            nbJardin ++;
-            break;
-        case TypeHex::PHabitation :
-            PlaceHabitation ++;
-            break;
-        case TypeHex::PMarche :
-            PlaceMarche += 2;
-            break;
-        case TypeHex::PCaserne :
-            PlaceCaserne += 2;
-            break;
-        case TypeHex::PTemple :
-            PlaceTemple += 2;
-            break;
-        case TypeHex::PJardin :
-            PlaceJardin += 3;
-            break;
-        case TypeHex::Carriere:
-            nbCarriere += 2;
-            break;
-        default:
-            break;
-        }
-
-    });
-    if (diff == 2){
         total += nbCarriere;
     }
-    if(diff == 3){
+    if (diff == 3)
+    {
         nbHabitation *= 2;
         nbMarche *= 2;
         nbCaserne *= 2;
         nbTemple *= 2;
-        nbJardin *=2;
+        nbJardin *= 2;
     }
-    total += nbHabitation*PlaceHabitation + nbMarche*PlaceMarche + nbCaserne*PlaceCaserne  + nbTemple*PlaceTemple + nbJardin*PlaceJardin;
+    total += nbHabitation * PlaceHabitation + nbMarche * PlaceMarche + nbCaserne * PlaceCaserne + nbTemple * PlaceTemple + nbJardin * PlaceJardin;
     return total;
-
 }
 
-
-int Plateau::calculerPointsCaserne(const Hexagone* h) const
+int Plateau::calculerPointsCaserne(const Hexagone *h) const
 {
     /*
-    *Calcul le nombre de points donner par la carserne
-    *@return Le nombre de points
-    */
-    
-    int multi=1;
-    if  (variantesScores[2] && h->getVoisins().size() <= 3) multi=2;
-    return (h->getVoisins().size() <= 5) ? (h->getZ()+1)*multi : 0;
+     *Calcul le nombre de points donner par la carserne
+     *@return Le nombre de points
+     */
+
+    int multi = 1;
+    if (variantesScores[2] && h->getVoisins().size() <= 3)
+        multi = 2;
+    return (h->getVoisins().size() <= 5) ? (h->getZ() + 1) * multi : 0;
 }
 
-int Plateau::calculerPointsTemple(const Hexagone* h) const
+int Plateau::calculerPointsTemple(const Hexagone *h) const
 {
     /*
-     *Calcul Le nombre de points donnés par le temple 
+     *Calcul Le nombre de points donnés par le temple
      *
      *@return Le nombre total de points apporté par le temple
      */
-    int mult=1;
-    if (variantesScores[3] && h->getZ()>=1) mult=2;
-    return (h->getVoisins().size() == 6) ? (h->getZ()+1)*mult : 0;
+    int mult = 1;
+    if (variantesScores[3] && h->getZ() >= 1)
+        mult = 2;
+    return (h->getVoisins().size() == 6) ? (h->getZ() + 1) * mult : 0;
 }
 
-
-int Plateau::calculerPointsJardin(const Hexagone* h) const{
+int Plateau::calculerPointsJardin(const Hexagone *h) const
+{
 
     /*
      *Calcul Le nombre de points donnés par le jardin passé en paramètre
      *
      *@return Le nombre total de points
      */
-    return (h->getZ()+1)+conditionVarianteJardin(h)*variantesScores[4]*(h->getZ()+1);
+    return (h->getZ() + 1) + conditionVarianteJardin(h) * variantesScores[4] * (h->getZ() + 1);
 }
 
-int Plateau::calculerPointsMarche(const Hexagone* h) const
+int Plateau::calculerPointsMarche(const Hexagone *h) const
 {
     /*
      *Calcul Le nombre de points donnés par le marché
      *
      *@return Le nombre total de points apporté
      */
-    int nbpoint=0;
-    bool voisinMarche=false;
+    int nbpoint = 0;
+    bool voisinMarche = false;
     for (const auto &voisin : h->getVoisins())
     {
-        if(voisin->getType() == TypeHex::Marche)
+        if (voisin->getType() == TypeHex::Marche)
         {
             voisinMarche = true;
             break;
         }
     }
-    if(!voisinMarche){
+    if (!voisinMarche)
+    {
         nbpoint += h->getZ();
 
-        if (variantesScores[1]){
+        if (variantesScores[1])
+        {
 
-            for(const auto &voisin: h->getVoisins()){
+            for (const auto &voisin : h->getVoisins())
+            {
 
-                if (voisin->getType() == TypeHex::PMarche){
+                if (voisin->getType() == TypeHex::PMarche)
+                {
                     nbpoint += h->getZ();
                     break;
                 }
             }
         }
     }
-    return nbpoint;}
+    return nbpoint;
+}
 
 int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const
 {
     /*
-     *Calcul Le nombre de points donnés par les habitations 
+     *Calcul Le nombre de points donnés par les habitations
      *
      *@return Le nombre total de points
      */
     int plusGrosQuartier = 0;
-    int scorePlusgrosQuartier=0;
+    int scorePlusgrosQuartier = 0;
     for (std::size_t i = 0; i < grapheHabitation.size(); ++i)
     {
         if (grapheHabitation[i].dejaVisite)
             continue;
 
         int tailleQuartier = 0;
-        int scoreQuartier =0;
+        int scoreQuartier = 0;
         std::vector<std::size_t> aVisiter = {i};
         grapheHabitation[i].dejaVisite = true;
 
@@ -529,7 +537,7 @@ int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) c
         {
             std::size_t currentIndex = aVisiter.back();
             aVisiter.pop_back();
-            tailleQuartier+=1;
+            tailleQuartier += 1;
             scoreQuartier += grapheHabitation[currentIndex].current->getZ() + 1;
 
             for (int voisinIndex : grapheHabitation[currentIndex].voisins)
@@ -543,79 +551,84 @@ int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) c
             }
         }
         plusGrosQuartier = std::max(plusGrosQuartier, tailleQuartier);
-        if (tailleQuartier==plusGrosQuartier && scorePlusgrosQuartier<scoreQuartier) scorePlusgrosQuartier=scoreQuartier;
+        if (tailleQuartier == plusGrosQuartier && scorePlusgrosQuartier < scoreQuartier)
+            scorePlusgrosQuartier = scoreQuartier;
     }
-    if (scorePlusgrosQuartier>=10 && variantesScores[0]) scorePlusgrosQuartier*=2;
+    if (scorePlusgrosQuartier >= 10 && variantesScores[0])
+        scorePlusgrosQuartier *= 2;
     return scorePlusgrosQuartier;
 }
 
-bool Plateau::conditionVarianteJardin (const Hexagone* q) const{
+bool Plateau::conditionVarianteJardin(const Hexagone *q) const
+{
     bool conditionRemplie = 0;
-    bool estVide, estLac=true;
+    bool estVide, estLac = true;
 
     std::vector<std::vector<int>> coVoisinsRelatifs = {{0, -1}, {1, -1}, {1, 0}, {0, 1}, {-1, 1}, {-1, 0}};
     std::vector<std::vector<int>> coVoisins = {};
     std::vector<std::vector<int>> coVoisinsVides = {};
 
     // On trouve les coordonnées relatives des voisins du jardin
-    pourChaqueHexagone([&](const Hexagone* h)
-    {
+    pourChaqueHexagone([&](const Hexagone *h)
+                       {
         for (const auto &co : coVoisinsRelatifs)
         {
             if ((q->getX() + co[0]) == h->getX() && (q->getY() + co[1]) == h->getY())
             { // Ne pas hésiter à me redemander (Dimitri)
                 coVoisins.push_back(co);
             }
-        }
-    });
+        } });
 
     // On recupère les voisins vides du jardin par différence avec les coordonnées relatives de des voisins du jardin
     for (const auto &cor : coVoisinsRelatifs)
     {
-        estVide=true;
-        for(const auto &cov : coVoisins){
-            if (cor == cov){
+        estVide = true;
+        for (const auto &cov : coVoisins)
+        {
+            if (cor == cov)
+            {
                 estVide = false;
             }
         }
-        if (estVide){
+        if (estVide)
+        {
             coVoisinsVides.push_back(cor);
         }
     }
 
-    
-    while(estLac && coVoisinsVides.size() > 0){
+    while (estLac && coVoisinsVides.size() > 0)
+    {
         std::vector<int> vide = coVoisinsVides[0];
-        for (std::vector<int> co : coVoisinsRelatifs){ 
+        for (std::vector<int> co : coVoisinsRelatifs)
+        {
             bool aVoisinNonVide = false;
-            pourChaqueHexagone([&](const Hexagone* h)
-            {
+            pourChaqueHexagone([&](const Hexagone *h)
+                               {
                 if (vide[0] + co[0] == h->getX() && vide[1] + co[1] == h->getY()){
                     aVoisinNonVide = true;
-                }
-            });
-            if(!aVoisinNonVide){
+                } });
+            if (!aVoisinNonVide)
+            {
                 estLac = false;
             }
         }
         coVoisinsVides.erase(coVoisinsVides.begin());
     }
 
-
     return conditionRemplie;
 }
 
-std::ostream& operator<<(std::ostream& os, const Plateau& p) 
+std::ostream &operator<<(std::ostream &os, const Plateau &p)
+{
+    /*
+     *Surchage l'operator << pour utiliser std::cout
+     *@return une référence ostream
+     */
+    os << "\nPlateau contient " << p.listeTuiles.size() << " tuiles :\n";
+    os << " ----\n";
+    for (const auto &t : p.listeTuiles)
     {
-        /*
-        *Surchage l'operator << pour utiliser std::cout
-        *@return une référence ostream
-        */
-        os<< "\nPlateau contient " << p.listeTuiles.size() << " tuiles :\n";
-        os<< " ----\n";
-        for (const auto &t : p.listeTuiles)
-        {
-            std::cout << t<<" ----\n";
-        }
-        return os;
+        std::cout << t << " ----\n";
     }
+    return os;
+}

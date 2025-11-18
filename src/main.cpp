@@ -1,5 +1,5 @@
 #include <iostream>
-#include <limits>          
+#include <limits>
 #include "Partie.h"
 #include "Position.h"
 #include "couleurs_console.h"
@@ -15,7 +15,8 @@ int main()
 
     int nbrJoueurs;
     std::cout << "Nombre de joueurs ? ";
-    while (!(std::cin >> nbrJoueurs) || nbrJoueurs <= 0) {
+    while (!(std::cin >> nbrJoueurs) || nbrJoueurs <= 0)
+    {
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         texte_couleur(ROUGE);
@@ -24,24 +25,26 @@ int main()
         texte_reset();
     }
 
-    
     std::cout << nbrJoueurs << " joueurs dans la partie.\n\n";
 
     int choixVarianteTuiles = 0;
     std::cout << "Choisissez une variante de jeu : \n";
-    while (choixVarianteTuiles != 1 && choixVarianteTuiles != 2){
+    while (choixVarianteTuiles != 1 && choixVarianteTuiles != 2)
+    {
         std::cout << " 1: Jouer avec les règles de base et n'avoir que 11 piles.\n";
         std::cout << " 2: Jouer avec une variante et utiliser toutes les tuiles disponibles pour avoir le maximum de piles.\n";
         std::cout << "Votre choix : ";
 
-        if (!(std::cin >> choixVarianteTuiles)) {
+        if (!(std::cin >> choixVarianteTuiles))
+        {
             // saisie non entière (ex: 't')
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             choixVarianteTuiles = 0; // force à rester dans la boucle
         }
 
-        if (choixVarianteTuiles != 1 && choixVarianteTuiles != 2){
+        if (choixVarianteTuiles != 1 && choixVarianteTuiles != 2)
+        {
             texte_couleur(ROUGE);
             texte_gras_on();
             std::cout << "Choix invalide.\n\n";
@@ -79,20 +82,20 @@ int main()
         }
         variantesScore[i] = (choixVarianteScore == 2);
     }
-    
 
     system("clear");
     std::vector<std::string> listePseudo;
-    for (int i = 0; i < nbrJoueurs; i++){
+    for (int i = 0; i < nbrJoueurs; i++)
+    {
         std::string nomJoueur;
-        std::cout << "Nom du joueur " << i+1 << " : ";
+        std::cout << "Nom du joueur " << i + 1 << " : ";
         std::cin >> nomJoueur;
         system("clear");
         listePseudo.push_back(nomJoueur);
     }
-    
+
     Partie partie(nbrJoueurs, listePseudo, variantesScore, utiliserToutesLesTuiles);
-    std::cout<<partie.getChantier().getTaille()<<std::endl;
+
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -108,7 +111,7 @@ int main()
             std::cout << joueurCourant;
 
             // Affichage du chantier
-            std::cout<<partie.getChantier();
+            std::cout << partie.getChantier();
 
             // Choix de la tuile à piocher
             int idTuile = -1;
@@ -153,19 +156,20 @@ int main()
                     }
                     else if (rep == 's' || rep == 'S')
                     {
-                       sauvegarderPartie(partie);
-                    }   
+                        sauvegarderPartie(partie);
+                    }
                 }
             }
 
-            // Choix de la position pour placer la tuile 
+            // Choix de la position pour placer la tuile
             int x, y, z;
             bool placementTuile = false;
 
             while (!placementTuile)
             {
                 std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
-                if (!(std::cin >> x >> y >> z)) {
+                if (!(std::cin >> x >> y >> z))
+                {
                     std::cin.clear();
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     texte_couleur(ROUGE);
@@ -177,7 +181,8 @@ int main()
 
                 Position pos{x, y, z};
 
-                try {
+                try
+                {
                     joueurCourant.placerTuile(*tuilePiochee, pos);
                     texte_couleur(JAUNE);
                     texte_gras_on();
@@ -186,7 +191,8 @@ int main()
                     placementTuile = true;
                 }
 
-                catch (const std::invalid_argument& e) {
+                catch (const std::invalid_argument &e)
+                {
                     texte_couleur(ROUGE);
                     texte_gras_on();
                     std::cout << e.what() << "\n";
@@ -194,17 +200,17 @@ int main()
                 }
             }
 
-
             system("sleep 2");
 
-            if (partie.fauxJoueurPresent()){
-                IllustreArchitecte* ia = partie.getFauxJoueur();
+            if (partie.fauxJoueurPresent())
+            {
+                IllustreArchitecte *ia = partie.getFauxJoueur();
 
                 // Affichage du plateau du joueur
-                std::cout<<&ia;
+                std::cout << &ia;
 
                 // Affichage du chantier
-                std::cout<<partie.getChantier();
+                std::cout << partie.getChantier();
 
                 // Choix de la tuile à piocher
                 int idTuile = ia->choixTuile(partie.getChantier());
@@ -214,7 +220,7 @@ int main()
                 if (tuilePiochee)
                 {
                     std::cout << "\nTuile piochée :\n\n";
-                    std::cout<<tuilePiochee;
+                    std::cout << tuilePiochee;
                 }
                 else
                 {
