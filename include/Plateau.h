@@ -44,22 +44,23 @@ private:
     explicit Plateau();
 
 public:
-    template <typename F>
     /**
      * @brief Applique une fonction à chaque hexagone du plateau
      * @param f Fonction à appliquer
      */
+    template <typename F>
     void pourChaqueHexagone(F f)
     {
         for (auto &tuile : listeTuiles)
             for (auto &hex : tuile.getHexagones())
                 f(hex);
     }
-    template <typename F>
+
     /**
      * @brief Applique une fonction à chaque hexagone du plateau (version constante)
      * @param f Fonction à appliquer
      */
+    template <typename F>
     void pourChaqueHexagone(F f) const
     {
         for (const auto &tuile : listeTuiles)
