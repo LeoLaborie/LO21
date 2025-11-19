@@ -86,10 +86,6 @@ void IllustreArchitecte::placerTuile(Tuile &t)
 
 int Joueur::choixTuile(const Chantier &chantier)
 {
-    /* Permet au joueur, que ce soit un vrai joueur ou le faux joueur, de piocher une tuile dans le chantier
-     *@param le chantier de la partie
-     *@return l'id de la Tuile qui a été pioché par le joueur
-     */
     int idTuile = -1;
     while (chantier.getTaille() <= idTuile || idTuile < 0)
     {

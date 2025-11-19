@@ -24,10 +24,6 @@ Plateau::Plateau()
 
 void Plateau::updateVoisins()
 {
-    /*
-     *Met à jour les voisins d'une tuile
-     *@return void
-     */
     // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
     // Parcourir toutes les tuiles du plateau
     pourChaqueHexagone([&](Hexagone *hexagone1)
@@ -62,14 +58,10 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
 
 bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 {
-    /*
-     *Vérifie si une position est correct en fonction d'une tuile (surtout de sa rotation) et de sa nouvelle position théorique
-     *@return un bouléen sur la validité de la position passé en paramètre
-     */
     std::vector<const Tuile *> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
-    int supports_par_hex = 0; //  pour vérifier qu’on pose bien sur 3 hexagones en hauteur
+    int supports_par_hex = 0; // pour vérifier qu’on pose bien sur 3 hexagones en hauteur
 
     int dx[6] = {+1, +1, 0, -1, -1, 0};
     int dy[6] = {0, -1, -1, 0, +1, +1};
@@ -160,10 +152,6 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 
 std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const
 {
-    /*
-     *Calcul toutes les positions légales en fonction d'une tuile (sa rotation)
-     *@return un vector contenant toutes les positions corrects
-     */
     std::vector<Position> listeValide;
     if (listeTuiles.empty())
         return listeValide;
@@ -213,10 +201,6 @@ std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const
 
 void Plateau::afficherPositionsLegales(const Tuile &t) const
 {
-    /*
-     *affiche toutes les positions légales possible pour une certaine tuile (surout de sa position en fonction des rotations)
-     *@return void
-     */
     auto positions = getPositionsLegales(t);
 
     std::cout << "Positions legales pour cette tuile ("
@@ -230,10 +214,6 @@ void Plateau::afficherPositionsLegales(const Tuile &t) const
 
 int Plateau::placerTuile(Tuile &t, Position &p)
 {
-    /*
-     *Place une tuile dans le plateau si son placement est correct
-     *@return Le nombre de carrière recouvert et -1 si placement incorrect
-     */
     int res = 0;
 
     if (!verifierPlacementTuile(p, t))
@@ -289,10 +269,6 @@ int Plateau::placerTuile(Tuile &t)
 
 int Plateau::calculerPoints() const
 {
-    /*
-     *Calcul le nombre de points total
-     *@return Le nombre total de points total
-     */
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0,
         nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbHabitation;
     int total = 0;
@@ -441,11 +417,6 @@ int Plateau::calculerPointsia(int &diff) const
 
 int Plateau::calculerPointsCaserne(const Hexagone *h) const
 {
-    /*
-     *Calcul le nombre de points donner par la carserne
-     *@return Le nombre de points
-     */
-
     int multi = 1;
     if (variantesScores[2] && h->getVoisins().size() <= 3)
         multi = 2;
@@ -454,11 +425,6 @@ int Plateau::calculerPointsCaserne(const Hexagone *h) const
 
 int Plateau::calculerPointsTemple(const Hexagone *h) const
 {
-    /*
-     *Calcul Le nombre de points donnés par le temple
-     *
-     *@return Le nombre total de points apporté par le temple
-     */
     int mult = 1;
     if (variantesScores[3] && h->getZ() >= 1)
         mult = 2;
@@ -467,22 +433,11 @@ int Plateau::calculerPointsTemple(const Hexagone *h) const
 
 int Plateau::calculerPointsJardin(const Hexagone *h) const
 {
-
-    /*
-     *Calcul Le nombre de points donnés par le jardin passé en paramètre
-     *
-     *@return Le nombre total de points
-     */
     return (h->getZ() + 1) + conditionVarianteJardin(h) * variantesScores[4] * (h->getZ() + 1);
 }
 
 int Plateau::calculerPointsMarche(const Hexagone *h) const
 {
-    /*
-     *Calcul Le nombre de points donnés par le marché
-     *
-     *@return Le nombre total de points apporté
-     */
     int nbpoint = 0;
     bool voisinMarche = false;
     for (const auto &voisin : h->getVoisins())
@@ -516,11 +471,6 @@ int Plateau::calculerPointsMarche(const Hexagone *h) const
 
 int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const
 {
-    /*
-     *Calcul Le nombre de points donnés par les habitations
-     *
-     *@return Le nombre total de points
-     */
     int plusGrosQuartier = 0;
     int scorePlusgrosQuartier = 0;
     for (std::size_t i = 0; i < grapheHabitation.size(); ++i)
@@ -620,10 +570,6 @@ bool Plateau::conditionVarianteJardin(const Hexagone *q) const
 
 std::ostream &operator<<(std::ostream &os, const Plateau &p)
 {
-    /*
-     *Surchage l'operator << pour utiliser std::cout
-     *@return une référence ostream
-     */
     os << "\nPlateau contient " << p.listeTuiles.size() << " tuiles :\n";
     os << " ----\n";
     for (const auto &t : p.listeTuiles)
