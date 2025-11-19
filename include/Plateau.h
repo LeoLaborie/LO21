@@ -20,6 +20,10 @@ struct SommetHab
     bool dejaVisite = false;
 };
 
+/**
+ * @class Plateau
+ * @brief Représente le plateau d'un joueur, contenant ses tuiles et les règles de score
+ */
 class Plateau
 {
     friend class Partie;
@@ -28,11 +32,23 @@ class Plateau
 private:
     std::vector<Tuile> listeTuiles;
     bool variantesScores[5];
+    /**
+     * @brief Constructeur de Plateau
+     * @param variantesScore Tableau des variantes de score
+     */
     explicit Plateau(const bool variantesScore[5]); // Les plateaux sont définis par le constructeur de Joueur
+
+    /**
+     * @brief Constructeur par défaut de Plateau
+     */
     explicit Plateau();
 
 public:
     template <typename F>
+    /**
+     * @brief Applique une fonction à chaque hexagone du plateau
+     * @param f Fonction à appliquer
+     */
     void pourChaqueHexagone(F f)
     {
         for (auto &tuile : listeTuiles)
@@ -40,6 +56,10 @@ public:
                 f(hex);
     }
     template <typename F>
+    /**
+     * @brief Applique une fonction à chaque hexagone du plateau (version constante)
+     * @param f Fonction à appliquer
+     */
     void pourChaqueHexagone(F f) const
     {
         for (const auto &tuile : listeTuiles)
@@ -47,8 +67,18 @@ public:
                 f(hex);
     }
 
-    // getters
+    // Getters
+    /**
+     * @brief Retourne les tuiles du plateau
+     * @return const std::vector<Tuile>& : référence constante vers le vecteur de tuiles
+     */
     const std::vector<Tuile> &getTuiles() const { return listeTuiles; };
+
+    // TODO: Méthode jamais utilisée
+    /**
+     * @brief Retourne les variantes de score du plateau
+     * @return const bool* : pointeur constant vers le tableau des variantes de score
+     */
     const bool *getVarianteScores() const { return variantesScores; };
 
     // Calcul des points
@@ -58,6 +88,12 @@ public:
      * @return Nombre total de points total
      */
     int calculerPoints() const;
+
+    /**
+     * @brief Calcule le nombre de points gagnés par l'IA
+     * @param diff
+     * @return Nombre de points gagnés
+     */
     int calculerPointsia(int &diff) const;
 
     /**
@@ -77,6 +113,12 @@ public:
      * @return Nombre total de points apportés par le jardin
      */
     int calculerPointsJardin(const Hexagone *h) const;
+
+    /**
+     * @brief Vérifie la condition de la variante de score "Jardin"
+     * @param q Pointeur vers l'hexagone jardin
+     * @return true si la condition est remplie, false sinon
+     */
     bool conditionVarianteJardin(const Hexagone *q) const;
 
     /**
@@ -122,7 +164,14 @@ public:
      * @throws std::invalid_argument si le placement est invalide
      */
     int placerTuile(Tuile &t, Position &p);
+
+    /**
+     * @brief Ajoute une tuile au plateau sans vérification de position
+     * @param t Tuile à placer
+     * @return 1
+     */
     int placerTuile(Tuile &t);
+
     /**
      * @brief Met à jour les voisins de chaque hexagone du plateau
      */
