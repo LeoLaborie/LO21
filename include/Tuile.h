@@ -122,6 +122,19 @@ public:
         }
         return os;
     }
+
+    /**
+     * @brief Affiche le Tuile avec sa position
+     */
+    void afficherDetails() const
+    {
+        std::cout << ' ';
+        for (const auto *h : hex)
+        {
+            h->afficher(false);
+            std::cout << ' ';
+        }
+    }
 };
 
 #endif
