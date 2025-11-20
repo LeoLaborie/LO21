@@ -67,10 +67,10 @@ std::ostream& operator<<=(std::ostream& os, const Hexagone& h)
 
 std::istream& operator>>=(std::istream& is, Hexagone& h)
 {
-    std::string tag;
-    if (!(is >> tag)) return is;
+    std::string ligne;
+    if (!(is >> ligne)) return is;
 
-    if (tag != "HEX") {
+    if (ligne != "HEX") {
         is.setstate(std::ios::failbit);
         return is;
     }
@@ -103,10 +103,10 @@ std::ostream& operator<<=(std::ostream& os, const Tuile& t)
 
 std::istream& operator>>=(std::istream& is, Tuile& tuile)
 {
-    std::string tag;
-    if (!(is >> tag)) return is;
+    std::string ligne;
+    if (!(is >> ligne)) return is;
 
-    if (tag != "TUILE") {
+    if (ligne != "TUILE") {
         is.setstate(std::ios::failbit);
         return is;
     }
