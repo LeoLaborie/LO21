@@ -574,7 +574,8 @@ std::ostream &operator<<(std::ostream &os, const Plateau &p)
     os << " ----\n";
     for (const auto &t : p.listeTuiles)
     {
-        std::cout << t << " ----\n";
+        t.afficherDetails();
+        os << "----\n";
     }
     return os;
 }
