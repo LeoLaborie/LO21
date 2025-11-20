@@ -109,11 +109,11 @@ public:
      * @param id Identifiant de la tuile à piocher
      * @param chantier Chantier de la partie
      * @param fauxJoueur Pointeur vers le faux joueur (Illustre Architecte), nullptr si pas utilisé
-     * @return Pointeur vers la tuile piochée, nullptr si échec
-     * 
-     * TODO: gérer les exceptions
+     * @return Référence vers la tuile piochée
+     * @throws std::out_of_range si l'ID est invalide
+     * @throws std::invalid_argument si le nombre de pierres est insuffisant
      */
-    virtual Tuile *piocherTuile(int id, Chantier &chantier, IllustreArchitecte *fauxJoueur);
+    virtual Tuile &piocherTuile(int id, Chantier &chantier, IllustreArchitecte *fauxJoueur);
 
     /**
      * @brief Permet au joueur de placer une tuile sur son plateau
@@ -166,9 +166,9 @@ public:
      * @brief Permet au joueur IA de piocher une tuile dans le chantier
      * @param id Identifiant de la tuile à piocher
      * @param chantier Chantier de la partie
-     * @return Pointeur vers la tuile piochée
+     * @return Référence vers la tuile piochée
      */
-    Tuile *piocherTuile(int id, Chantier &chantier);
+    Tuile &piocherTuile(int id, Chantier &chantier);
 
     /**
      * @brief Permet au joueur IA de choisir une tuile dans le chantier

@@ -37,12 +37,12 @@ void IllustreArchitecte::setNbrPoints()
     nbrPoints = getPlateau().calculerPoints();
 }
 
-Tuile *Joueur::piocherTuile(int id, Chantier &chantier, IllustreArchitecte *fauxJoueur)
+Tuile &Joueur::piocherTuile(int id, Chantier &chantier, IllustreArchitecte *fauxJoueur)
 {
     if (id < 0 || id >= chantier.getTaille())
-        return nullptr;
+        throw std::out_of_range("ID de tuile invalide.");
     if (id > getNbrPierres())
-        return nullptr;
+        throw std::invalid_argument("Nombre de pierres insuffisant.");
     setNbrPierres(getNbrPierres() - id);
     if (fauxJoueur)
     {
@@ -50,15 +50,15 @@ Tuile *Joueur::piocherTuile(int id, Chantier &chantier, IllustreArchitecte *faux
     }
     setTuileEnMain(chantier.getTuiles()[id]);
     chantier.retirerTuile(id);
-    return &tuileEnMain;
+    return tuileEnMain;
 }
 
-Tuile *IllustreArchitecte::piocherTuile(int id, Chantier &chantier)
+Tuile &IllustreArchitecte::piocherTuile(int id, Chantier &chantier)
 {
     setNbrPierres(getNbrPierres() - id);
     setTuileEnMain(chantier.getTuiles()[id]);
     chantier.retirerTuile(id);
-    return &tuileEnMain;
+    return tuileEnMain;
 }
 
 void Joueur::placerTuile(Tuile &t, Position &p)
