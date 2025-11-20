@@ -1,75 +1,69 @@
 #ifndef SAUVEGARDE_H
 #define SAUVEGARDE_H
+
+#include <iosfwd>
 #include <string>
-#include <vector>
-#include <fstream>
 #include "Partie.h"
 
 /**
- * @brief Donnees extraites d'une sauvegarde pour reconstruire la partie.
+ * @brief Convertit un TypeHex en chaîne lisible.
+ * @param t Type d'hexagone à convertir.
+ * @return Nom du type sous forme de chaîne.
  */
-typedef struct PartieSauvegarde{
-    int nbrJoueurs;                         ///< Nombre total de joueurs.
-    int maitreArchitecte;                   ///< Indice du maitre architecte.
-    int mainJoueur;                         ///< Indice du joueur actif au moment de la sauvegarde.
-    int nbrTours;                           ///< Nombre de tours deja joues.
-    int taillepaquet;                       ///< Taille restante du paquet de tuiles.
-    IllustreArchitecte *fauxJoueur;         ///< Pointeur vers un faux joueur eventuel.
-    Chantier chantier;                      ///< Etat du chantier au moment de la sauvegarde.
-    std::vector<Joueur> joueurs;            ///< Liste des joueurs et leur etat.
-    std::vector<std::vector<Tuile>> piles;  ///< Piles de tuiles restantes.
-}PartieSauvegarde;
-
+std::string typeToString(TypeHex t);
 
 /**
- * @brief Sauvegarde l'etat complet d'une partie dans un fichier timestamp.
- * @param partie Partie a serialiser sur disque.
+ * @brief Convertit une chaîne en TypeHex.
+ * @param s Chaîne représentant un type d'hexagone.
+ * @return Valeur TypeHex correspondante.
+ * @throws std::invalid_argument si la chaîne est inconnue.
  */
-void sauvegarderPartie(const Partie& partie);
+TypeHex stringToType(const std::string& s);
 
 /**
- * @brief Charge une partie a partir d'un fichier de sauvegarde et valide son contenu.
- * @param nomSauvegarde Chemin du fichier a ouvrir.
- * @return true si le fichier est bien formate et charge, false sinon.
+ * @brief Sauvegarde l'état complet d'une partie sur disque.
+ * @param p Partie à sauvegarder.
  */
-bool chargerPartie(const std::string& nomSauvegarde);
+void sauvegarderPartie(const Partie& p);
 
 /**
- * @brief lecture de la section [PARTIE] et remplit les champs de base.
- * @param f Flux deja positionne apres [PARTIE].
- * @param p Objet PartieSauvegarde qui contient les élements du fichier.
- * @param erreurs Liste des erreurs detectees .
- * @return true si aucune erreur n'est remontee.
+ * @brief Sérialise un hexagone vers un flux de sortie.
+ * @param os Flux cible.
+ * @param h Hexagone à écrire.
+ * @return Le flux pour chaînage.
  */
-bool lirePartie(std::ifstream& f, PartieSauvegarde& p, std::vector<std::string>& erreurs);
+std::ostream& operator<<=(std::ostream& os, const Hexagone& h);
 
 /**
- * @brief lecture de la section [CHANTIER] et avance le flux du fichier en vérifiant le format des tuiles.
- * @param f Flux deja positionne apres [CHANTIER].
- * @param p Objet PartieSauvegarde qui contient les élements du fichier.
- * @param erreurs Liste des erreurs detectees.
- * @return true si aucune erreur n'est remontee.
+ * @brief Désérialise un hexagone depuis un flux d'entrée.
+ * @param is Flux source.
+ * @param h Hexagone à remplir.
+ * @return Le flux pour chaînage.
  */
-bool lireChantier(std::ifstream& f, PartieSauvegarde& p, std::vector<std::string>& erreurs);
+std::istream& operator>>=(std::istream& is, Hexagone& h);
 
 /**
- * @brief lecture de la la section [PILES] et valide les compteurs/structures des tuiles.
- * @param f Flux deja positionne apres [PILES].
- * @param p Objet PartieSauvegarde qui contient les élements du fichier.
- * @param erreurs Liste des erreurs detectees.
- * @return true si aucune erreur n'est remontee.
+ * @brief Sérialise une tuile vers un flux.
+ * @param os Flux cible.
+ * @param t Tuile à écrire.
+ * @return Le flux pour chaînage.
  */
-bool lirePiles(std::ifstream& f, PartieSauvegarde& p, std::vector<std::string>& erreurs);
+std::ostream& operator<<=(std::ostream& os, const Tuile& t);
 
 /**
- * @brief lecture de la la section [JOUEURS] et valide nom, scores, plateau et tuile en main.
- * @param f Flux deja positionne apres [JOUEURS].
- * @param p Objet PartieSauvegarde qui contient les élements du fichier.
- * @param erreurs Liste des erreurs detectees.
- * @return true si aucune erreur n'est remontee.
+ * @brief Désérialise une tuile depuis un flux.
+ * @param is Flux source.
+ * @param t Tuile à remplir.
+ * @return Le flux pour chaînage.
  */
-bool lireJoueurs(std::ifstream& f, PartieSauvegarde& p, std::vector<std::string>& erreurs);
+std::istream& operator>>=(std::istream& is, Tuile& t);
 
+/**
+ * @brief Charge une tuile depuis un fichier texte au format attendu.
+ * @param nomFichier Chemin du fichier à lire.
+ * @param t Tuile résultat si le chargement réussit.
+ * @return true en cas de succès, false sinon.
+ */
+bool chargerTuileDepuisFichier(const std::string& nomFichier, Tuile& t);
 
-
-#endif
+#endif 
