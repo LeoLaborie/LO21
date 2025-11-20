@@ -36,13 +36,17 @@
 *.exe
 *.out
 *.app
+main
 
 # debug information files
 *.dwo
 
+# IDEs and editors
 .vscode
 
-#sauvegarde
+# Sauvegarde
 *.ratatata
-main
 /build/
+
+# Documentation
+docs/
