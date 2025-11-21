@@ -205,6 +205,7 @@ void sauvegarderPartie(const Partie& p)
             f<<=tuile;
         }
     }
+    else f<<'0'<<'\n';
     
 
     std::cout << "Sauvegarde terminée.\n";
@@ -216,66 +217,78 @@ Partie Partie::FromSave(const std::string& nomFichier)
     if (!f)
         throw std::runtime_error("Impossible d'ouvrir le fichier " + nomFichier);
 
-    auto expectLigne = [&](const std::string &attendu) //vérifie si la ligne est bien celle attendu et passe à la ligne suivante renvoie une erreur sinon 
+    auto expectLigne = [&](const std::string &attendu)
     {
         std::string ligne;
         if (!(f >> ligne) || ligne != attendu)
             throw std::runtime_error("Format invalide : attendu \"" + attendu + "\"");
     };
 
+    bool variantesScore[5] = {};
+    int present = 0;
+    int difficulteFaux = 0, pierresFaux = 0, pointsFaux = 0;
+    std::vector<Tuile> plateauFaux;
 
-    //gestion Partie
-    expectLigne("PARTIE");   
+    // gestion Partie
+    expectLigne("PARTIE");
 
     int nbJoueurs = 0;
     int nbTours = 0;
     int maitreArchitecte = 0;
     int mainJoueur = 0;
+
     if (!(f >> nbJoueurs >> nbTours >> maitreArchitecte >> mainJoueur))
         throw std::runtime_error("Format invalide : informations de partie manquantes");
 
-    //gestion chantier    
+    // gestion Chantier
     expectLigne("CHANTIER");
     size_t nbChantier = 0;
     if (!(f >> nbChantier))
-        throw std::runtime_error("Format invalide : taille du chantier manquante");
+        throw std::runtime_error("Format invalide : taille du chantier");
+
     std::vector<Tuile> tuilesChantier;
     tuilesChantier.reserve(nbChantier);
+
     for (size_t i = 0; i < nbChantier; ++i)
     {
         Tuile t;
-        if (!(f >>= t))   //on utilise la surchage faite avant pour gérer le chargement d'une tuile
-            throw std::runtime_error("Format invalide : tuile de chantier #" + std::to_string(i));
+        if (!(f >>= t))
+            throw std::runtime_error("Format invalide : tuile chantier");
         tuilesChantier.push_back(t);
     }
 
-    //gestion Piles
+    // gestion Piles
     expectLigne("PILES");
-
     size_t nbPiles = 0;
+
     if (!(f >> nbPiles))
-        throw std::runtime_error("Format invalide : nombre de piles manquant");
+        throw std::runtime_error("Format invalide : nb piles");
+
     std::vector<std::vector<Tuile>> piles(nbPiles);
+
     for (size_t id = 0; id < nbPiles; ++id)
     {
         expectLigne("PILE");
         size_t pileId = 0, taille = 0;
+
         if (!(f >> pileId >> taille))
-            throw std::runtime_error("Format invalide");
+            throw std::runtime_error("Format invalide : PILE");
+
         if (pileId != id)
-            throw std::runtime_error("Erreur sur l'ordre des piles incorrect");
+            throw std::runtime_error("Ordre des piles incorrect");
+
         for (size_t j = 0; j < taille; ++j)
         {
             Tuile t;
             if (!(f >>= t))
-                throw std::runtime_error("Format invalide : tuile dans pile");
-
+                throw std::runtime_error("Format invalide : tuile pile");
             piles[id].push_back(t);
         }
     }
 
-    //gestion des joueurs
+    // gestion Joueurs
     expectLigne("JOUEURS");
+
     struct JoueurCharge
     {
         std::string nom;
@@ -287,55 +300,123 @@ Partie Partie::FromSave(const std::string& nomFichier)
 
     std::vector<JoueurCharge> joueurs;
     joueurs.reserve(nbJoueurs);
+
     for (size_t idx = 0; idx < static_cast<size_t>(nbJoueurs); ++idx)
     {
         JoueurCharge data;
 
         expectLigne("NOM");
         if (!(f >> data.nom))
-            throw std::runtime_error("Format invalide : nom du joueur #" + std::to_string(idx));
+            throw std::runtime_error("Format invalide : nom joueur");
 
         expectLigne("PIERRES");
         if (!(f >> data.pierres))
-            throw std::runtime_error("Format invalide : pierres du joueur " + data.nom);
+            throw std::runtime_error("Format invalide : pierres joueur");
 
         expectLigne("POINTS");
         if (!(f >> data.points))
-            throw std::runtime_error("Format invalide : points du joueur " + data.nom);
+            throw std::runtime_error("Format invalide : points joueur");
 
         expectLigne("TUILE_MAIN");
         if (!(f >>= data.tuileMain))
-            throw std::runtime_error("Format invalide : tuile en main du joueur " + data.nom);
+            throw std::runtime_error("Format invalide : tuile main joueur");
 
         expectLigne("PLATEAU");
-        size_t nbTuilesPlateau = 0;
-        if (!(f >> nbTuilesPlateau))
-            throw std::runtime_error("Format invalide : nombre de tuiles du plateau pour " + data.nom);
+        size_t nbTP = 0;
+        if (!(f >> nbTP))
+            throw std::runtime_error("Format invalide : nb tuiles plateau joueur");
 
-        data.plateau.reserve(nbTuilesPlateau);
-        for (size_t k = 0; k < nbTuilesPlateau; ++k)
+        data.plateau.reserve(nbTP);
+
+        for (size_t k = 0; k < nbTP; ++k)
         {
             Tuile t;
             if (!(f >>= t))
-                throw std::runtime_error("Format invalide : tuile du plateau de " + data.nom);
+                throw std::runtime_error("Format invalide : tuile du plateau joueur");
             data.plateau.push_back(t);
+        }
+
+        expectLigne("VARIANTES");
+        for (int i = 0; i < 5; ++i)
+        {
+            if (!(f >> variantesScore[i]))
+                throw std::runtime_error("Format invalide : variantesScore");
         }
 
         joueurs.push_back(std::move(data));
     }
 
-    bool variantesScore[5] = {};
-    std::vector<Joueur> joueursConstruits;
-    joueursConstruits.reserve(joueurs.size());
-    for (auto &joueur : joueurs)
+    // gestion Faux Joueur
+    expectLigne("FAUX_JOUEUR");
+    if (!(f >> present))
+        throw std::runtime_error("Format invalide : FAUX_JOUEUR");
+
+    if (present == 1)
     {
-        joueursConstruits.push_back(Joueur::fromSave(variantesScore,std::move(joueur.nom),joueur.pierres,joueur.points,
-        std::move(joueur.tuileMain),std::move(joueur.plateau)));
+        expectLigne("DIFFICULTE");
+        if (!(f >> difficulteFaux))
+            throw std::runtime_error("Format invalide : difficulté IA");
+
+        expectLigne("PIERRES");
+        if (!(f >> pierresFaux))
+            throw std::runtime_error("Format invalide : pierres IA");
+
+        expectLigne("POINTS");
+        if (!(f >> pointsFaux))
+            throw std::runtime_error("Format invalide : points IA");
+
+        expectLigne("PLATEAU");
+        size_t nbIA = 0;
+        if (!(f >> nbIA))
+            throw std::runtime_error("Format invalide : taille plateau IA");
+
+        plateauFaux.reserve(nbIA);
+
+        for (size_t k = 0; k < nbIA; ++k)
+        {
+            Tuile t;
+            if (!(f >>= t))
+                throw std::runtime_error("Format invalide : tuile IA");
+            plateauFaux.push_back(t);
+        }
     }
 
-    Chantier chantierConstruit = Chantier::fromSave(std::move(tuilesChantier));
-    Partie partie(nbJoueurs,nbTours,maitreArchitecte,
-    mainJoueur,std::move(chantierConstruit),std::move(piles),std::move(joueursConstruits));
+    // construction des objets
+    std::vector<Joueur> joueursConstruits;
+    joueursConstruits.reserve(joueurs.size());
+
+    for (auto &j : joueurs)
+    {
+        joueursConstruits.push_back(
+            Joueur::fromSave(
+                variantesScore,
+                std::move(j.nom),
+                j.pierres,
+                j.points,
+                std::move(j.tuileMain),
+                std::move(j.plateau)
+            )
+        );
+    }
+
+    Chantier chantierConstruits = Chantier::fromSave(std::move(tuilesChantier));
+
+    Partie partie(nbJoueurs, nbTours, maitreArchitecte, mainJoueur,
+                  std::move(chantierConstruits),
+                  std::move(piles),
+                  std::move(joueursConstruits));
+
+    if (present == 1)
+    {
+        partie.fauxJoueur = IllustreArchitecte::fromSave(
+            difficulteFaux, pierresFaux, pointsFaux,
+            variantesScore,
+            std::move(plateauFaux)
+        );
+    }
+
     return partie;
 }
 
+
+gar

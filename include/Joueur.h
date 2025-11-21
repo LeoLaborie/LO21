@@ -186,6 +186,17 @@ public:
      * @return Référence vers la tuile piochée
      */
     Tuile &piocherTuile(int id, Chantier &chantier);
+    
+    /**
+     * @brief Reconstruit un Illustre Architecte depuis une sauvegarde.
+     * @param diff Difficulté (1 à 3).
+     * @param pierres Nombre de pierres.
+     * @param points Nombre de points.
+     * @param variantes Variantes de score actives.
+     * @param plateau Tuiles du plateau.
+     */
+    static IllustreArchitecte *fromSave(int diff,int pierres,int points,const bool variantes[5],
+    std::vector<Tuile> plateau);
 
     /**
      * @brief Permet au joueur IA de choisir une tuile dans le chantier

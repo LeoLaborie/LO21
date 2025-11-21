@@ -153,6 +153,14 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
     }
     return idTuile;
 }
+IllustreArchitecte *IllustreArchitecte::fromSave(int diff,int pierres,int points,const bool variantes[5],std::vector<Tuile> plateauSave)
+{
+    auto *ia = new IllustreArchitecte(diff);
+    ia->nbrPierres = pierres;
+    ia->nbrPoints = points;
+    ia->plateau = Plateau::fromSave(variantes, std::move(plateauSave));
+    return ia;
+}
 
 std::ostream &operator<<(std::ostream &os, const Joueur &j)
 {
