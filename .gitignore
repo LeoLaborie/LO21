@@ -1,6 +1,6 @@
 # Prerequisites
 *.d
-*.config
+*.editorconfig
 # Compiled Object files
 *.slo
 *.lo
