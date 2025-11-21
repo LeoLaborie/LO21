@@ -1,5 +1,28 @@
 #include "Partie.h"
 
+#include "Sauvegarde.h"
+
+// Constructeur privé utilisé par fromSave (factory de chargement)
+Partie::Partie(int nbJoueursInit,
+               int nbToursInit,
+               int maitreArchitecteInit,
+               int mainJoueurInit,
+               Chantier chantierInit,
+               std::vector<std::vector<Tuile>> pilesInit,
+               std::vector<Joueur> joueursInit)
+    : nbrJoueurs(nbJoueursInit),
+      maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)),
+      mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)),
+      nbrTours(nbToursInit),
+      taillepaquet(nbJoueursInit + 1),
+      fauxJoueur(nullptr),
+      chantier(std::move(chantierInit)),
+      joueurs(std::move(joueursInit)),
+      piles(std::move(pilesInit))
+{}
+
+
+
 Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile)
 {
     if (nbJouer <= 0 || nbJouer > 4)
@@ -34,7 +57,7 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
     genererTuilesParties(varianteFullTuile);
 }
 
-void Partie::creerFauxJoueur()
+    void Partie::creerFauxJoueur()
 {
     nbrJoueurs++;
     int difficulte;

@@ -134,8 +134,6 @@ public:
      */
     int calculerPointsCaserne(const Hexagone *h) const;
 
-    // Gestion des placements
-
     /**
      * @brief Calcule toutes les positions légales en fonction d'une tuile (sa rotation)
      * @param t Tuile à placer
@@ -183,5 +181,13 @@ public:
      * @return une référence ostream
      */
     friend std::ostream &operator<<(std::ostream &os, const Plateau &p);
+
+    /**
+     * @brief Reconstruit un plateau à partir des tuiles et variantes sauvegardées.
+     * @param variantes Variantes de score actives.
+     * @param tuiles Ensemble des tuiles déjà posées.
+     * @return Plateau réhydraté.
+     */
+    static Plateau fromSave(const bool variantes[5], std::vector<Tuile> tuiles);
 };
 #endif

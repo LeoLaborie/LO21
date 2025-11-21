@@ -12,6 +12,18 @@ IllustreArchitecte::IllustreArchitecte(int diff)
     : Joueur("Illustre Architecte"),
       difficulte(diff) {};
 
+Joueur::Joueur(const bool variantes[5], std::string nomSave, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateauSave) :
+    nbrPierres(pierres),
+    nbrPoints(points),
+    nom(std::move(nomSave)),
+    plateau(Plateau::fromSave(variantes, std::move(plateauSave))),
+    tuileEnMain(std::move(tuileMain)) {}
+
+Joueur Joueur::fromSave(const bool variantes[5], std::string nom, int pierres, int points,Tuile tuileMain, std::vector<Tuile> plateau){
+    return Joueur(variantes,std::move(nom),pierres,points,std::move(tuileMain),std::move(plateau));
+}
+
+
 int Joueur::getNbrPierres() const
 {
     return nbrPierres;

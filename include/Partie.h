@@ -29,7 +29,17 @@ private:
     Chantier chantier;
     std::vector<Joueur> joueurs;
     std::vector<std::vector<Tuile>> piles;
-
+    /**
+     * @brief Constructeur privé utilisé uniquement pour reconstruire une partie depuis une sauvegarde.
+     */
+    Partie(int nbJoueurs,
+           int nbTours,
+           int maitreArchitecte,
+           int mainJoueur,
+           Chantier chantier,
+            std::vector<std::vector<Tuile>> piles,
+            std::vector<Joueur> joueurs);
+           
 public:
     /**
      * * @brief Constructeur de Partie
@@ -176,6 +186,14 @@ public:
      * @return IllustreArchitecte* : pointeur vers le faux joueur
      */
     IllustreArchitecte *getFauxJoueur() const { return fauxJoueur; }
+
+    /**
+     * @brief Charge une partie sauvegardée depuis un fichier.
+     * @param nomFichier Chemin du fichier de sauvegarde.
+     * @return Partie reconstruite à partir du fichier.
+     * @throws std::runtime_error si le fichier est introuvable ou invalide.
+     */
+    static Partie FromSave(const std::string& nomFichier);
 };
 
 #endif

@@ -27,6 +27,14 @@ TypeHex stringToType(const std::string& s);
 void sauvegarderPartie(const Partie& p);
 
 /**
+ * @brief Charge une partie depuis un fichier de sauvegarde.
+ * @param nomFichier Chemin du fichier à lire.
+ * @return Partie reconstruite.
+ * @throws std::runtime_error si le format du fichier est invalide.
+ */
+Partie chargerPartie(const std::string& nomFichier);
+
+/**
  * @brief Sérialise un hexagone vers un flux de sortie.
  * @param os Flux cible.
  * @param h Hexagone à écrire.
@@ -57,13 +65,5 @@ std::ostream& operator<<=(std::ostream& os, const Tuile& t);
  * @return Le flux pour chaînage.
  */
 std::istream& operator>>=(std::istream& is, Tuile& t);
-
-/**
- * @brief Charge une tuile depuis un fichier texte au format attendu.
- * @param nomFichier Chemin du fichier à lire.
- * @param t Tuile résultat si le chargement réussit.
- * @return true en cas de succès, false sinon.
- */
-bool chargerTuileDepuisFichier(const std::string& nomFichier, Tuile& t);
 
 #endif 
