@@ -49,7 +49,11 @@ public:
      * @param varianteFullTuile Indique si la variante Full Tuile est activée
      */
     Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile);
-
+    /**
+     * @brief constructeur de base de partie utiliser pour créer la partie dans le main
+    */ 
+     Partie(): nbrJoueurs(0),maitreArchitecte(0),mainJoueur(0),
+      nbrTours(0),taillepaquet(0),fauxJoueur(nullptr),chantier(), joueurs(),piles(){}
     /**
      * @brief Destructeur de Partie
      */

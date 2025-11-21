@@ -4,12 +4,9 @@
 #include "Position.h"
 #include "couleurs_console.h"
 #include "Sauvegarde.h"
-int main()
-{
-    texte_reset();
-    afficher_curseur();
-    texte_couleur(ROUGE);
-    texte_gras_on();
+
+
+Partie CreerNouvellePartie(){
     std::cout << "===== DEMARRAGE PARTIE =====\n";
     texte_reset();
 
@@ -94,8 +91,59 @@ int main()
         listePseudo.push_back(nomJoueur);
     }
 
-    Partie partie(nbrJoueurs, listePseudo, variantesScore, utiliserToutesLesTuiles);
+    return Partie(nbrJoueurs, listePseudo, variantesScore, utiliserToutesLesTuiles);
 
+}
+
+void jouer(){
+    texte_reset();
+    afficher_curseur();
+    texte_couleur(ROUGE);
+    texte_gras_on();
+    bool choixMode=false;
+    Partie partie;
+    while (!choixMode){
+        int choix;
+        int Choixsauvegarde=-1;
+        int indiceSauvegarde=0;
+        std::cout << " 1: Jouer une nouvelle partie.\n";
+        std::cout << " 2: charger une partie.\n";
+        std::cout<< "0: quiter le akropolis.\n";
+        std::cout << "Votre choix : ";
+        std::cin>>choix;
+        std::cin.clear();
+        switch (choix)
+        {
+        case 1:
+            partie =CreerNouvellePartie();
+            choixMode=true;
+            break;
+        case 2:
+            std::cout<<"Listes des sauvegardes :"<<std::endl;
+            for (auto fichier : getSauvegardes()){
+                std::cout<<"["<<indiceSauvegarde<<"]"<<fichier<<std::endl;
+                indiceSauvegarde++;
+            }
+            while (Choixsauvegarde<0 || Choixsauvegarde>=indiceSauvegarde){
+                std::cout << " Choisissez le numéro de la sauvegarde: ";
+                std::cin>>Choixsauvegarde;
+                std::cin.clear();
+                if (Choixsauvegarde<0 || Choixsauvegarde>indiceSauvegarde){
+                    std::cout<<"\n choix invalide \n";
+                }
+            }
+            partie=Partie::FromSave("saves/"+getSauvegardes()[Choixsauvegarde]);
+            choixMode=true;
+            texte_reset();
+            break;
+        case 0:
+            return;
+        default:
+            break;
+        }
+
+    }
+    
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -145,24 +193,42 @@ int main()
                 std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile [a] | sauvegarder [s]: ";
                 char rep;
                 std::cin >> rep;
-                if (rep == 'o' || rep == 'O')
+                switch (rep){
+                case 'o':
+                case 'O':
                 {
                     tuilePiochee.pivoterTuile();
                     std::cout << "\nTuile après pivot :\n\n";
                     std::cout << tuilePiochee;
+                    break;
                 }
-                else if (rep == 'a' || rep == 'A')
+                case 'a':
+                case 'A':
                 {
                     std::cout << "\nAperçu tuile :\n\n";
                     std::cout << tuilePiochee;
+                    break;
                 }
-                else if (rep == 'p' || rep == 'P')
+                case 'p':
+                case 'P':
                 {
                     phaseRotation = false; // on passe à la phase de placement
+                    break;
                 }
-                else if (rep == 's' || rep == 'S')
+                case 's':
+                case 'S':
                 {
                     sauvegarderPartie(partie);
+                    break;
+                }
+                case 'x':
+                case 'X':
+                    jouer();
+                    break;
+                default:
+                    texte_reset();
+                    std::cout<<"\n Choix invalide veuillez réessayer"<<std::endl;
+                    break;
                 }
             }
 
@@ -288,6 +354,12 @@ int main()
 
     texte_reset();
     std::cout << std::endl;
+}
 
+int main()
+{
+    jouer();
     return 0;
 }
+
+

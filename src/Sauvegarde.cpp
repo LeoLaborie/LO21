@@ -6,6 +6,24 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <filesystem>
+
+std::vector<std::string> getSauvegardes()
+{
+    std::string folder = "./saves";
+    std::vector<std::string> files;
+    const std::string ext = ".ratatata";
+    for (const auto& entry : std::filesystem::directory_iterator(folder)) {
+        if (entry.is_regular_file() && entry.path().extension() == ext) {
+            files.push_back(entry.path().filename().string());
+        }
+    }
+
+    return files;
+}
+
+
+
 
 std::string getCurrentDate() {
   std::time_t t = std::time(nullptr);
@@ -191,15 +209,16 @@ void sauvegarderPartie(const Partie &p) {
     f <<= j.getTuileEnMain();
     const auto &tuilesPlateau = j.getPlateau().getTuiles();
     f << "PLATEAU " << tuilesPlateau.size() << '\n';
+    for (const auto &t : tuilesPlateau) {
+      f <<= t;
+    }
     f << "VARIANTES ";
-    for (unsigned int i = 0; i < 5; i++) {
-      f << j.getPlateau().getVarianteScores()[i] << " ";
+    for (unsigned int i = 0; i < 5; ++i) {
+      f << j.getPlateau().getVarianteScores()[i] << ' ';
     }
     f << '\n';
-    for (const auto &t : tuilesPlateau)
-      f <<= t;
   }
-  f << "FAUX JOUEUR ";
+  f << "FAUX_JOUEUR ";
   if (p.fauxJoueurPresent()) {
     f << "1"
       << "\n";
