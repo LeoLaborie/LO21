@@ -3,8 +3,10 @@
 #include <QPolygonF>
 #include <QPen>
 #include <QBrush>
+#include <QGraphicsPixmapItem>
 #include "Hexagone.h"
 #include <QFile>
+#include <QCoreApplication>
 
 
 QPointF axialVersPixel(int q, int r, double size) {
@@ -43,24 +45,25 @@ HexItem::HexItem(const Hexagone* modele, double taille)
     grad.setColorAt(1.0, QColor(220, 220, 220));
     setBrush(QBrush(grad));
 
-    QString imgPath;
+    const QString basePath = QCoreApplication::applicationDirPath() + "/img/";
+    QString imgFile;
     switch (modele->getType())
     {
-    case TypeHex::PHabitation: imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/PlaceHabitation.png"; break;
-    case TypeHex::PMarche:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/PlaceMarche.png"; break;
-    case TypeHex::PTemple:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/PlaceTemple.png"; break;
-    case TypeHex::PCaserne:    imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/placeCarserne.png"; break;
-    case TypeHex::PJardin:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/placeJardin.png"; break;
-    case TypeHex::Habitation:  imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Habitation.png"; break;
-    case TypeHex::Marche:      imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Marche.png"; break;
-    case TypeHex::Temple:      imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Temple.png"; break;
-    case TypeHex::Caserne:     imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Carserne.png"; break;
-    case TypeHex::Jardin:      imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Jardin.png"; break;
-    case TypeHex::Carriere:    imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/Carriere.png"; break;
-    default:                   imgPath = "C:/Users/thibault/source/repos/LeoLaborie/LO21/img/placeHabitation.png"; break;
+    case TypeHex::PHabitation: imgFile = "placeHabitation.png"; break;
+    case TypeHex::PMarche:     imgFile = "PlaceMarche.png"; break;
+    case TypeHex::PTemple:     imgFile = "PlaceTemple.png"; break;
+    case TypeHex::PCaserne:    imgFile = "PlaceCarserne.png"; break;
+    case TypeHex::PJardin:     imgFile = "PlaceJardin.png"; break;
+    case TypeHex::Habitation:  imgFile = "Habitation.png"; break;
+    case TypeHex::Marche:      imgFile = "Marche.png"; break;
+    case TypeHex::Temple:      imgFile = "Temple.png"; break;
+    case TypeHex::Caserne:     imgFile = "Carserne.png"; break;
+    case TypeHex::Jardin:      imgFile = "Jardin.png"; break;
+    case TypeHex::Carriere:    imgFile = "Carriere.png"; break;
+    default:                   imgFile = "placeHabitation.png"; break;
     }
 
-    QPixmap pix(imgPath);
+    QPixmap pix(basePath + imgFile);
     QPixmap scaled = pix.scaled(taille * 1.5, taille * 1.5,
                                 Qt::KeepAspectRatio,
                                 Qt::SmoothTransformation);

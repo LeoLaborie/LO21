@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include <QCoreApplication>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -48,9 +49,11 @@ MainWindow::MainWindow(QWidget* parent)
     stack->addWidget(newGamePage);
     stack->addWidget(loadPage);
     stack->addWidget(settingsPage);
-    stack->setStyleSheet(R"(
+
+    const QString background = QCoreApplication::applicationDirPath() + "/img/akropolis.png";
+    const QString stylesheet = QString(R"(
         #MenuPage, #NewGamePage, #LoadPage, #SettingsPage {
-            border-image: url(C:/Users/thibault/source/repos/LeoLaborie/LO21/img/akropolis.png) 0 0 0 0 stretch stretch;
+            border-image: url("%1") 0 0 0 0 stretch stretch;
         }
         #MenuPanel { background: rgba(0,0,0,0.35); border-radius: 16px; }
 
@@ -60,12 +63,11 @@ MainWindow::MainWindow(QWidget* parent)
         }
         QPushButton:hover  { background: #3b7bf0; }
         QPushButton:pressed{ background: #2a5ec2; }
-    )");
+    )").arg(background);
+    stack->setStyleSheet(stylesheet);
 
     connect(newGame,  &QPushButton::clicked, stack, [stack,newGamePage]{ stack->setCurrentWidget(newGamePage); });
     connect(loadGame, &QPushButton::clicked, stack, [stack,loadPage]{    stack->setCurrentWidget(loadPage); });
     connect(setting,  &QPushButton::clicked, stack, [stack,settingsPage]{stack->setCurrentWidget(settingsPage); });
     connect(quitter,  &QPushButton::clicked, this,  &QWidget::close);
 }
-
-
