@@ -51,8 +51,8 @@
 #define texte_couleur(coul)     printf("\033[%dm",coul)
 #define texte_fond(coul)      printf("\033[%dm",coul+10)
 
-#define cacher_curseur()        printf("\e[?25l")
-#define afficher_curseur()      printf("\e[?25h")
+#define cacher_curseur()        printf("\033[?25l")
+#define afficher_curseur()      printf("\033[?25h")
 
 #define texte_effet(effet)      printf("\033[%dm",effet)
 

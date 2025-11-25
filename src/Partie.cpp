@@ -1,37 +1,108 @@
 #include "Partie.h"
-#include <map>
-#include <string>
-#include <vector>
-#include <stdexcept>
-#include <random>
+
+#include "Sauvegarde.h"
+
+// Constructeur privé utilisé par fromSave (factory de chargement)
+Partie::Partie(int nbJoueursInit,
+               int nbToursInit,
+               int maitreArchitecteInit,
+               int mainJoueurInit,
+               Chantier chantierInit,
+               std::vector<std::vector<Tuile>> pilesInit,
+               std::vector<Joueur> joueursInit)
+    : nbrJoueurs(nbJoueursInit),
+      maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)),
+      mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)),
+      nbrTours(nbToursInit),
+      taillepaquet(nbJoueursInit + 1),
+      fauxJoueur(nullptr),
+      chantier(std::move(chantierInit)),
+      joueurs(std::move(joueursInit)),
+      piles(std::move(pilesInit))
+{}
+
+
+
+Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile)
+{
+    if (nbJouer <= 0 || nbJouer > 4)
+        throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
+
+    nbrJoueurs = nbJouer;
+    fauxJoueur = nullptr;
+
+    // creation des joueurs
+    joueurs.clear();
+    joueurs.reserve(nbrJoueurs);
+
+    for (int i = 0; i < nbrJoueurs; ++i)
+    {
+        // ajout de chaque joueur dans la liste
+        Joueur j(variantesScore, pseudo[i]);
+        j.setNbrPierres(i + 1);
+        joueurs.push_back(j);
+    }
+
+    if (nbrJoueurs == 1)
+    {
+        creerFauxJoueur();
+    }
+
+    // initialisation des paramètres
+    mainJoueur = 0;
+    maitreArchitecte = 0;
+    nbrTours = 0;
+    taillepaquet = 1 + nbrJoueurs;
+
+    genererTuilesParties(varianteFullTuile);
+}
+
+    void Partie::creerFauxJoueur()
+{
+    nbrJoueurs++;
+    int difficulte;
+    std::cout << "Choisissez le niveau de difficulté de l'Illustre Architecte (entre 1 et 3)\n";
+    std::cin >> difficulte;
+    while (difficulte > 3 || difficulte < 1)
+    {
+        texte_couleur(ROUGE);
+        texte_gras_on();
+        std::cout << "Niveau de difficulté invalide\n";
+        texte_reset();
+        std::cin >> difficulte;
+    }
+    IllustreArchitecte *f = new IllustreArchitecte{difficulte};
+    f->setNbrPierres(2);
+    fauxJoueur = f;
+}
 
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
 {
     if (type == "placeBleue")
-        return new Hexagone(0, 0, 0, TypeHex::PHabitation, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PHabitation, &tuile);
     else if (type == "placeJaune")
     {
         *marcheDejaPresent = true;
-        return new Hexagone(0, 0, 0, TypeHex::PMarche, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PMarche, &tuile);
     }
     else if (type == "placeRouge")
-        return new Hexagone(0, 0, 0, TypeHex::PCaserne, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PCaserne, &tuile);
     else if (type == "placeViolette")
-        return new Hexagone(0, 0, 0, TypeHex::PTemple, 2, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PTemple, &tuile);
     else if (type == "placeVerte")
-        return new Hexagone(0, 0, 0, TypeHex::PJardin, 3, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::PJardin, &tuile);
     else if (type == "quartierBleu")
-        return new Hexagone(0, 0, 0, TypeHex::Habitation, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Habitation, &tuile);
     else if (type == "quartierJaune")
-        return new Hexagone(0, 0, 0, TypeHex::Marche, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Marche, &tuile);
     else if (type == "quartierRouge")
-        return new Hexagone(0, 0, 0, TypeHex::Caserne, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Caserne, &tuile);
     else if (type == "quartierViolet")
-        return new Hexagone(0, 0, 0, TypeHex::Temple, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Temple, &tuile);
     else if (type == "quartierVert")
-        return new Hexagone(0, 0, 0, TypeHex::Jardin, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Jardin, &tuile);
     else if (type == "carriere")
-        return new Hexagone(0, 0, 0, TypeHex::Carriere, 1, &tuile);
+        return new Hexagone(0, 0, 0, TypeHex::Carriere, &tuile);
 
     throw std::runtime_error("Type inconnu: " + type);
 }
@@ -77,23 +148,32 @@ std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent
     return choisi;
 }
 
-void Partie::genererTuilesParties()
+void Partie::genererTuilesParties(bool fullTuiles)
 {
     std::map<int, std::map<std::string, int>> cartes = {
-        {2, {
-                {"placeBleue", 5}, {"placeJaune", 4}, {"placeRouge", 4}, {"placeViolette", 4}, {"placeVerte", 3}, {"quartierBleu", 18}, {"quartierJaune", 12}, {"quartierRouge", 10}, {"quartierViolet", 8}, {"quartierVert", 6}, {"carriere", 37} 
-            }},
-        {3, {
-                {"placeBleue", 6}, {"placeJaune", 5}, {"placeRouge", 5}, {"placeViolette", 5}, {"placeVerte", 4}, {"quartierBleu", 27}, {"quartierJaune", 16}, {"quartierRouge", 13}, {"quartierViolet", 10}, {"quartierVert", 7}, {"carriere", 49} 
-            }},
-        {4, {
-                {"placeBleue", 7}, {"placeJaune", 6}, {"placeRouge", 6}, {"placeViolette", 6}, {"placeVerte", 5}, {"quartierBleu", 36}, {"quartierJaune", 20}, {"quartierRouge", 16}, {"quartierViolet", 12}, {"quartierVert", 8}, {"carriere", 61} 
-            }}};
+        {2, {{"placeBleue", 5}, {"placeJaune", 4}, {"placeRouge", 4}, {"placeViolette", 4}, {"placeVerte", 3}, {"quartierBleu", 18}, {"quartierJaune", 12}, {"quartierRouge", 10}, {"quartierViolet", 8}, {"quartierVert", 6}, {"carriere", 37}}},
+        {3, {{"placeBleue", 6}, {"placeJaune", 5}, {"placeRouge", 5}, {"placeViolette", 5}, {"placeVerte", 4}, {"quartierBleu", 27}, {"quartierJaune", 16}, {"quartierRouge", 13}, {"quartierViolet", 10}, {"quartierVert", 7}, {"carriere", 49}}},
+        {4, {{"placeBleue", 7}, {"placeJaune", 6}, {"placeRouge", 6}, {"placeViolette", 6}, {"placeVerte", 5}, {"quartierBleu", 36}, {"quartierJaune", 20}, {"quartierRouge", 16}, {"quartierViolet", 12}, {"quartierVert", 8}, {"carriere", 61}}}};
 
-    auto &stock = cartes[getNbrJoueurs()];
+    std::map<std::string, int> *stock = &cartes[getNbrJoueurs()];
 
     int tuilesParPile = getNbrJoueurs() + 1;
     int nombreDePiles = 12;
+    if (nbrJoueurs < 4)
+    { // Variante du nombre de piles en fonction du nombre de joueurs
+        if (fullTuiles)
+        {
+            stock = &cartes[4];
+            if (nbrJoueurs == 3)
+            {
+                nombreDePiles = 15;
+            }
+            else if (nbrJoueurs == 2)
+            {
+                nombreDePiles = 20;
+            }
+        }
+    }
 
     for (int i = 0; i < nombreDePiles; i++)
     {
@@ -106,12 +186,11 @@ void Partie::genererTuilesParties()
 
             for (int k = 0; k < 3; k++)
             {
-                std::string type = tirerCarte(stock, marcheDejaPresent);
+                std::string type = tirerCarte(*stock, marcheDejaPresent);
                 Hexagone *h = creerHexagoneDepuisType(type, tuile, &marcheDejaPresent);
                 hexas.push_back(h);
             }
-
-            tuile.creerTuile(hexas[0], hexas[1], hexas[2]);
+            tuile = Tuile(hexas[0], hexas[1], hexas[2]);
             pile.push_back(tuile);
         }
         piles.push_back(pile);
@@ -125,16 +204,15 @@ void Partie::genererTuilesParties()
 
     for (int i = 0; i < 3; i++)
     {
-        std::string type = tirerCarte(stock, marcheDejaPresent);
+        std::string type = tirerCarte(*stock, marcheDejaPresent);
         Hexagone *h = creerHexagoneDepuisType(type, tuileBonus, &marcheDejaPresent);
         hexas.push_back(h);
     }
 
-    tuileBonus.creerTuile(hexas[0], hexas[1], hexas[2]);
-    chantier.ajouterTuile(tuileBonus); // ajouté directement dans le chantier
-
+    tuileBonus = Tuile(hexas[0], hexas[1], hexas[2]);
+    chantier.ajouterTuile(tuileBonus);
     // Vérification : le stock doit être vide
-    for (auto &[type, quantite] : stock)
+    for (auto &[type, quantite] : *stock)
     {
         if (quantite != 0)
         {
@@ -145,24 +223,6 @@ void Partie::genererTuilesParties()
 
     // Initialiser le chantier avec une pile de tuiles
     addTuileInChantierFromPiles();
-}
-
-void Partie::setNbrJoueurs(int nbr)
-{
-    int nbpierre = 1;
-    if (nbr <= 0 || nbr > 4)
-        throw std::invalid_argument("nbrJoueurs doit etre > 0 et inférieur à 4");
-    nbrJoueurs = nbr;
-    joueurs.assign(nbrJoueurs, Joueur{});
-    for (auto &j : joueurs)
-    {
-        j.setNbrPierres(nbpierre);
-        nbpierre++;
-    }
-    mainJoueur = 0;
-    maitreArchitecte = 0;
-    nbrTours = 0;
-    taillepaquet = 1 + nbrJoueurs;
 }
 
 void Partie::tourTermine()
