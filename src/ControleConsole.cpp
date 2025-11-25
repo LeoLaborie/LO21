@@ -123,8 +123,19 @@ void controleConsole()
             choixMode = true;
             break;
         case 2:
+        {
+            const auto sauvegardes = getSauvegardes();
+            if (sauvegardes.empty())
+            {
+                texte_couleur(ROUGE);
+                texte_gras_on();
+                std::cout << "\nAucune sauvegarde disponible.\n\n";
+                texte_reset();
+                break;
+            }
+
             std::cout << "Listes des sauvegardes :" << std::endl;
-            for (auto fichier : getSauvegardes())
+            for (const auto &fichier : sauvegardes)
             {
                 std::cout << "[" << indiceSauvegarde << "]" << fichier << std::endl;
                 indiceSauvegarde++;
@@ -134,15 +145,16 @@ void controleConsole()
                 std::cout << " Choisissez le numéro de la sauvegarde: ";
                 std::cin >> Choixsauvegarde;
                 std::cin.clear();
-                if (Choixsauvegarde < 0 || Choixsauvegarde > indiceSauvegarde)
+                if (Choixsauvegarde < 0 || Choixsauvegarde >= indiceSauvegarde)
                 {
                     std::cout << "\n choix invalide \n";
                 }
             }
-            partie = Partie::FromSave("saves/" + getSauvegardes()[Choixsauvegarde]);
+            partie = Partie::FromSave("saves/" + sauvegardes[Choixsauvegarde]);
             choixMode = true;
             texte_reset();
             break;
+        }
         case 0:
             return;
         default:
@@ -167,36 +179,45 @@ void controleConsole()
             // Affichage du chantier
             std::cout << partie.getChantier();
 
-            // Choix de la tuile à piocher
-            int idTuile = -1;
-            idTuile = joueurCourant.choixTuile(partie.getChantier());
-
-            // Pioche de la tuile
-            bool piocheReussie = false;
             Tuile tuilePiochee;
-            while (!piocheReussie)
+            const bool tuileDejaEnMain = !joueurCourant.getTuileEnMain().getHexagones().empty();
+            if (!tuileDejaEnMain)
             {
-                try
+                // Choix de la tuile à piocher
+                int idTuile = -1;
+                idTuile = joueurCourant.choixTuile(partie.getChantier());
+
+                // Pioche de la tuile
+                bool piocheReussie = false;
+                while (!piocheReussie)
                 {
-                    tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
-                    std::cout << "\nTuile piochée :\n\n";
-                    std::cout << tuilePiochee; // operator<< respecte les offsets
-                    piocheReussie = true;
+                    try
+                    {
+                        tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
+                        std::cout << "\nTuile piochée :\n\n";
+                        std::cout << tuilePiochee; // operator<< respecte les offsets
+                        piocheReussie = true;
+                    }
+                    catch (const std::exception &e)
+                    {
+                        texte_couleur(ROUGE);
+                        texte_gras_on();
+                        std::cout << e.what() << "\n";
+                        texte_reset();
+                    }
                 }
-                catch (const std::exception &e)
-                {
-                    texte_couleur(ROUGE);
-                    texte_gras_on();
-                    std::cout << e.what() << "\n";
-                    texte_reset();
-                }
+            }
+            else
+            {
+                tuilePiochee = joueurCourant.getTuileEnMain();
+                std::cout << "\nTuile déjà en main. Accès direct aux actions de placement.\n";
             }
 
             bool phaseRotation = true;
             while (phaseRotation)
             {
                 joueurCourant.getPlateau().afficherPositionsLegales(joueurCourant.getTuileEnMain());
-                std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile [a] | sauvegarder [s]: ";
+                std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile [a] | sauvegarder [s] | quitter [q]: ";
                 char rep;
                 std::cin >> rep;
                 switch (rep)
@@ -228,10 +249,18 @@ void controleConsole()
                     sauvegarderPartie(partie);
                     break;
                 }
-                case 'x':
-                case 'X':
-                    controleConsole();
-                    break;
+                case 'q':
+                case 'Q':
+                {
+                    char sauvegarderAvantQuitter;
+                    std::cout << "Voulez-vous sauvegarder avant de quitter ? (o/n) : ";
+                    std::cin >> sauvegarderAvantQuitter;
+                    if (sauvegarderAvantQuitter == 'o' || sauvegarderAvantQuitter == 'O')
+                    {
+                        sauvegarderPartie(partie);
+                    }
+                    return;
+                }
                 default:
                     texte_reset();
                     std::cout << "\n Choix invalide veuillez réessayer" << std::endl;
