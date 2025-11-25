@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <utility>
 #include "Tuile.h"
 #include "couleurs_console.h"
 
@@ -14,7 +15,6 @@ class Chantier
 {
 private:
     std::vector<Tuile> tuilesChantier;
-
 public:
     /**
      * @brief Constructeur par défaut de Chantier
@@ -70,6 +70,17 @@ public:
         }
         os << std::endl;
         return os;
+    }
+
+    /**
+     * @brief Reconstruit un chantier depuis les données sauvegardées.
+     * @param chantier Tuiles à remettre dans le chantier.
+     * @return Chantier contenant les tuiles chargées.
+     */
+    static Chantier fromSave(std::vector<Tuile> chantier) {
+        Chantier c;
+        c.tuilesChantier = std::move(chantier);
+        return c;
     }
 };
 

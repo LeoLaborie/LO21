@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <utility>
 #include "Plateau.h"
 #include "Tuile.h"
 #include "Chantier.h"
@@ -18,7 +19,6 @@ class IllustreArchitecte;
 class Joueur
 {
     friend class Partie;
-
 protected:
     int nbrPierres{};
     int nbrPoints{};
@@ -38,6 +38,11 @@ protected:
      * @param nom Nom du joueur
      */
     explicit Joueur(std::string nom);
+
+    /**
+     * @brief Constructeur utilisé pour la restauration depuis une sauvegarde.
+     */
+    Joueur(const bool variantes[5], std::string nom, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateau);
 
 public:
     /**
@@ -136,6 +141,18 @@ public:
      * @return id de la Tuile choisie par le joueur
      */
     virtual int choixTuile(const Chantier &chantier);
+
+    /**
+     * @brief Reconstruit un joueur depuis les données de sauvegarde.
+     * @param variantes Variantes de score actives.
+     * @param nom Nom du joueur.
+     * @param pierres Nombre de pierres.
+     * @param points Nombre de points.
+     * @param tuileMain Tuile en main.
+     * @param plateau Tuiles présentes sur le plateau.
+     */
+    static Joueur fromSave(const bool variantes[5], std::string nom, int pierres, int points,
+                           Tuile tuileMain, std::vector<Tuile> plateau);
 };
 
 /**
@@ -169,6 +186,17 @@ public:
      * @return Référence vers la tuile piochée
      */
     Tuile &piocherTuile(int id, Chantier &chantier);
+    
+    /**
+     * @brief Reconstruit un Illustre Architecte depuis une sauvegarde.
+     * @param diff Difficulté (1 à 3).
+     * @param pierres Nombre de pierres.
+     * @param points Nombre de points.
+     * @param variantes Variantes de score actives.
+     * @param plateau Tuiles du plateau.
+     */
+    static IllustreArchitecte *fromSave(int diff,int pierres,int points,const bool variantes[5],
+    std::vector<Tuile> plateau);
 
     /**
      * @brief Permet au joueur IA de choisir une tuile dans le chantier

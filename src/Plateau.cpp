@@ -1,6 +1,7 @@
 #include "Plateau.h"
 #include <algorithm>
 #include <unordered_map>
+#include <utility>
 
 Plateau::Plateau(const bool vs[5])
 {
@@ -20,6 +21,14 @@ Plateau::Plateau()
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
+}
+
+Plateau Plateau::fromSave(const bool variantes[5], std::vector<Tuile> tuiles)
+{
+    Plateau p(variantes);
+    p.listeTuiles = std::move(tuiles);
+    p.updateVoisins();
+    return p;
 }
 
 void Plateau::updateVoisins()
@@ -235,7 +244,7 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     if (p.z > 0)
     {
         auto Recouvrir = [&](int x, int y)
-        {
+         {
             bool traite = false;
             pourChaqueHexagone([&](Hexagone *h)
                                {
