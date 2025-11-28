@@ -1,7 +1,11 @@
-#include "ControleConsole.h"
+#include <QApplication>
+#include "mainwindow.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-    controleConsole();
-    return 0;
+    QApplication app(argc, argv);
+    MainWindow w;
+    w.resize(1920, 1080);
+    w.show();
+    return app.exec();
 }
