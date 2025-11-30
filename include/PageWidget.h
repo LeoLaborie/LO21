@@ -10,7 +10,6 @@ class newPartiePage : public QWidget
 
 public:
     explicit newPartiePage(QWidget* parent = nullptr);
-    ~newPartiePage() =default;
 };
 
 #endif

@@ -1,8 +1,12 @@
 #include "PageWidget.h"
-#include <QLayout>
-#include <QLabel>
 
-newPartiePage::newPartiePage(QWidget* parent = nullptr){
-    QWidget(parent);
-    auto * label = new QLabel("test",this);
+#include <QLabel>
+#include <QVBoxLayout>
+
+newPartiePage::newPartiePage(QWidget* parent)
+    : QWidget(parent)
+{
+    auto* layout = new QVBoxLayout(this);
+    auto* label  = new QLabel("test", this);
+    layout->addWidget(label);
 }
