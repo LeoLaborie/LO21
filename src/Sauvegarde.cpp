@@ -7,10 +7,11 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-
+#include <QCoreApplication>
 std::vector<std::string> getSauvegardes()
 {
-    std::string folder = "./saves";
+    const auto base = std::filesystem::current_path();          
+    const auto folder = base / "saves";
     std::vector<std::string> files;
     const std::string ext = ".ratatata";
     for (const auto& entry : std::filesystem::directory_iterator(folder)) {
