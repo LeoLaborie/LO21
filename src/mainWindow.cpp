@@ -3,7 +3,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
-
+#include "PageWidget.h"
 #include <QStackedWidget>
 
 MainWindow::MainWindow(QWidget* parent)
@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget* parent)
     col->addStretch();
 
 
-    QWidget* newGamePage = new QWidget(stack);
+    auto * newGamePage = new newPartiePage(stack);
     newGamePage->setObjectName("NewGamePage");
     QWidget* loadPage    = new QWidget(stack);
     loadPage->setObjectName("LoadPage");
