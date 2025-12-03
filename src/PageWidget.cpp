@@ -1,8 +1,19 @@
 #include "PageWidget.h"
+#include <iostream>
 #include <QCheckBox>
 #include <QFrame>
 #include <QAbstractSpinBox>
 #include <QGridLayout>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLabel>
+#include <QVector>
+#include <QFrame>
+#include <QAbstractSpinBox>
+#include <QGridLayout>
+#include <string>
+
 
 void newPartiePage::lancerLaPartie()
 {
@@ -20,11 +31,9 @@ void newPartiePage::lancerLaPartie()
     }
 }
 
-newPartiePage::newPartiePage(QWidget* parent)
-    : QWidget(parent)
+newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
 {
     setAttribute(Qt::WA_StyledBackground, true);
-
     auto* LayoutCentral = new QVBoxLayout(this);
     LayoutCentral->setContentsMargins(0, 0, 0, 0);
     LayoutCentral->setAlignment(Qt::AlignCenter);
@@ -117,3 +126,6 @@ newPartiePage::newPartiePage(QWidget* parent)
     LayoutCentral->addWidget(Cadre, 0, Qt::AlignCenter);
     connect(StartButton, &QPushButton::clicked,this, &newPartiePage::lancerLaPartie);
 }
+
+
+

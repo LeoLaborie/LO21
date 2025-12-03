@@ -1,17 +1,10 @@
 #ifndef PAGEWIDGET_H
 #define PAGEWIDGET_H
 
-#include <QLineEdit>
-#include "PageWidget.h"
-#include <QGroupBox>
-#include <QCheckBox>
-#include <QPushButton>
 #include <QSpinBox>
-#include <QLabel>
-#include <QVector>
 #include <QVBoxLayout>
-#include <string>
-#include <iostream>
+#include <QCheckBox>
+#include <QWidget>
 
 class newPartiePage : public QWidget
 {

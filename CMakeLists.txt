@@ -26,6 +26,7 @@ set(LO21_HEADERS
     "${CMAKE_SOURCE_DIR}/include/mainwindow.h"
     "${CMAKE_SOURCE_DIR}/include/TuileItem.h"
     "${CMAKE_SOURCE_DIR}/include/PageWidget.h"
+    "${CMAKE_SOURCE_DIR}/include/VuePlateau.h"
 )
 
 # Créer l'exécutable
