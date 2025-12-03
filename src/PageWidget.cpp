@@ -18,17 +18,14 @@
 void newPartiePage::lancerLaPartie()
 {
     int nb = NbJoueurs->value();
-    std::cout << "Nombre de joueurs : " << nb << "\n";
-    for (int i = 0; i < nb; i++) {
-        std::cout << "Joueur " << i+1 << " : "
-                  << PseudoJoueurs[i]->text().toStdString() << "\n";
-    }
-    std::cout << "Variantes activées :\n";
-    for (const auto* checkbox : variantesOptions) {
-        if (checkbox->isChecked()) {
-            std::cout << " - " << checkbox->text().toStdString() << "\n";
-        }
-    }
+    QStringList pseudos;
+    for (int i = 0; i < nb; ++i)
+        pseudos << PseudoJoueurs[i]->text();
+    QVector<bool> variantes;
+    variantes.reserve(variantesOptions.size());
+    for (auto* checkbox : variantesOptions)
+        variantes.push_back(checkbox->isChecked());
+    emit afficherPlateau(nb, pseudos, variantes);
 }
 
 newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)

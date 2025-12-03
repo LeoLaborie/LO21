@@ -20,6 +20,7 @@ private:
 
 private slots:
     void lancerLaPartie();   
+signals:
+    void afficherPlateau(int nb, const QStringList& pseudos,const QVector<bool>& variantes);
 };
-
 #endif
