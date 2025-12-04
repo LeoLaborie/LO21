@@ -22,9 +22,6 @@ std::vector<std::string> getSauvegardes()
     return files;
 }
 
-
-
-
 std::string getCurrentDate() {
   std::time_t t = std::time(nullptr);
   char buf[32];

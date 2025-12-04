@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     auto * newGamePage = new newPartiePage(stack);
     newGamePage->setObjectName("NewGamePage");
-    QWidget* loadPage    = new QWidget(stack);
+    QWidget* loadPage    = new chargePartieWidget(stack);
     loadPage->setObjectName("LoadPage");
     QWidget* settingsPage= new QWidget(stack);
     settingsPage->setObjectName("SettingsPage");
