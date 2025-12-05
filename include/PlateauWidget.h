@@ -29,11 +29,7 @@ public:
      * @param centrer centre automatiquement la tuile dans la zone si true.
      * @return pointeur vers le TuileItem créé pour manipulations ultérieures.
      */
-    TuileItem* ajouterTuile(Tuile & t, bool centrer = true);
-    /**
-     * @brief Ajoute et positionne immédiatement une tuile sur les coordonnées axiales (q,r).
-     */
-    TuileItem* ajouterTuile(Tuile & t, int q, int r);
+
 
 private:
     QGraphicsScene* plateauScene = nullptr;
@@ -46,12 +42,7 @@ private:
     QGraphicsView* piocheView = nullptr;
     QWidget* panneauScores = nullptr;
     QLabel * score = nullptr;
-    QLabel *erreur = nullptr;
     QLabel * joueurSelect = nullptr;
-    /**
-     * @brief Construit un setup de démonstration avec la tuile de départ et quelques exemples.
-     */
-    void initialiserPlateauDemo();
 };
 
 #endif

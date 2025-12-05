@@ -51,8 +51,7 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     scoreLayout->setSpacing(8);
     score = new QLabel("Scores", panneauScores);
     joueurSelect = new QLabel("Joueur actif", panneauScores);
-    erreur = new QLabel("", panneauScores);
-    for (auto* label : {score, joueurSelect, erreur}) {
+    for (auto* label : {score, joueurSelect}) {
         label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         scoreLayout->addWidget(label);
     }
