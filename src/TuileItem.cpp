@@ -57,8 +57,6 @@ void TuileItem::setInteractivite(bool autoriserDeplacement, bool autoriserRotati
 }
 
 
-
-
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     if (event->button() == Qt::RightButton && rotationAutorisee)
@@ -97,13 +95,4 @@ void TuileItem::replacerCorrectement()
     setPos(pos() + deltaScene);
 }
 
-void TuileItem::positionnerSurAxial(int q, int r)
-{
-    if (!hexRef)
-        return;
 
-    const QPointF cScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF cibleScene = axialVersPixel(q, r, taille) + plateauOrigin;
-    const QPointF deltaScene = cibleScene - cScene;
-    setPos(pos() + deltaScene);
-}
