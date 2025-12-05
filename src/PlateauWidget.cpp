@@ -16,9 +16,9 @@ PlateauWidget::PlateauWidget(QWidget* parent)
 {
     setFixedSize(1920, 1080);
 
-    constexpr int colonneDroiteLargeur = 250;
-    constexpr int scoreWidgetSize = 250;
-
+    int colonneDroiteLargeur = 250;
+    int scoreWidgetSize = 250;
+    /* Gestion plateau */
     plateauScene = new QGraphicsScene(this);
     piocheScene = new QGraphicsScene(this);
     plateauView = new QGraphicsView(plateauScene, this);
@@ -42,6 +42,7 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     colonneDroite->setSpacing(0);
     layout->addWidget(panneauDroit, 0);
 
+    /* Gestion scores */
     panneauScores = new QWidget(panneauDroit);
     panneauScores->setFixedSize(colonneDroiteLargeur, scoreWidgetSize);
     panneauScores->setStyleSheet("background-color: #f0f0f0;");
@@ -57,6 +58,7 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     }
     colonneDroite->addWidget(panneauScores, 0, Qt::AlignTop);
 
+    /* Gestion pioche */
     piocheView->setFixedWidth(colonneDroiteLargeur);
     piocheView->setFixedHeight(height() - scoreWidgetSize);
     colonneDroite->addWidget(piocheView, 1);
@@ -72,8 +74,5 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     piocheScene->setSceneRect(0, 0, colonneDroiteLargeur, piocheHeight);
     zonePiocheRectItem = piocheScene->addRect(0, 0, colonneDroiteLargeur, piocheHeight,
                                               QPen(Qt::NoPen), QBrush(Qt::red));
-    zonePiocheRect = zonePiocheRectItem->rect();
-
-    
+    zonePiocheRect = zonePiocheRectItem->rect(); 
 }
-
