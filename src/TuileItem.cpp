@@ -74,10 +74,11 @@ QPointF pixelVersAxial(double px, double py, double size) {
 void TuileItem::replacerCorrectement()
 {
     const QPointF cScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF axialF = pixelVersAxial(cScene.x(), cScene.y(), taille);
+    const QPointF localCenter = cScene - plateauOrigin;
+    const QPointF axialF = pixelVersAxial(localCenter.x(), localCenter.y(), taille);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
-    const QPointF cibleScene = axialVersPixel(q, r, taille);
+    const QPointF cibleScene = axialVersPixel(q, r, taille) + plateauOrigin;
     const QPointF deltaScene = cibleScene - cScene;
     setPos(pos() + deltaScene);
 }

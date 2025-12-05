@@ -2,6 +2,7 @@
 #define TUILEITEM_H
 
 #include <QGraphicsItemGroup>
+#include <QPointF>
 #include <QObject>
 #include "HexItem.h"
 #include "Tuile.h"
@@ -9,6 +10,7 @@
 class TuileItem : public QObject ,public QGraphicsItemGroup {
     Q_OBJECT
     HexItem* hexRef;
+    QPointF plateauOrigin{0,0};
 public:
     explicit TuileItem(QGraphicsItem* parent = nullptr);
     TuileItem(Tuile& modele, QGraphicsItem* parent = nullptr);
@@ -17,6 +19,7 @@ public:
     void rotate60();
     void replacerCorrectement();
     void debugMarkers();
+    void setPlateauOrigin(const QPointF& origin) { plateauOrigin = origin; }
 signals:
     void rightClicked();
 
