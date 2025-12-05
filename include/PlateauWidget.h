@@ -21,6 +21,8 @@ private:
     QGraphicsRectItem* zonePlateauRectItem = nullptr;
     QRectF zonePlateauRect;
     QLabel * score;
+    QLabel *erreur;
+    QLabel * joueurSelect;
 };
 
 #endif

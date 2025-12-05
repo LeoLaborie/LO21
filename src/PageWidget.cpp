@@ -12,6 +12,7 @@
 #include <QGridLayout>
 #include <QCompleter>
 #include <QComboBox>
+#include <QSignalBlocker>
 #include <string>
 #include "Sauvegarde.h"
 void newPartiePage::lancerLaPartie()
@@ -44,6 +45,16 @@ newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
     );
 
     auto* layoutJoueur = new QVBoxLayout(Cadre);
+    //bouton retour 
+
+    auto * boutonRetour = new QPushButton("Retour");
+    boutonRetour->setStyleSheet("font-size:20px;");
+    layoutJoueur->addWidget(boutonRetour);
+    connect(boutonRetour, &QPushButton::clicked, this, [this]{
+        emit retourMenu();
+    });
+
+
     layoutJoueur->setContentsMargins(32, 32, 32, 32);
     layoutJoueur->setSpacing(18);
 
@@ -156,6 +167,14 @@ chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
     LayoutCentral->addWidget(Cadre, 0, Qt::AlignCenter);
 
     auto * layoutLoad = new QVBoxLayout(Cadre);
+
+    //bouton retour 
+    layoutLoad->addSpacing(20);
+    auto * boutonRetour = new QPushButton("Retour");
+    boutonRetour->setStyleSheet("font-size:20px;");
+    layoutLoad->addWidget(boutonRetour);
+    connect(boutonRetour, &QPushButton::clicked, this, [this]{emit retourMenu();});
+
     layoutLoad->setAlignment(Qt::AlignTop); 
     layoutLoad->addSpacing(20);
 
@@ -166,6 +185,12 @@ chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
     titre->setAlignment(Qt::AlignCenter); 
     layoutLoad->addWidget(titre, 0, Qt::AlignCenter);
     layoutLoad->addSpacing(45);
+
+    //ajout un QLabel pour gérer les erreurs
+    erreur = new QLabel();
+    erreur->setStyleSheet("font-size: 15px; font-weight: 600;color : red");
+    erreur->setAlignment(Qt::AlignCenter);  
+    layoutLoad->addWidget(erreur, 0, Qt::AlignCenter);
 
     // liste des saugegarde
     NomSauvegarde = new QComboBox();
@@ -181,11 +206,9 @@ chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
     completer->setCompletionMode(QCompleter::PopupCompletion);
     NomSauvegarde->setCompleter(completer);
 
-    for (auto& sauvegarde : getSauvegardes())
-        NomSauvegarde->addItem(QString::fromStdString(sauvegarde));
-
+    rafraichirSauvegardes();
     
-    layoutLoad->addSpacing(70);  
+    layoutLoad->addSpacing(40);  
 
 
     // bouton confirmer
@@ -199,13 +222,25 @@ chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
     connect(StartButton, &QPushButton::clicked,this, &chargerPartiePage::chargerLaPartie);
     layoutLoad->addWidget(StartButton, 0, Qt::AlignHCenter);
     layoutLoad->addSpacing(15);  
+}
 
-    //ajout un QLabel pour gérer les erreurs
-    auto * erreur = new QLabel();
-    erreur->setStyleSheet("font-size: 15px; font-weight: 600;color : red");
-    erreur->setAlignment(Qt::AlignCenter);  
-    layoutLoad->addWidget(erreur, 0, Qt::AlignCenter);
+QString recupererNomSansExtension(const std::string& nomAvecExtension) {
+    QString nom;
+    for (char c : nomAvecExtension) {
+        if (c == '.')
+            break;
+        nom.append(QChar::fromLatin1(c));
+    }
+    return nom;
 }
 
 
-
+void chargerPartiePage::rafraichirSauvegardes()
+{
+    NomSauvegarde->clear();
+    if (getSauvegardes().size()==0){
+        this->erreur->setText("Pas de sauvegardes disponible");
+    }
+    for (auto& sauvegarde : getSauvegardes())
+        NomSauvegarde->addItem(recupererNomSansExtension(sauvegarde));
+}

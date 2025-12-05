@@ -80,4 +80,16 @@ MainWindow::MainWindow(QWidget* parent)
             //plateau->initialiser(nom sauvegarxede); à faire 
             stack->setCurrentWidget(plateau);          
     });
+
+    connect(newGamePage, &newPartiePage::retourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+    connect(loadPage, &chargerPartiePage::retourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+
+    connect(stack, &QStackedWidget::currentChanged, loadPage, [stack, loadPage](int index){
+        if (stack->widget(index) == loadPage)
+            loadPage->rafraichirSauvegardes();
+    });
 }

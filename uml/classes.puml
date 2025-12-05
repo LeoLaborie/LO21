@@ -1,0 +1,506 @@
+@startuml
+class "std::vector<Hexagone *>" as C_0012470612530441296509
+class C_0012470612530441296509 {
+__
+}
+class "std::vector<OffsetQR>" as C_0001285423285670893284
+class C_0001285423285670893284 {
+__
+}
+class "std::vector<size_t>" as C_0009048762651940375792
+class C_0009048762651940375792 {
+__
+}
+class "std::vector<Tuile>" as C_0003657538408170427701
+class C_0003657538408170427701 {
+__
+}
+class "std::vector<SommetHab>" as C_0009005856772429224317
+class C_0009005856772429224317 {
+__
+}
+class "std::vector<Position>" as C_0004306116583398013898
+class C_0004306116583398013898 {
+__
+}
+class "std::string" as C_0001275076681856179721
+class C_0001275076681856179721 {
+__
+}
+class "std::vector<std::vector<Tuile>>" as C_0010471845977360830535
+class C_0010471845977360830535 {
+__
+}
+class "std::vector<Joueur>" as C_0013714715651628596620
+class C_0013714715651628596620 {
+__
+}
+class "std::vector<std::string>" as C_0001347152004389415025
+class C_0001347152004389415025 {
+__
+}
+enum "TypeHex" as C_0009038773645781566143
+enum C_0009038773645781566143 {
+Habitation
+Marche
+Temple
+Caserne
+Jardin
+PHabitation
+PMarche
+PTemple
+PCaserne
+PJardin
+Carriere
+}
+class "Hexagone" as C_0001657958861387180638
+class C_0001657958861387180638 {
++Hexagone(int x_coord, int y_coord, int z_coord, TypeHex type, Tuile * p = nullptr, std::vector<Hexagone *> v = = {}) : void
++~Hexagone() = default : void
+..
++addVoisin(Hexagone * v) : void
++afficher(bool court = false) const : void
++getEstRecouvert() const : bool
++getParent() const : const Tuile *
++getParent() : Tuile *
++getType() const : TypeHex
++getVoisins() const : const std::vector<Hexagone *> &
++getX() const : int
++getY() const : int
++getZ() const : int
++isCarriere() const : bool
++isPlace() const : bool
++isQuartier() const : bool
++setCoord(int x_coord, int y_coord, int z_coord) : void
++setEstRecouvert(bool v = true) : void
++setParent(Tuile * p) : void
++setType(TypeHex t) : void
++setVoisins(std::vector<Hexagone *> v) : void
+__
+-est_recouvert : bool
+-parent : Tuile *
+-type_ : TypeHex
+-voisins : std::vector<Hexagone *>
+-x : int
+-y : int
+-z : int
+}
+class "OffsetQR" as C_0016797248245970155660
+class C_0016797248245970155660 {
+__
++q : int
++r : int
+}
+class "Tuile" as C_0003332771940195880868
+class C_0003332771940195880868 {
++Tuile() = default : void
++Tuile(Hexagone * hex1, Hexagone * hex2, Hexagone * hex3) : void
++Tuile(Hexagone * hex1, Hexagone * hex2, Hexagone * hex3, Hexagone * hex4) : void
++~Tuile() = default : void
+..
++afficherDetails() const : void
++getHexagones() const : const std::vector<Hexagone *> &
++getOffsets() const : const std::vector<OffsetQR> &
++pivoterTuile() : void
++pivoterTuile(int k) : void
+__
+-hex : std::vector<Hexagone *>
+-offsets : std::vector<OffsetQR>
+}
+class "Position" as C_0003696319223639600799
+class C_0003696319223639600799 {
+__
++x : int
++y : int
++z : int
+}
+class "SommetHab" as C_0018231900236296144972
+class C_0018231900236296144972 {
+__
++current : const Hexagone *
++dejaVisite : bool
++voisins : std::vector<size_t>
+}
+class "Plateau" as C_0005636909735506540531
+class C_0005636909735506540531 {
+-Plateau(const bool * variantesScore) : void
+-Plateau() : void
+..
++afficherPositionsLegales(const Tuile & t) const : void
++calculerPoints() const : int
++calculerPointsCaserne(const Hexagone * h) const : int
++calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const : int
++calculerPointsJardin(const Hexagone * h) const : int
++calculerPointsMarche(const Hexagone * h) const : int
++calculerPointsTemple(const Hexagone * h) const : int
++calculerPointsia(int & diff) const : int
++conditionVarianteJardin(const Hexagone * q) const : bool
+{static} +fromSave(const bool * variantes, std::vector<Tuile> tuiles) : Plateau
++getPositionsLegales(const Tuile & t) const : std::vector<Position>
++getTuiles() const : const std::vector<Tuile> &
++getVarianteScores() const : const bool *
++placerTuile(Tuile & t, Position & p) : int
++placerTuile(Tuile & t) : int
++pourChaqueHexagone<F>(F f) : void
++pourChaqueHexagone<F>(F f) const : void
++updateVoisins() : void
++verifierPlacementTuile(const Position & p, const Tuile & t) const : bool
+__
+-listeTuiles : std::vector<Tuile>
+-variantesScores : bool[5]
+}
+class "Partie" as C_0007203252982171251181
+class C_0007203252982171251181 {
+-Partie(int nbJoueurs, int nbTours, int maitreArchitecte, int mainJoueur, Chantier chantier, std::vector<std::vector<Tuile>> piles, std::vector<Joueur> joueurs) : void
++Partie(int nbJouer, std::vector<std::string> & pseudo, const bool * variantesScore, bool varianteFullTuile) : void
++Partie() : void
++~Partie() = default : void
+..
+{static} +FromSave(const std::string & nomFichier) : Partie
++addTuileInChantierFromPiles() : void
++creerFauxJoueur() : void
++fauxJoueurPresent() const : bool
++genererTuilesParties(bool fullTuiles = false) : void
++getChantier() : Chantier &
++getChantier() const : const Chantier &
++getFauxJoueur() const : IllustreArchitecte *
++getJoueurMain() : Joueur &
++getJoueurs() const : const std::vector<Joueur> &
++getMainJoueur() const : int
++getMaitreArchitecte() const : int
++getNbrJoueurs() const : int
++getNbrPiles() const : int
++getNbrTours() const : int
++getPile() const : const std::vector<std::vector<Tuile>> &
++getTaillePaquet() const : int
++pilesRestantes() const : bool
++retirerPaquet() : std::vector<Tuile>
++setMaitreArchitecte(int i) : void
++setProchainJoueur() : void
++tourTermine() : void
+__
+-chantier : Chantier
+-fauxJoueur : IllustreArchitecte *
+-joueurs : std::vector<Joueur>
+-mainJoueur : int
+-maitreArchitecte : int
+-nbrJoueurs : int
+-nbrTours : int
+-piles : std::vector<std::vector<Tuile>>
+-taillepaquet : int
+}
+class "Joueur" as C_0008384816455252289460
+class C_0008384816455252289460 {
+#Joueur(const bool * variantesScore, std::string nom) : void
+#Joueur(std::string nom) : void
+#Joueur(const bool * variantes, std::string nom, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateau) : void
++~Joueur() = default : void
+..
++choixTuile(const Chantier & chantier) : int
+{static} +fromSave(const bool * variantes, std::string nom, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateau) : Joueur
++getNbrPierres() const : int
++getNbrPoints() const : int
++getNom() const : const std::string &
++getPlateau() : Plateau &
++getPlateau() const : const Plateau &
++getTuileEnMain() const : const Tuile &
++piocherTuile(int id, Chantier & chantier, IllustreArchitecte * fauxJoueur) : Tuile &
++placerTuile(Tuile & t, Position & p) : void
++setNbrPierres(int) : void
++setNbrPoints() : void
++setTuileEnMain(const Tuile & t) : void
+__
+#nbrPierres : int
+#nbrPoints : int
+#nom : std::string
+#plateau : Plateau
+#tuileEnMain : Tuile
+}
+class "Chantier" as C_0013149937831398571846
+class C_0013149937831398571846 {
++Chantier() : void
++~Chantier() = default : void
+..
++ajouterTuile(const Tuile & t) : void
+{static} +fromSave(std::vector<Tuile> chantier) : Chantier
++getTaille() const : int
++getTuiles() const : const std::vector<Tuile> &
++retirerTuile(int id) : void
+__
+-tuilesChantier : std::vector<Tuile>
+}
+class "IllustreArchitecte" as C_0015137659488237195562
+class C_0015137659488237195562 {
+-IllustreArchitecte(int diff) : void
+-~IllustreArchitecte() = default : void
+..
++choixTuile(const Chantier & chantier) : int
+{static} +fromSave(int diff, int pierres, int points, const bool * variantes, std::vector<Tuile> plateau) : IllustreArchitecte *
++getdifficulte() : int
++piocherTuile(int id, Chantier & chantier) : Tuile &
++placerTuile(Tuile & t) : void
++setNbrPoints() : void
+__
+-difficulte : int
+}
+class "HexItem" as C_0010198615775613811833
+class C_0010198615775613811833 {
++HexItem(const Hexagone * model, double size = 36.0) : void
+__
+}
+class "TuileItem" as C_0012519580046060027689
+class C_0012519580046060027689 {
++TuileItem(QGraphicsItem * parent = nullptr) : void
++TuileItem(Tuile & modele, QGraphicsItem * parent = nullptr) : void
+..
++addHex(HexItem * hex) : void
++debugMarkers() : void
++metaObject() const : const QMetaObject *
+#mousePressEvent(QGraphicsSceneMouseEvent * event) : void
+#mouseReleaseEvent(QGraphicsSceneMouseEvent * event) : void
++qt_metacall(QMetaObject::Call, int, void **) : int
++qt_metacast(const char *) : void *
+{static} -qt_static_metacall(QObject *, QMetaObject::Call, int, void **) : void
++replacerCorrectement() : void
++rightClicked() : void
++rotate60() : void
++setCoordonnee(int x, int y) : void
+{static} +tr(const char * s, const char * c = nullptr, int n = -1) : QString
+__
+-hexRef : HexItem *
+{static} +staticMetaObject : const QMetaObject
+}
+class "TuileItem::QPrivateSignal" as C_0004206137791085904545
+class C_0004206137791085904545 {
+__
+}
+class "PlateauWidget" as C_0002619271437300227176
+class C_0002619271437300227176 {
++PlateauWidget(QWidget * parent = nullptr) : void
+..
++ajouterTuile(Tuile & t) : void
++metaObject() const : const QMetaObject *
++qt_metacall(QMetaObject::Call, int, void **) : int
++qt_metacast(const char *) : void *
+{static} -qt_static_metacall(QObject *, QMetaObject::Call, int, void **) : void
+{static} +tr(const char * s, const char * c = nullptr, int n = -1) : QString
+__
+-erreur : QLabel *
+-joueurSelect : QLabel *
+-plateauScene : QGraphicsScene *
+-score : QLabel *
+{static} +staticMetaObject : const QMetaObject
+-zonePlateauRect : QRectF
+-zonePlateauRectItem : QGraphicsRectItem *
+}
+class "PlateauWidget::QPrivateSignal" as C_0011615190096039052105
+class C_0011615190096039052105 {
+__
+}
+class "QList<QString>" as C_0008375322064658753815
+class C_0008375322064658753815 {
+__
+}
+class "QList<bool>" as C_0015320854893219983188
+class C_0015320854893219983188 {
+__
+}
+class "QList<QLineEdit *>" as C_0012247874590088985443
+class C_0012247874590088985443 {
+__
+}
+class "QList<QCheckBox *>" as C_0000403246178410051534
+class C_0000403246178410051534 {
+__
+}
+class "newPartiePage" as C_0005242138267023148027
+class C_0005242138267023148027 {
++newPartiePage(QWidget * parent = nullptr) : void
+..
++envoieArgument(int nb, const QStringList & pseudos, const QVector<bool> & variantes) : void
+-lancerLaPartie() : void
++metaObject() const : const QMetaObject *
++qt_metacall(QMetaObject::Call, int, void **) : int
++qt_metacast(const char *) : void *
+{static} -qt_static_metacall(QObject *, QMetaObject::Call, int, void **) : void
+{static} +tr(const char * s, const char * c = nullptr, int n = -1) : QString
+__
+-NbJoueurs : QSpinBox *
+-PseudoJoueurs : QVector<QLineEdit *>
+{static} +staticMetaObject : const QMetaObject
+-variantesOptions : QVector<QCheckBox *>
+}
+class "newPartiePage::QPrivateSignal" as C_0003653533338421361994
+class C_0003653533338421361994 {
+__
+}
+class "chargerPartiePage" as C_0009934274818401811406
+class C_0009934274818401811406 {
++chargerPartiePage(QWidget * parent = nullptr) : void
+..
+-chargerLaPartie() : void
++envoieArgument(std::string nom) : void
++metaObject() const : const QMetaObject *
++qt_metacall(QMetaObject::Call, int, void **) : int
++qt_metacast(const char *) : void *
+{static} -qt_static_metacall(QObject *, QMetaObject::Call, int, void **) : void
++rafraichirSauvegardes() : void
+{static} +tr(const char * s, const char * c = nullptr, int n = -1) : QString
+__
+-NomSauvegarde : QComboBox *
++erreur : QLabel *
+{static} +staticMetaObject : const QMetaObject
+}
+class "chargerPartiePage::QPrivateSignal" as C_0003155089714642560251
+class C_0003155089714642560251 {
+__
+}
+class "qt_meta_stringdata_newPartiePage_t" as C_0017270827018601426244
+class C_0017270827018601426244 {
+__
++offsetsAndSizes : uint[16]
++stringdata0 : char[14]
++stringdata1 : char[15]
++stringdata2 : char[1]
++stringdata3 : char[3]
++stringdata4 : char[8]
++stringdata5 : char[12]
++stringdata6 : char[10]
++stringdata7 : char[15]
+}
+class "qt_meta_stringdata_chargerPartiePage_t" as C_0013960942332930603137
+class C_0013960942332930603137 {
+__
++offsetsAndSizes : uint[14]
++stringdata0 : char[18]
++stringdata1 : char[15]
++stringdata2 : char[1]
++stringdata3 : char[12]
++stringdata4 : char[4]
++stringdata5 : char[22]
++stringdata6 : char[16]
+}
+class "qt_meta_stringdata_PlateauWidget_t" as C_0005936237934174267924
+class C_0005936237934174267924 {
+__
++offsetsAndSizes : uint[2]
++stringdata0 : char[14]
+}
+class "qt_meta_stringdata_TuileItem_t" as C_0005572286706262534239
+class C_0005572286706262534239 {
+__
++offsetsAndSizes : uint[6]
++stringdata0 : char[10]
++stringdata1 : char[13]
++stringdata2 : char[1]
+}
+class "MainWindow" as C_0005789804228041011096
+class C_0005789804228041011096 {
++MainWindow(QWidget * parent = nullptr) : void
+..
++metaObject() const : const QMetaObject *
++qt_metacall(QMetaObject::Call, int, void **) : int
++qt_metacast(const char *) : void *
+{static} -qt_static_metacall(QObject *, QMetaObject::Call, int, void **) : void
+{static} +tr(const char * s, const char * c = nullptr, int n = -1) : QString
+__
+{static} +staticMetaObject : const QMetaObject
+}
+class "MainWindow::QPrivateSignal" as C_0008974768779937952624
+class C_0008974768779937952624 {
+__
+}
+class "qt_meta_stringdata_MainWindow_t" as C_0006713635930654592638
+class C_0006713635930654592638 {
+__
++offsetsAndSizes : uint[2]
++stringdata0 : char[11]
+}
+class "JeuController" as C_0017898346447346633611
+class C_0017898346447346633611 {
++JeuController() = default : void
+..
+-boucleDeJeu(Partie & partie) : bool
+-chargerDepuisSauvegarde(Partie & partie) : bool
+-confirmerQuitter(Partie & partie) : bool
+-creerNouvellePartie() : Partie
+-demanderPosition() const : Position
++executerConsole() : void
+-phaseManipulationTuile(Joueur & joueur, Partie & partie, Tuile & tuilePiochee) : bool
+-phasePlacementTuile(Joueur & joueur) : void
+-traiterTourHumain(Partie & partie) : void
+-traiterTourIA(Partie & partie) : void
+__
+}
+C_0012470612530441296509 ..> C_0001657958861387180638
+C_0001285423285670893284 ..> C_0016797248245970155660
+C_0003657538408170427701 ..> C_0003332771940195880868
+C_0009005856772429224317 ..> C_0018231900236296144972
+C_0004306116583398013898 ..> C_0003696319223639600799
+C_0010471845977360830535 ..> C_0003657538408170427701
+C_0013714715651628596620 ..> C_0008384816455252289460
+C_0001347152004389415025 ..> C_0001275076681856179721
+C_0001657958861387180638 o-- C_0012470612530441296509 : -voisins
+C_0001657958861387180638 --> C_0003332771940195880868 : -parent
+C_0001657958861387180638 o-- C_0009038773645781566143 : -type_
+C_0003332771940195880868 ..> C_0001657958861387180638
+C_0003332771940195880868 ..> C_0016797248245970155660
+C_0003332771940195880868 o-- C_0012470612530441296509 : -hex
+C_0003332771940195880868 o-- C_0001285423285670893284 : -offsets
+C_0018231900236296144972 --> C_0001657958861387180638 : +current
+C_0018231900236296144972 o-- C_0009048762651940375792 : +voisins
+C_0005636909735506540531 ..> C_0003332771940195880868
+C_0005636909735506540531 ..> C_0009005856772429224317
+C_0005636909735506540531 ..> C_0018231900236296144972
+C_0005636909735506540531 ..> C_0001657958861387180638
+C_0005636909735506540531 ..> C_0004306116583398013898
+C_0005636909735506540531 ..> C_0003696319223639600799
+C_0005636909735506540531 o-- C_0003657538408170427701 : -listeTuiles
+C_0005636909735506540531 <.. C_0008384816455252289460 : +<<friend>>
+C_0005636909735506540531 <.. C_0007203252982171251181 : +<<friend>>
+C_0007203252982171251181 ..> C_0003332771940195880868
+C_0007203252982171251181 ..> C_0008384816455252289460
+C_0007203252982171251181 ..> C_0001347152004389415025
+C_0007203252982171251181 ..> C_0003657538408170427701
+C_0007203252982171251181 ..> C_0001275076681856179721
+C_0007203252982171251181 --> C_0015137659488237195562 : -fauxJoueur
+C_0007203252982171251181 o-- C_0013149937831398571846 : -chantier
+C_0007203252982171251181 o-- C_0013714715651628596620 : -joueurs
+C_0007203252982171251181 o-- C_0010471845977360830535 : -piles
+C_0008384816455252289460 ..> C_0003657538408170427701
+C_0008384816455252289460 ..> C_0013149937831398571846
+C_0008384816455252289460 ..> C_0015137659488237195562
+C_0008384816455252289460 ..> C_0003696319223639600799
+C_0008384816455252289460 o-- C_0001275076681856179721 : #nom
+C_0008384816455252289460 o-- C_0005636909735506540531 : #plateau
+C_0008384816455252289460 o-- C_0003332771940195880868 : #tuileEnMain
+C_0008384816455252289460 <.. C_0007203252982171251181 : +<<friend>>
+C_0013149937831398571846 ..> C_0003332771940195880868
+C_0013149937831398571846 o-- C_0003657538408170427701 : -tuilesChantier
+C_0015137659488237195562 ..> C_0013149937831398571846
+C_0015137659488237195562 ..> C_0003332771940195880868
+C_0015137659488237195562 ..> C_0003657538408170427701
+C_0015137659488237195562 <.. C_0007203252982171251181 : +<<friend>>
+C_0008384816455252289460 <|-- C_0015137659488237195562
+C_0010198615775613811833 ..> C_0001657958861387180638
+C_0012519580046060027689 ..> C_0003332771940195880868
+C_0012519580046060027689 --> C_0010198615775613811833 : -hexRef
+C_0004206137791085904545 --+ C_0012519580046060027689
+C_0002619271437300227176 ..> C_0003332771940195880868
+C_0011615190096039052105 --+ C_0002619271437300227176
+C_0005242138267023148027 ..> C_0008375322064658753815
+C_0005242138267023148027 ..> C_0015320854893219983188
+C_0005242138267023148027 o-- C_0012247874590088985443 : -PseudoJoueurs
+C_0005242138267023148027 o-- C_0000403246178410051534 : -variantesOptions
+C_0003653533338421361994 --+ C_0005242138267023148027
+C_0009934274818401811406 ..> C_0001275076681856179721
+C_0003155089714642560251 --+ C_0009934274818401811406
+C_0008974768779937952624 --+ C_0005789804228041011096
+C_0017898346447346633611 ..> C_0007203252982171251181
+C_0017898346447346633611 ..> C_0008384816455252289460
+C_0017898346447346633611 ..> C_0003332771940195880868
+C_0017898346447346633611 ..> C_0003696319223639600799
+
+'Generated with clang-uml, version 0.5.3
+'LLVM version Ubuntu clang version 16.0.6 (15)
+@enduml
