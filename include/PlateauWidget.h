@@ -6,6 +6,7 @@
 #include <QRectF>
 #include "Partie.h"
 #include "TuileItem.h"
+#include <QLabel>
 
 class PlateauWidget : public QWidget
 {
@@ -19,6 +20,7 @@ private:
     QGraphicsScene* plateauScene = nullptr;
     QGraphicsRectItem* zonePlateauRectItem = nullptr;
     QRectF zonePlateauRect;
+    QLabel * score;
 };
 
 #endif

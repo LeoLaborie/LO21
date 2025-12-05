@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     auto * newGamePage = new newPartiePage(stack);
     newGamePage->setObjectName("NewGamePage");
-    QWidget* loadPage    = new QWidget(stack);
+    auto* loadPage    = new chargerPartiePage(stack);
     loadPage->setObjectName("LoadPage");
     QWidget* settingsPage= new QWidget(stack);
     settingsPage->setObjectName("SettingsPage");
@@ -73,8 +73,11 @@ MainWindow::MainWindow(QWidget* parent)
     connect(loadGame, &QPushButton::clicked, stack, [stack,loadPage]{    stack->setCurrentWidget(loadPage); });
     connect(setting,  &QPushButton::clicked, stack, [stack,settingsPage]{stack->setCurrentWidget(settingsPage); });
     connect(quitter,  &QPushButton::clicked, this,  &QWidget::close);
-    connect(newGamePage, &newPartiePage::afficherPlateau,this, [stack, plateau](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
+    connect(newGamePage, &newPartiePage::envoieArgument,this, [stack, plateau](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
             //plateau->initialiser(nb, pseudos, variantes); à faire 
+            stack->setCurrentWidget(plateau);});
+    connect(loadPage, &chargerPartiePage::envoieArgument,this, [stack, plateau](std::string nomSauvegarde){
+            //plateau->initialiser(nom sauvegarxede); à faire 
             stack->setCurrentWidget(plateau);          
     });
 }

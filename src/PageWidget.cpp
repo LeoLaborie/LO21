@@ -2,19 +2,18 @@
 #include <iostream>
 #include <QCheckBox>
 #include <QFrame>
-#include <QAbstractSpinBox>
+#include <QLineEdit>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QPushButton>
-#include <QLineEdit>
 #include <QLabel>
 #include <QVector>
 #include <QFrame>
-#include <QAbstractSpinBox>
 #include <QGridLayout>
+#include <QCompleter>
+#include <QComboBox>
 #include <string>
-
-
+#include "Sauvegarde.h"
 void newPartiePage::lancerLaPartie()
 {
     int nb = NbJoueurs->value();
@@ -25,8 +24,10 @@ void newPartiePage::lancerLaPartie()
     variantes.reserve(variantesOptions.size());
     for (auto* checkbox : variantesOptions)
         variantes.push_back(checkbox->isChecked());
-    emit afficherPlateau(nb, pseudos, variantes);
+    emit envoieArgument(nb, pseudos, variantes);
 }
+
+
 
 newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
 {
@@ -60,7 +61,6 @@ newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
     NbJoueurs->setFixedHeight(36);
     NbJoueurs->setFixedWidth(100);
     NbJoueurs->setAlignment(Qt::AlignCenter);
-    NbJoueurs->setButtonSymbols(QAbstractSpinBox::PlusMinus);
     NbJoueurs->setStyleSheet("QSpinBox { font-size: 16px; }");
     layoutJoueur->addWidget(NbJoueurs, 0, Qt::AlignCenter);
 
@@ -122,6 +122,89 @@ newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
     layoutJoueur->addWidget(StartButton);
     LayoutCentral->addWidget(Cadre, 0, Qt::AlignCenter);
     connect(StartButton, &QPushButton::clicked,this, &newPartiePage::lancerLaPartie);
+}
+
+
+
+
+
+//charger Une partie page Qt
+
+
+//gestion du slot
+
+void chargerPartiePage::chargerLaPartie(){
+   emit envoieArgument(this->NomSauvegarde->currentText().toStdString());
+   std::cout<<this->NomSauvegarde->currentText().toStdString()<<std::endl;
+}
+
+chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
+{
+    setAttribute(Qt::WA_StyledBackground, true);
+
+    auto* LayoutCentral = new QVBoxLayout(this);
+    LayoutCentral->setContentsMargins(0, 0, 0, 0);
+    LayoutCentral->setAlignment(Qt::AlignCenter);
+
+    // cadre pour le widget
+    auto* Cadre = new QFrame();
+    Cadre->setObjectName("loadGameCadre");
+    Cadre->setFixedSize(300, 350);
+    Cadre->setStyleSheet(
+        "#loadGameCadre {background-color: #fafafa; border: 1px solid #dcdcdc; border-radius: 18px;}"
+    );
+    LayoutCentral->addWidget(Cadre, 0, Qt::AlignCenter);
+
+    auto * layoutLoad = new QVBoxLayout(Cadre);
+    layoutLoad->setAlignment(Qt::AlignTop); 
+    layoutLoad->addSpacing(20);
+
+
+    // titre
+    auto * titre = new QLabel("<u>Charger une partie</u>");
+    titre->setStyleSheet("font-size: 25px; font-weight: 600;");
+    titre->setAlignment(Qt::AlignCenter); 
+    layoutLoad->addWidget(titre, 0, Qt::AlignCenter);
+    layoutLoad->addSpacing(45);
+
+    // liste des saugegarde
+    NomSauvegarde = new QComboBox();
+    NomSauvegarde->setFixedHeight(34);
+    NomSauvegarde->setFixedWidth(260);
+    NomSauvegarde->setEditable(true);
+    NomSauvegarde->setStyleSheet("QLineEdit { font-size: 14px; padding: 4px 8px; }");
+    layoutLoad->addWidget(NomSauvegarde, 0, Qt::AlignHCenter);
+
+    // Complétion
+    QCompleter* completer = new QCompleter(NomSauvegarde->model(), NomSauvegarde);
+    completer->setFilterMode(Qt::MatchContains);
+    completer->setCompletionMode(QCompleter::PopupCompletion);
+    NomSauvegarde->setCompleter(completer);
+
+    for (auto& sauvegarde : getSauvegardes())
+        NomSauvegarde->addItem(QString::fromStdString(sauvegarde));
+
+    
+    layoutLoad->addSpacing(70);  
+
+
+    // bouton confirmer
+    auto StartButton = new QPushButton("Confirmer");
+    StartButton->setFixedHeight(44);
+    StartButton->setStyleSheet(
+        "QPushButton { font-size: 15px; font-weight: 600; color: white; background-color: #0078d4; border-radius: 8px; padding: 6px 14px; }"
+        "QPushButton:hover { background-color: #0a84ff; }"
+        "QPushButton:pressed { background-color: #0062a3; }"
+    );
+    connect(StartButton, &QPushButton::clicked,this, &chargerPartiePage::chargerLaPartie);
+    layoutLoad->addWidget(StartButton, 0, Qt::AlignHCenter);
+    layoutLoad->addSpacing(15);  
+
+    //ajout un QLabel pour gérer les erreurs
+    auto * erreur = new QLabel();
+    erreur->setStyleSheet("font-size: 15px; font-weight: 600;color : red");
+    erreur->setAlignment(Qt::AlignCenter);  
+    layoutLoad->addWidget(erreur, 0, Qt::AlignCenter);
 }
 
 
