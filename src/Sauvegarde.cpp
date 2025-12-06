@@ -10,31 +10,41 @@
 #include <QCoreApplication>
 std::vector<std::string> getSauvegardes()
 {
-    const auto base = std::filesystem::current_path();          
-    const auto folder = base / "saves";
-    std::vector<std::string> files;
-    const std::string ext = ".ratatata";
-    for (const auto& entry : std::filesystem::directory_iterator(folder)) {
-        if (entry.is_regular_file() && entry.path().extension() == ext) {
-            files.push_back(entry.path().filename().string());
-        }
-    }
+  // Utilise le dossier à côté de l'exécutable et le crée au besoin pour éviter
+  // les exceptions std::filesystem quand il n'existe pas (cas courant sous Windows).
+  const auto base = std::filesystem::path(QCoreApplication::applicationDirPath().toStdWString());
+  const auto folder = base / "saves";
+  std::error_code ec;
+  std::filesystem::create_directories(folder, ec);
 
-    return files;
+  std::vector<std::string> files;
+  const std::string ext = ".ratatata";
+
+  for (const auto &entry : std::filesystem::directory_iterator(folder, ec))
+  {
+    if (ec)
+      break;
+    if (entry.is_regular_file() && entry.path().extension() == ext)
+    {
+      files.push_back(entry.path().filename().string());
+    }
+  }
+
+  return files;
 }
 
-
-
-
-std::string getCurrentDate() {
+std::string getCurrentDate()
+{
   std::time_t t = std::time(nullptr);
   char buf[32];
   std::strftime(buf, sizeof(buf), "%d-%m-%Y_%H-%M", std::localtime(&t));
   return buf;
 }
 
-std::string typeToString(TypeHex t) {
-  switch (t) {
+std::string typeToString(TypeHex t)
+{
+  switch (t)
+  {
   case TypeHex::Habitation:
     return "Habitation";
   case TypeHex::Marche:
@@ -61,7 +71,8 @@ std::string typeToString(TypeHex t) {
   return "Carriere";
 }
 
-TypeHex stringToType(const std::string &s) {
+TypeHex stringToType(const std::string &s)
+{
   if (s == "Habitation")
     return TypeHex::Habitation;
   if (s == "Marche")
@@ -88,7 +99,8 @@ TypeHex stringToType(const std::string &s) {
   throw std::invalid_argument("TypeHex inconnu: " + s);
 }
 
-std::ostream &operator<<=(std::ostream &os, const Hexagone &h) {
+std::ostream &operator<<=(std::ostream &os, const Hexagone &h)
+{
   os << "HEX " << h.getX() << ' ' << h.getY() << ' ' << h.getZ() << ' '
      << typeToString(h.getType()) << ' ' << (h.getEstRecouvert() ? 1 : 0)
      << '\n';
@@ -96,12 +108,14 @@ std::ostream &operator<<=(std::ostream &os, const Hexagone &h) {
   return os;
 }
 
-std::istream &operator>>=(std::istream &is, Hexagone &h) {
+std::istream &operator>>=(std::istream &is, Hexagone &h)
+{
   std::string ligne;
   if (!(is >> ligne))
     return is;
 
-  if (ligne != "HEX") {
+  if (ligne != "HEX")
+  {
     is.setstate(std::ios::failbit);
     return is;
   }
@@ -110,7 +124,8 @@ std::istream &operator>>=(std::istream &is, Hexagone &h) {
   std::string typeStr;
   int rec = 0;
 
-  if (!(is >> x >> y >> z >> typeStr >> rec)) {
+  if (!(is >> x >> y >> z >> typeStr >> rec))
+  {
     is.setstate(std::ios::failbit);
     return is;
   }
@@ -121,7 +136,8 @@ std::istream &operator>>=(std::istream &is, Hexagone &h) {
   return is;
 }
 
-std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
+std::ostream &operator<<=(std::ostream &os, const Tuile &t)
+{
   const auto &hexs = t.getHexagones();
   os << "TUILE " << hexs.size() << '\n';
 
@@ -131,28 +147,33 @@ std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
   return os;
 }
 
-std::istream &operator>>=(std::istream &is, Tuile &tuile) {
+std::istream &operator>>=(std::istream &is, Tuile &tuile)
+{
   std::string ligne;
   if (!(is >> ligne))
     return is;
 
-  if (ligne != "TUILE") {
+  if (ligne != "TUILE")
+  {
     is.setstate(std::ios::failbit);
     return is;
   }
 
   int nbHex = 0;
-  if (!(is >> nbHex)) {
+  if (!(is >> nbHex))
+  {
     is.setstate(std::ios::failbit);
     return is;
   }
 
-  if (nbHex == 0) {
+  if (nbHex == 0)
+  {
     tuile = Tuile();
     return is;
   }
 
-  if (nbHex != 3 && nbHex != 4) {
+  if (nbHex != 3 && nbHex != 4)
+  {
     is.setstate(std::ios::failbit);
     return is;
   }
@@ -160,7 +181,8 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile) {
   std::vector<std::unique_ptr<Hexagone>> hexs;
   hexs.reserve(nbHex);
 
-  for (int i = 0; i < nbHex; ++i) {
+  for (int i = 0; i < nbHex; ++i)
+  {
     Hexagone tmp(0, 0, 0, TypeHex::Carriere);
     if (!(is >>= tmp))
       return is;
@@ -175,11 +197,13 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile) {
 
   return is;
 }
-void sauvegarderPartie(const Partie &p) {
+void sauvegarderPartie(const Partie &p)
+{
   std::string date = getCurrentDate();
   std::string nom = "saves/save_" + date + ".ratatata";
   std::ofstream f(nom);
-  if (!f) {
+  if (!f)
+  {
     std::cerr << "Erreur : impossible de créer la sauvegarde.\n";
     return;
   }
@@ -188,13 +212,15 @@ void sauvegarderPartie(const Partie &p) {
     << p.getMaitreArchitecte() << ' ' << p.getMainJoueur() << '\n';
   const auto &chantier = p.getChantier().getTuiles();
   f << "CHANTIER " << chantier.size() << '\n';
-  for (const auto &t : chantier) {
+  for (const auto &t : chantier)
+  {
     f <<= t;
   }
   const auto &piles = p.getPile();
   f << "PILES " << piles.size() << '\n';
 
-  for (size_t i = 0; i < piles.size(); ++i) {
+  for (size_t i = 0; i < piles.size(); ++i)
+  {
     f << "PILE " << i << " " << piles[i].size() << '\n';
     for (const auto &t : piles[i])
       f <<= t;
@@ -202,7 +228,8 @@ void sauvegarderPartie(const Partie &p) {
   const auto &joueurs = p.getJoueurs();
   f << "JOUEURS " << '\n';
 
-  for (const auto &j : joueurs) {
+  for (const auto &j : joueurs)
+  {
     f << "NOM " << j.getNom() << '\n';
     f << "PIERRES " << j.getNbrPierres() << '\n';
     f << "POINTS " << j.getNbrPoints() << '\n';
@@ -210,17 +237,20 @@ void sauvegarderPartie(const Partie &p) {
     f <<= j.getTuileEnMain();
     const auto &tuilesPlateau = j.getPlateau().getTuiles();
     f << "PLATEAU " << tuilesPlateau.size() << '\n';
-    for (const auto &t : tuilesPlateau) {
+    for (const auto &t : tuilesPlateau)
+    {
       f <<= t;
     }
     f << "VARIANTES ";
-    for (unsigned int i = 0; i < 5; ++i) {
+    for (unsigned int i = 0; i < 5; ++i)
+    {
       f << j.getPlateau().getVarianteScores()[i] << ' ';
     }
     f << '\n';
   }
   f << "FAUX_JOUEUR ";
-  if (p.fauxJoueurPresent()) {
+  if (p.fauxJoueurPresent())
+  {
     f << "1"
       << "\n";
     f << "DIFFICULTE " << p.getFauxJoueur()->getdifficulte() << "\n";
@@ -228,21 +258,25 @@ void sauvegarderPartie(const Partie &p) {
     f << "POINTS " << p.getFauxJoueur()->getNbrPoints() << '\n';
     f << "PLATEAU " << p.getFauxJoueur()->getPlateau().getTuiles().size()
       << "\n";
-    for (auto tuile : p.getFauxJoueur()->getPlateau().getTuiles()) {
+    for (auto tuile : p.getFauxJoueur()->getPlateau().getTuiles())
+    {
       f <<= tuile;
     }
-  } else
+  }
+  else
     f << '0' << '\n';
 
   std::cout << "Sauvegarde terminée.\n";
 }
 
-Partie Partie::FromSave(const std::string &nomFichier) {
+Partie Partie::FromSave(const std::string &nomFichier)
+{
   std::ifstream f(nomFichier);
   if (!f)
     throw std::runtime_error("Impossible d'ouvrir le fichier " + nomFichier);
 
-  auto expectLigne = [&](const std::string &attendu) {
+  auto expectLigne = [&](const std::string &attendu)
+  {
     std::string ligne;
     if (!(f >> ligne) || ligne != attendu)
       throw std::runtime_error("Format invalide : attendu \"" + attendu + "\"");
@@ -274,7 +308,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
   std::vector<Tuile> tuilesChantier;
   tuilesChantier.reserve(nbChantier);
 
-  for (size_t i = 0; i < nbChantier; ++i) {
+  for (size_t i = 0; i < nbChantier; ++i)
+  {
     Tuile t;
     if (!(f >>= t))
       throw std::runtime_error("Format invalide : tuile chantier");
@@ -290,7 +325,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
 
   std::vector<std::vector<Tuile>> piles(nbPiles);
 
-  for (size_t id = 0; id < nbPiles; ++id) {
+  for (size_t id = 0; id < nbPiles; ++id)
+  {
     expectLigne("PILE");
     size_t pileId = 0, taille = 0;
 
@@ -300,7 +336,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
     if (pileId != id)
       throw std::runtime_error("Ordre des piles incorrect");
 
-    for (size_t j = 0; j < taille; ++j) {
+    for (size_t j = 0; j < taille; ++j)
+    {
       Tuile t;
       if (!(f >>= t))
         throw std::runtime_error("Format invalide : tuile pile");
@@ -311,7 +348,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
   // gestion Joueurs
   expectLigne("JOUEURS");
 
-  struct JoueurCharge {
+  struct JoueurCharge
+  {
     std::string nom;
     int pierres = 0;
     int points = 0;
@@ -322,7 +360,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
   std::vector<JoueurCharge> joueurs;
   joueurs.reserve(nbJoueurs);
 
-  for (size_t idx = 0; idx < static_cast<size_t>(nbJoueurs); ++idx) {
+  for (size_t idx = 0; idx < static_cast<size_t>(nbJoueurs); ++idx)
+  {
     JoueurCharge data;
 
     expectLigne("NOM");
@@ -348,7 +387,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
 
     data.plateau.reserve(nbTP);
 
-    for (size_t k = 0; k < nbTP; ++k) {
+    for (size_t k = 0; k < nbTP; ++k)
+    {
       Tuile t;
       if (!(f >>= t))
         throw std::runtime_error("Format invalide : tuile du plateau joueur");
@@ -356,7 +396,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
     }
 
     expectLigne("VARIANTES");
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
+    {
       if (!(f >> variantesScore[i]))
         throw std::runtime_error("Format invalide : variantesScore");
     }
@@ -369,7 +410,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
   if (!(f >> present))
     throw std::runtime_error("Format invalide : FAUX_JOUEUR");
 
-  if (present == 1) {
+  if (present == 1)
+  {
     expectLigne("DIFFICULTE");
     if (!(f >> difficulteFaux))
       throw std::runtime_error("Format invalide : difficulté IA");
@@ -389,7 +431,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
 
     plateauFaux.reserve(nbIA);
 
-    for (size_t k = 0; k < nbIA; ++k) {
+    for (size_t k = 0; k < nbIA; ++k)
+    {
       Tuile t;
       if (!(f >>= t))
         throw std::runtime_error("Format invalide : tuile IA");
@@ -401,7 +444,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
   std::vector<Joueur> joueursConstruits;
   joueursConstruits.reserve(joueurs.size());
 
-  for (auto &j : joueurs) {
+  for (auto &j : joueurs)
+  {
     joueursConstruits.push_back(
         Joueur::fromSave(variantesScore, std::move(j.nom), j.pierres, j.points,
                          std::move(j.tuileMain), std::move(j.plateau)));
@@ -413,7 +457,8 @@ Partie Partie::FromSave(const std::string &nomFichier) {
                 std::move(chantierConstruits), std::move(piles),
                 std::move(joueursConstruits));
 
-  if (present == 1) {
+  if (present == 1)
+  {
     partie.fauxJoueur =
         IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux,
                                      variantesScore, std::move(plateauFaux));

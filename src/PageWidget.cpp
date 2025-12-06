@@ -23,47 +23,52 @@ void newPartiePage::lancerLaPartie()
         pseudos << PseudoJoueurs[i]->text();
     QVector<bool> variantes;
     variantes.reserve(variantesOptions.size());
-    for (auto* checkbox : variantesOptions)
+    for (auto *checkbox : variantesOptions)
         variantes.push_back(checkbox->isChecked());
     emit envoieArgument(nb, pseudos, variantes);
 }
 
-
-
-newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
+newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
 {
+    setStyleSheet("QWidget { color: #0f172a; }"
+                  "QLineEdit, QSpinBox, QComboBox {"
+                  "color: #0f172a;"
+                  "background: #ffffff;"
+                  "border: 1px solid #d0d5dd;"
+                  "border-radius: 6px;"
+                  "selection-background-color: #0a84ff;"
+                  "selection-color: #ffffff;"
+                  "}");
+
     setAttribute(Qt::WA_StyledBackground, true);
-    auto* LayoutCentral = new QVBoxLayout(this);
+    auto *LayoutCentral = new QVBoxLayout(this);
     LayoutCentral->setContentsMargins(0, 0, 0, 0);
     LayoutCentral->setAlignment(Qt::AlignCenter);
 
-    auto* Cadre = new QFrame();
+    auto *Cadre = new QFrame();
     Cadre->setObjectName("newGameCadre");
     Cadre->setMaximumWidth(420);
     Cadre->setStyleSheet(
-        "#newGameCadre {background-color: #fafafa; border: 1px solid #dcdcdc; border-radius: 18px;}"
-    );
+        "#newGameCadre {background-color: #fafafa; border: 1px solid #dcdcdc; border-radius: 18px;}");
 
-    auto* layoutJoueur = new QVBoxLayout(Cadre);
-    //bouton retour 
+    auto *layoutJoueur = new QVBoxLayout(Cadre);
+    // bouton retour
 
-    auto * boutonRetour = new QPushButton("Retour");
+    auto *boutonRetour = new QPushButton("Retour");
     boutonRetour->setStyleSheet("font-size:20px;");
     layoutJoueur->addWidget(boutonRetour);
-    connect(boutonRetour, &QPushButton::clicked, this, [this]{
-        emit retourMenu();
-    });
-
+    connect(boutonRetour, &QPushButton::clicked, this, [this]
+            { emit retourMenu(); });
 
     layoutJoueur->setContentsMargins(32, 32, 32, 32);
     layoutJoueur->setSpacing(18);
 
-    auto* titre = new QLabel("Nouvelle partie");
+    auto *titre = new QLabel("Nouvelle partie");
     titre->setAlignment(Qt::AlignCenter);
     titre->setStyleSheet("font-size: 22px; font-weight: 600;");
     layoutJoueur->addWidget(titre);
 
-    auto* labelNbJoueurs = new QLabel("Nombre de joueurs");
+    auto *labelNbJoueurs = new QLabel("Nombre de joueurs");
     labelNbJoueurs->setStyleSheet("font-size: 14px; font-weight: 600;");
     layoutJoueur->addWidget(labelNbJoueurs);
 
@@ -75,25 +80,27 @@ newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
     NbJoueurs->setStyleSheet("QSpinBox { font-size: 16px; }");
     layoutJoueur->addWidget(NbJoueurs, 0, Qt::AlignCenter);
 
-    auto* pseudoLabel = new QLabel("Pseudos des joueurs");
+    auto *pseudoLabel = new QLabel("Pseudos des joueurs");
     pseudoLabel->setStyleSheet("font-size: 14px; font-weight: 600;");
     layoutJoueur->addWidget(pseudoLabel);
 
-    auto* GrillePseudo = new QVBoxLayout();
+    auto *GrillePseudo = new QVBoxLayout();
     GrillePseudo->setSpacing(8);
     GrillePseudo->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     layoutJoueur->addLayout(GrillePseudo);
 
-    auto updateNbPseudo = [this,GrillePseudo](int nbJoueur)
+    auto updateNbPseudo = [this, GrillePseudo](int nbJoueur)
     {
-        while (PseudoJoueurs.size() > nbJoueur) {
-            auto* suppression = PseudoJoueurs.takeLast();
+        while (PseudoJoueurs.size() > nbJoueur)
+        {
+            auto *suppression = PseudoJoueurs.takeLast();
             GrillePseudo->removeWidget(suppression);
             suppression->deleteLater();
         }
 
-        while (PseudoJoueurs.size() < nbJoueur) {
-            auto* ChampPseudo = new QLineEdit();
+        while (PseudoJoueurs.size() < nbJoueur)
+        {
+            auto *ChampPseudo = new QLineEdit();
             ChampPseudo->setText("Joueur " + QString::number(PseudoJoueurs.size() + 1));
             ChampPseudo->setFixedHeight(34);
             ChampPseudo->setFixedWidth(260);
@@ -103,22 +110,23 @@ newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
         }
     };
 
-    QObject::connect(NbJoueurs,QOverload<int>::of(&QSpinBox::valueChanged),updateNbPseudo);
+    QObject::connect(NbJoueurs, QOverload<int>::of(&QSpinBox::valueChanged), updateNbPseudo);
     updateNbPseudo(NbJoueurs->value());
 
-    auto * group = new QGroupBox("Variantes de la partie");
+    auto *group = new QGroupBox("Variantes de la partie");
     group->setStyleSheet("QGroupBox { font-size: 14px; font-weight: 600; border: 1px solid #dcdcdc; border-radius: 12px; margin-top: 6px;}"
                          "QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top center; padding: 0 8px; }"
                          "QCheckBox { font-size: 13px; }"
                          "QCheckBox::indicator { width: 20px; height: 20px; }");
-    auto * LayoutVarianteScore = new QVBoxLayout(group);
+    auto *LayoutVarianteScore = new QVBoxLayout(group);
     LayoutVarianteScore->setContentsMargins(20, 28, 20, 12);
     LayoutVarianteScore->setSpacing(10);
 
     QStringList variantes = {"Jouer avec toutes les tuiles", "Variante score habitation", "Variante score marché",
-         "Variante score caserne", "Variante score temple", "Variante score jardin" };
-    for (const QString& v : variantes) {
-        auto * checkbox = new QCheckBox(v);
+                             "Variante score caserne", "Variante score temple", "Variante score jardin"};
+    for (const QString &v : variantes)
+    {
+        auto *checkbox = new QCheckBox(v);
         LayoutVarianteScore->addWidget(checkbox);
         variantesOptions.append(checkbox);
     }
@@ -132,64 +140,69 @@ newPartiePage::newPartiePage(QWidget* parent) : QWidget(parent)
                                "QPushButton:pressed { background-color: #0062a3; }");
     layoutJoueur->addWidget(StartButton);
     LayoutCentral->addWidget(Cadre, 0, Qt::AlignCenter);
-    connect(StartButton, &QPushButton::clicked,this, &newPartiePage::lancerLaPartie);
+    connect(StartButton, &QPushButton::clicked, this, &newPartiePage::lancerLaPartie);
 }
 
+// charger Une partie page Qt
 
+// gestion du slot
 
-
-
-//charger Une partie page Qt
-
-
-//gestion du slot
-
-void chargerPartiePage::chargerLaPartie(){
-   emit envoieArgument(this->NomSauvegarde->currentText().toStdString());
-   std::cout<<this->NomSauvegarde->currentText().toStdString()<<std::endl;
-}
-
-chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
+void chargerPartiePage::chargerLaPartie()
 {
+    emit envoieArgument(this->NomSauvegarde->currentText().toStdString());
+    std::cout << this->NomSauvegarde->currentText().toStdString() << std::endl;
+}
+
+chargerPartiePage::chargerPartiePage(QWidget *parent) : QWidget(parent)
+{
+    setStyleSheet("QWidget { color: #0f172a; }"
+                  "QLineEdit, QSpinBox, QComboBox {"
+                  "color: #0f172a;"
+                  "background: #ffffff;"
+                  "border: 1px solid #d0d5dd;"
+                  "border-radius: 6px;"
+                  "selection-background-color: #0a84ff;"
+                  "selection-color: #ffffff;"
+                  "}");
+
     setAttribute(Qt::WA_StyledBackground, true);
 
-    auto* LayoutCentral = new QVBoxLayout(this);
+    auto *LayoutCentral = new QVBoxLayout(this);
     LayoutCentral->setContentsMargins(0, 0, 0, 0);
     LayoutCentral->setAlignment(Qt::AlignCenter);
 
     // cadre pour le widget
-    auto* Cadre = new QFrame();
+    auto *Cadre = new QFrame();
     Cadre->setObjectName("loadGameCadre");
     Cadre->setFixedSize(300, 350);
     Cadre->setStyleSheet(
-        "#loadGameCadre {background-color: #fafafa; border: 1px solid #dcdcdc; border-radius: 18px;}"
-    );
+        "#loadGameCadre {background-color: #fafafa; border: 1px solid #dcdcdc; border-radius: 18px;}");
     LayoutCentral->addWidget(Cadre, 0, Qt::AlignCenter);
 
-    auto * layoutLoad = new QVBoxLayout(Cadre);
+    auto *layoutLoad = new QVBoxLayout(Cadre);
 
-    //bouton retour 
+    // bouton retour
     layoutLoad->addSpacing(20);
-    auto * boutonRetour = new QPushButton("Retour");
+    auto *boutonRetour = new QPushButton("Retour");
     boutonRetour->setStyleSheet("font-size:20px;");
     layoutLoad->addWidget(boutonRetour);
-    connect(boutonRetour, &QPushButton::clicked, this, [this]{emit retourMenu();});
+    connect(boutonRetour, &QPushButton::clicked, this, [this]
+            { emit retourMenu(); });
 
-    layoutLoad->setAlignment(Qt::AlignTop); 
+    layoutLoad->setAlignment(Qt::AlignTop);
     layoutLoad->addSpacing(20);
 
-
     // titre
-    auto * titre = new QLabel("<u>Charger une partie</u>");
+    auto *titre = new QLabel("<u>Charger une partie</u>");
     titre->setStyleSheet("font-size: 25px; font-weight: 600;");
-    titre->setAlignment(Qt::AlignCenter); 
+    titre->setAlignment(Qt::AlignCenter);
     layoutLoad->addWidget(titre, 0, Qt::AlignCenter);
     layoutLoad->addSpacing(45);
 
-    //ajout un QLabel pour gérer les erreurs
+    // ajout un QLabel pour gérer les erreurs
     erreur = new QLabel();
     erreur->setStyleSheet("font-size: 15px; font-weight: 600;color : red");
-    erreur->setAlignment(Qt::AlignCenter);  
+    erreur->setAlignment(Qt::AlignCenter);
     layoutLoad->addWidget(erreur, 0, Qt::AlignCenter);
 
     // liste des saugegarde
@@ -201,15 +214,14 @@ chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
     layoutLoad->addWidget(NomSauvegarde, 0, Qt::AlignHCenter);
 
     // Complétion
-    QCompleter* completer = new QCompleter(NomSauvegarde->model(), NomSauvegarde);
+    QCompleter *completer = new QCompleter(NomSauvegarde->model(), NomSauvegarde);
     completer->setFilterMode(Qt::MatchContains);
     completer->setCompletionMode(QCompleter::PopupCompletion);
     NomSauvegarde->setCompleter(completer);
 
     rafraichirSauvegardes();
-    
-    layoutLoad->addSpacing(40);  
 
+    layoutLoad->addSpacing(40);
 
     // bouton confirmer
     auto StartButton = new QPushButton("Confirmer");
@@ -217,16 +229,17 @@ chargerPartiePage::chargerPartiePage(QWidget* parent) : QWidget(parent)
     StartButton->setStyleSheet(
         "QPushButton { font-size: 15px; font-weight: 600; color: white; background-color: #0078d4; border-radius: 8px; padding: 6px 14px; }"
         "QPushButton:hover { background-color: #0a84ff; }"
-        "QPushButton:pressed { background-color: #0062a3; }"
-    );
-    connect(StartButton, &QPushButton::clicked,this, &chargerPartiePage::chargerLaPartie);
+        "QPushButton:pressed { background-color: #0062a3; }");
+    connect(StartButton, &QPushButton::clicked, this, &chargerPartiePage::chargerLaPartie);
     layoutLoad->addWidget(StartButton, 0, Qt::AlignHCenter);
-    layoutLoad->addSpacing(15);  
+    layoutLoad->addSpacing(15);
 }
 
-QString recupererNomSansExtension(const std::string& nomAvecExtension) {
+QString recupererNomSansExtension(const std::string &nomAvecExtension)
+{
     QString nom;
-    for (char c : nomAvecExtension) {
+    for (char c : nomAvecExtension)
+    {
         if (c == '.')
             break;
         nom.append(QChar::fromLatin1(c));
@@ -234,13 +247,13 @@ QString recupererNomSansExtension(const std::string& nomAvecExtension) {
     return nom;
 }
 
-
 void chargerPartiePage::rafraichirSauvegardes()
 {
     NomSauvegarde->clear();
-    if (getSauvegardes().size()==0){
+    if (getSauvegardes().size() == 0)
+    {
         this->erreur->setText("Pas de sauvegardes disponible");
     }
-    for (auto& sauvegarde : getSauvegardes())
+    for (auto &sauvegarde : getSauvegardes())
         NomSauvegarde->addItem(recupererNomSansExtension(sauvegarde));
 }
