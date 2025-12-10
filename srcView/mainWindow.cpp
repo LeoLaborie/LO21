@@ -3,7 +3,8 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
-
+#include "PageWidget.h"
+#include "PlateauWidget.h"
 #include <QStackedWidget>
 
 MainWindow::MainWindow(QWidget* parent)
@@ -39,16 +40,18 @@ MainWindow::MainWindow(QWidget* parent)
     col->addStretch();
 
 
-    QWidget* newGamePage = new QWidget(stack);
+    auto * newGamePage = new newPartiePage(stack);
     newGamePage->setObjectName("NewGamePage");
-    QWidget* loadPage    = new QWidget(stack);
+    auto* loadPage    = new chargerPartiePage(stack);
     loadPage->setObjectName("LoadPage");
     QWidget* settingsPage= new QWidget(stack);
     settingsPage->setObjectName("SettingsPage");
+    auto* plateau = new PlateauWidget(stack);
 
     stack->addWidget(newGamePage);
     stack->addWidget(loadPage);
     stack->addWidget(settingsPage);
+    stack->addWidget(plateau);
 
     const QString background = QCoreApplication::applicationDirPath() + "/img/akropolis.png";
     const QString stylesheet = QString(R"(
@@ -70,4 +73,23 @@ MainWindow::MainWindow(QWidget* parent)
     connect(loadGame, &QPushButton::clicked, stack, [stack,loadPage]{    stack->setCurrentWidget(loadPage); });
     connect(setting,  &QPushButton::clicked, stack, [stack,settingsPage]{stack->setCurrentWidget(settingsPage); });
     connect(quitter,  &QPushButton::clicked, this,  &QWidget::close);
+    connect(newGamePage, &newPartiePage::envoieArgument,this, [stack, plateau](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
+            //plateau->initialiser(nb, pseudos, variantes); à faire 
+            stack->setCurrentWidget(plateau);});
+    connect(loadPage, &chargerPartiePage::envoieArgument,this, [stack, plateau](std::string nomSauvegarde){
+            //plateau->initialiser(nom sauvegarxede); à faire 
+            stack->setCurrentWidget(plateau);          
+    });
+
+    connect(newGamePage, &newPartiePage::retourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+    connect(loadPage, &chargerPartiePage::retourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+
+    connect(stack, &QStackedWidget::currentChanged, loadPage, [stack, loadPage](int index){
+        if (stack->widget(index) == loadPage)
+            loadPage->rafraichirSauvegardes();
+    });
 }
