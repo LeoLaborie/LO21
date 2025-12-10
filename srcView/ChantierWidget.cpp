@@ -6,6 +6,29 @@
 
 static int NB_MAX_TUILES = 5; // en attendant le controleur
 
+namespace {
+void placerTuileCentre(TuileItem* tuile, const QPointF& centreScene)
+{
+    if (!tuile)
+        return;
+    const QPointF centreLocal = tuile->boundingRect().center();
+    tuile->setPos(centreScene - centreLocal);
+}
+QPointF calculerPositionChantier(int index, const QRectF& zone)
+{
+    const int espaceMin = 30;
+    const qreal espaceDisponible = zone.height() - espaceMin * (NB_MAX_TUILES - 1);
+    qreal hauteurTuile = espaceDisponible / NB_MAX_TUILES;
+
+    if (hauteurTuile < 0)
+        hauteurTuile = 0;
+
+    const qreal yCentre = zone.top() + hauteurTuile / 2.0 + index * (hauteurTuile + espaceMin);
+    const qreal x = zone.left() + 20;
+    return QPointF(x, yCentre);
+}
+}
+
 
 ChantierWidget::ChantierWidget(int width, int height, QWidget* parent)
     : QGraphicsView(parent)
@@ -27,28 +50,17 @@ ChantierWidget::ChantierWidget(int width, int height, QWidget* parent)
 }
 
 
-static QPointF calculerPositionChantier(int index, int totalHauteur)
-{
-    const int espaceMin = 30;
-    const int espaceDisponible = totalHauteur - espaceMin * (NB_MAX_TUILES - 1);
-    int hauteurTuile = espaceDisponible / NB_MAX_TUILES;
 
-    if (hauteurTuile < 0)
-        hauteurTuile = 0;
-
-    int y = index * (hauteurTuile + espaceMin);
-    return QPointF(20, y);
-}
 
 
 void ChantierWidget::ajouterTuilleDansChantier(Tuile* t) {
-    const int taille = qMin((width() / 2 - 20),(height()/10-30));
+    const int taille = qMin((width() / 2.5 - 20),(height()/(2.5*NB_MAX_TUILES)-20));
     const int indice = static_cast<int>(listeTuilesChantier.size());
     auto* tuile = new TuileItem(*t, nullptr, TuileItem::Mode::Pioche, taille, indice);
     connect(tuile, &TuileItem::estPiocher,this, &ChantierWidget::piocherTuile);
 
-    QPointF pos = calculerPositionChantier(indice, height());
-    tuile->setPos(pos);
+    QPointF pos = calculerPositionChantier(indice, chantierZoneRect);
+    placerTuileCentre(tuile, pos);
 
     chantierScene->addItem(tuile);
     listeTuilesChantier.push_back(tuile);
@@ -83,7 +95,7 @@ void ChantierWidget::reordonnerTuiles()
         if (!tuile)
             continue;
         tuile->setIndiceDansPioche(static_cast<unsigned int>(i));
-        QPointF pos = calculerPositionChantier(i, height());
-        tuile->setPos(pos);
+        QPointF pos = calculerPositionChantier(i, chantierZoneRect);
+        placerTuileCentre(tuile, pos);
     }
 }
