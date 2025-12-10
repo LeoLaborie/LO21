@@ -8,24 +8,40 @@
 #include <vector>
 #include <filesystem>
 #include <QCoreApplication>
+#include <filesystem>
+#include <vector>
+#include <string>
+
 std::vector<std::string> getSauvegardes()
 {
-    const auto base = std::filesystem::current_path();          
-    const auto folder = base / "saves";
-    std::vector<std::string> files;
-    const std::string ext = ".ratatata";
-    for (const auto& entry : std::filesystem::directory_iterator(folder)) {
-        if (entry.is_regular_file() && entry.path().extension() == ext) {
-            files.push_back(entry.path().filename().string());
+    //on récuperes le dossiers saves
+    const auto cheminCourrant   = std::filesystem::current_path();
+    const auto cheminComplet = cheminCourrant / "saves";
+    std::vector<std::string> fichiersSave;
+    const std::string extension = ".ratatata";
+    std::error_code e;
+    //si le dossier n'existe pas encore on le crée
+    if (!std::filesystem::exists(cheminComplet, e)) {
+        if (!std::filesystem::create_directories(cheminComplet, e)) {
+            return fichiersSave;
+        }
+        return fichiersSave;
+    }
+    //on définit l'itérator pour le parcours des fichiers
+    std::filesystem::directory_iterator it(cheminComplet, e);
+    if (e) {
+        return fichiersSave;
+    }
+    for (const auto& entry : it) {
+      //on vérifie si c'est un fichier et que l'extension est bien celle des fichiers sauvegardes
+        if (entry.is_regular_file() && entry.path().extension() == extension) {
+            fichiersSave.push_back(entry.path().filename().string()); //on ajoutes dans le vecteur le nom du fichier
         }
     }
-
-    return files;
+    return fichiersSave;
 }
 
-
-
-
+//récupere la dateCourante
 std::string getCurrentDate() {
   std::time_t t = std::time(nullptr);
   char buf[32];
@@ -33,6 +49,8 @@ std::string getCurrentDate() {
   return buf;
 }
 
+
+//convertir type en string et inversement
 std::string typeToString(TypeHex t) {
   switch (t) {
   case TypeHex::Habitation:
@@ -88,6 +106,7 @@ TypeHex stringToType(const std::string &s) {
   throw std::invalid_argument("TypeHex inconnu: " + s);
 }
 
+//surchage opérator pour sauvegarder un hexagone => mettre les infos importantes dans le flux ostream
 std::ostream &operator<<=(std::ostream &os, const Hexagone &h) {
   os << "HEX " << h.getX() << ' ' << h.getY() << ' ' << h.getZ() << ' '
      << typeToString(h.getType()) << ' ' << (h.getEstRecouvert() ? 1 : 0)
@@ -96,31 +115,40 @@ std::ostream &operator<<=(std::ostream &os, const Hexagone &h) {
   return os;
 }
 
+//surchage opérator pour charger un hexagone
 std::istream &operator>>=(std::istream &is, Hexagone &h) {
+  //principe : on récupere une ligne courantes où il y a normalement le début de la saugarde d'un hex
   std::string ligne;
   if (!(is >> ligne))
     return is;
 
+  //si c'est pas un hex on modifie le bit d'erreur d'extraction pour signifier que ce n'est pas un hex
   if (ligne != "HEX") {
     is.setstate(std::ios::failbit);
     return is;
   }
 
+  //on déclare les variables pour créer l'hexagones
   int x = 0, y = 0, z = 0;
   std::string typeStr;
   int rec = 0;
 
+  //on utilise les operator de base de ostream pour affecter la valeur à chaque variable si il y a une erreur 
+  // on le signal dans le bit d'erreur d'extraction
   if (!(is >> x >> y >> z >> typeStr >> rec)) {
     is.setstate(std::ios::failbit);
     return is;
   }
-
+  //on affecte à l'hexagones passer en référence les valeurs de la sauvegarde
   h = Hexagone(x, y, z, stringToType(typeStr));
   h.setEstRecouvert(rec != 0);
 
   return is;
 }
 
+/*meme chose pour sauvegarde la tuile, mais cette fois on utilise notre opérator créer pour les hexagones 
+pour sauvegarder les hexagones de la tuile
+*/
 std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
   const auto &hexs = t.getHexagones();
   os << "TUILE " << hexs.size() << '\n';
@@ -130,7 +158,7 @@ std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
 
   return os;
 }
-
+// de même pour le chargement on utilise l'opérator surchager précédemment
 std::istream &operator>>=(std::istream &is, Tuile &tuile) {
   std::string ligne;
   if (!(is >> ligne))
@@ -157,9 +185,9 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile) {
     return is;
   }
 
+  //on utilise les des pointeurs temporaires pour créer les hexagones de la tuile vue qu'ils sont stocker par pointeurs
   std::vector<std::unique_ptr<Hexagone>> hexs;
   hexs.reserve(nbHex);
-
   for (int i = 0; i < nbHex; ++i) {
     Hexagone tmp(0, 0, 0, TypeHex::Carriere);
     if (!(is >>= tmp))
@@ -167,21 +195,23 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile) {
     hexs.push_back(std::make_unique<Hexagone>(tmp));
   }
 
+  //on change le propriétaire des pointeurs  des hexagones pour la tuile
   if (nbHex == 3)
     tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release());
   else
-    tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release(),
-                  hexs[3].release());
+    tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release(),hexs[3].release());
 
   return is;
 }
-void sauvegarderPartie(const Partie &p) {
+//on va utiliser tt les opérators de base et se surchager pour suavegarder dans les fichiers les différents objets de la partie
+
+bool sauvegarderPartie(const Partie &p) {
   std::string date = getCurrentDate();
   std::string nom = "saves/save_" + date + ".ratatata";
   std::ofstream f(nom);
   if (!f) {
     std::cerr << "Erreur : impossible de créer la sauvegarde.\n";
-    return;
+    return false;
   }
 
   f << "PARTIE " << p.getNbrJoueurs() << ' ' << p.getNbrTours() << ' '
@@ -233,10 +263,9 @@ void sauvegarderPartie(const Partie &p) {
     }
   } else
     f << '0' << '\n';
-
-  std::cout << "Sauvegarde terminée.\n";
+  return true;
 }
-
+//meme chose pour le chargement, on traite les erreurs aussi
 Partie Partie::FromSave(const std::string &nomFichier) {
   std::ifstream f(nomFichier);
   if (!f)
