@@ -24,18 +24,7 @@ TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile,in
         ++i;
     }
     setTransformOriginPoint(boundingRect().center());
-    QObject::connect(this, &TuileItem::rightClicked,
-                     this, &TuileItem::rotate60,
-                     Qt::UniqueConnection);
-}
-
-void TuileItem::addHex(HexItem* hex)
-{
-    addToGroup(hex);
-    if (!hexRef)
-        hexRef = hex;
-    prepareGeometryChange();
-    setTransformOriginPoint(boundingRect().center());
+    QObject::connect(this, &TuileItem::rightClicked,this, &TuileItem::rotate60,Qt::UniqueConnection);
 }
 
 void TuileItem::rotate60()
@@ -77,6 +66,9 @@ void TuileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
+/**
+ * @brief Convertit des coordonnées pixel en coordonnées axiales approximatives.
+ */
 QPointF pixelVersAxial(double px, double py, double size) {
     const double rt3 = std::sqrt(3.0);
     const double qf = px / (1.5 * size);
@@ -97,6 +89,9 @@ void TuileItem::replacerCorrectement()
     setPos(pos() + deltaScene);
 }
 
+/**
+ * @brief Redimensionne chaque HexItem pour agrandir ou réduire la tuile.
+ */
 void TuileItem::setTaille(int nouvelleTaille)
 {
     tailleHex = nouvelleTaille;
@@ -105,7 +100,6 @@ void TuileItem::setTaille(int nouvelleTaille)
         if (hex)
             hex->setTaille(nouvelleTaille);
     }
-
     prepareGeometryChange();
     setTransformOriginPoint(boundingRect().center());
     replacerCorrectement();

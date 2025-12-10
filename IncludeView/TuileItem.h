@@ -22,11 +22,6 @@ public:
      * @brief Construit une tuile graphique à partir d'une tuile métier et crée les HexItem associés.
      */
     TuileItem(Tuile& modele, QGraphicsItem* parent = nullptr,Mode m=Mode::Pioche,int tailleTuile=50,int indice=-1);
-    void setCoordonnee(int x,int y);
-    /**
-     * @brief Ajoute dynamiquement un hexagone à la tuile graphique.
-     */
-    void addHex(HexItem* hex);
     /**
      * @brief Pivote la tuile de 60° autour de son centre si l'interaction est autorisée.
      */
@@ -40,22 +35,19 @@ public:
      */
     void setInteractivite(bool autoriserDeplacement, bool autoriserRotation);
     /**
-     * @brief Retourne l'indice de l'objet quand il était dans le pioche.
-     */
-    unsigned int getIndiceDansPioche()const {return indice;} 
-    /**
      * @brief Met à jour l'indice de la tuile dans la pioche.
      */
     void setIndiceDansPioche(unsigned int nouvelIndice);
-    /**
-     * @brief Retourne le mode de la TuileItem.
-     */
-    Mode getMode() const {return mode;};
     /**
      * @brief Changer le mode de la TuileItem.
      */
     void setMode(Mode m) {mode=m;};
 
+    /**
+     * @brief Ajuste la taille des hexagones et recalcule le centre de rotation.
+     *
+     * @param nouvelleTaille diamètre utilisé pour redimensionner chaque HexItem.
+     */
     void setTaille(int nouvelleTaille);
 
 signals:
