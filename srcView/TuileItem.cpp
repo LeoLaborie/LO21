@@ -34,22 +34,32 @@ TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent)
 void TuileItem::addHex(HexItem* hex)
 {
     addToGroup(hex);
+    if (!hexRef)
+        hexRef = hex;
     prepareGeometryChange();
     setTransformOriginPoint(boundingRect().center());
 }
 
 void TuileItem::rotate60()
 {
+    if (!rotationAutorisee)
+        return;
     setRotation(rotation() + 60.0);
     replacerCorrectement();
 }
 
 
+void TuileItem::setInteractivite(bool autoriserDeplacement, bool autoriserRotation)
+{
+    setFlag(ItemIsMovable, autoriserDeplacement);
+    setFlag(ItemIsSelectable, autoriserDeplacement);
+    rotationAutorisee = autoriserRotation;
+}
 
 
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::RightButton)
+    if (event->button() == Qt::RightButton && rotationAutorisee)
         emit rightClicked();
 
     QGraphicsItemGroup::mousePressEvent(event);
@@ -73,11 +83,16 @@ QPointF pixelVersAxial(double px, double py, double size) {
 
 void TuileItem::replacerCorrectement()
 {
+    if (!hexRef)
+        return;
     const QPointF cScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF axialF = pixelVersAxial(cScene.x(), cScene.y(), taille);
+    const QPointF localCenter = cScene - plateauOrigin;
+    const QPointF axialF = pixelVersAxial(localCenter.x(), localCenter.y(), taille);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
-    const QPointF cibleScene = axialVersPixel(q, r, taille);
+    const QPointF cibleScene = axialVersPixel(q, r, taille) + plateauOrigin;
     const QPointF deltaScene = cibleScene - cScene;
     setPos(pos() + deltaScene);
 }
+
+

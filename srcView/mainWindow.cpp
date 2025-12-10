@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include "ControllerView.h"
 #include "PageWidget.h"
 #include "PlateauWidget.h"
 #include <QStackedWidget>
@@ -42,15 +43,14 @@ MainWindow::MainWindow(QWidget* parent)
 
     auto * newGamePage = new newPartiePage(stack);
     newGamePage->setObjectName("NewGamePage");
-<<<<<<< HEAD
-    QWidget* loadPage    = new chargePartieWidget(stack);
-=======
+
     auto* loadPage    = new chargerPartiePage(stack);
->>>>>>> 8521dea4899c275bd638c713e162c7b032bf136e
+
     loadPage->setObjectName("LoadPage");
     QWidget* settingsPage= new QWidget(stack);
     settingsPage->setObjectName("SettingsPage");
     auto* plateau = new PlateauWidget(stack);
+    ControllerView* controller = ControllerView::giveInstance();
 
     stack->addWidget(newGamePage);
     stack->addWidget(loadPage);
@@ -77,11 +77,23 @@ MainWindow::MainWindow(QWidget* parent)
     connect(loadGame, &QPushButton::clicked, stack, [stack,loadPage]{    stack->setCurrentWidget(loadPage); });
     connect(setting,  &QPushButton::clicked, stack, [stack,settingsPage]{stack->setCurrentWidget(settingsPage); });
     connect(quitter,  &QPushButton::clicked, this,  &QWidget::close);
-    connect(newGamePage, &newPartiePage::envoieArgument,this, [stack, plateau](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
-            //plateau->initialiser(nb, pseudos, variantes); à faire 
+    connect(newGamePage, &newPartiePage::envoieArgument,this, [stack, plateau, controller](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
+        controller->creerNouvellePartie(nb, pseudos, variantes);
             stack->setCurrentWidget(plateau);});
-    connect(loadPage, &chargerPartiePage::envoieArgument,this, [stack, plateau](std::string nomSauvegarde){
-            //plateau->initialiser(nom sauvegarxede); à faire 
+    connect(loadPage, &chargerPartiePage::envoieArgument,this, [stack, plateau, controller](std::string nomSauvegarde){
+        controller->chargerDepuisSauvegarde(nomSauvegarde);
             stack->setCurrentWidget(plateau);          
+    });
+
+    connect(newGamePage, &newPartiePage::retourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+    connect(loadPage, &chargerPartiePage::retourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+
+    connect(stack, &QStackedWidget::currentChanged, loadPage, [stack, loadPage](int index){
+        if (stack->widget(index) == loadPage)
+            loadPage->rafraichirSauvegardes();
     });
 }
