@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 project(lo21 VERSION 1.0 LANGUAGES CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Standard C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,27 +16,33 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 # Met l'exécutable dans build/bin/
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Inclure les headers
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
 # Récupérer tous les .cpp du dossier src
 file(GLOB_RECURSE LO21_SOURCES
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_SOURCE_DIR}/srcView/*.cpp"
 )
 
 set(LO21_HEADERS
-    "${CMAKE_SOURCE_DIR}/include/mainwindow.h"
-    "${CMAKE_SOURCE_DIR}/include/TuileItem.h"
-    "${CMAKE_SOURCE_DIR}/include/PageWidget.h"
-    "${CMAKE_SOURCE_DIR}/include/PlateauWidget.h"
-    "${CMAKE_SOURCE_DIR}/include/EchapWidget.h"
-    "${CMAKE_SOURCE_DIR}/include/PiocheWidget.h"
-    "${CMAKE_SOURCE_DIR}/include/ZoneJeuWidget.h"
-    "${CMAKE_SOURCE_DIR}/include/ScorePanel.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/mainwindow.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/TuileItem.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/PageWidget.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/PlateauWidget.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/EchapWidget.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/PiocheWidget.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/ZoneJeuWidget.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/ScorePanel.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/HexItem.h"
 )
 
 # Créer l'exécutable
 add_executable(lo21 ${LO21_SOURCES} ${LO21_HEADERS})
+target_include_directories(lo21 PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/IncludeView
+    $<TARGET_PROPERTY:Qt6::Core,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Qt6::Gui,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Qt6::Widgets,INTERFACE_INCLUDE_DIRECTORIES>
+)
 target_link_libraries(lo21 PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
 
 # Options de warnings (confort)

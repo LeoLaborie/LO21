@@ -1,5 +1,4 @@
 #include "ScorePanel.h"
-
 #include <QLabel>
 #include <QVBoxLayout>
 
