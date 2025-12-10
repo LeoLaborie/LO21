@@ -2,13 +2,13 @@
 #define PLATEAUWIDGET_H
 #include <QWidget>
 
-class PiocheWidget;
+class ChantierWidget;
 class ScorePanel;
 class ZoneJeuWidget;
 
 /**
- * @brief Widget principal affichant le plateau de jeu, la pioche et les informations de score.
- * Il encapsule deux scènes graphiques distinctes (plateau/pioche) afin de gérer
+ * @brief Widget principal affichant le plateau de jeu, le chantier et les informations de score.
+ * Il encapsule deux scènes graphiques distinctes (plateau/chantier) afin de gérer
  * indépendamment le zoom et l'affichage.
  */
 class PlateauWidget : public QWidget
@@ -17,7 +17,7 @@ class PlateauWidget : public QWidget
 
 public:
     /**
-     * @brief Construit le widget et installe les vues/scènes du plateau et de la pioche.
+     * @brief Construit le widget et installe les vues/scènes du plateau et du chantier.
      */
     explicit PlateauWidget(QWidget* parent = nullptr);
     /**
@@ -28,7 +28,7 @@ public:
      */
 private:
     ZoneJeuWidget* zoneJeuWidget = nullptr;
-    PiocheWidget* piocheWidget = nullptr;
+    ChantierWidget* chantierWidget = nullptr;
     ScorePanel* scorePanel = nullptr;
 };
 

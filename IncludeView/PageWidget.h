@@ -26,7 +26,7 @@ private:
 private slots:
     void lancerLaPartie();   
 signals:
-    void envoieArgument(int nb, const QStringList& pseudos,const QVector<bool>& variantes);
+    void envoieArgument(int nb, const QStringList& pseudos,bool ToutesLesTuiles,const QVector<bool>& variantes);
     void retourMenu();
 };
 

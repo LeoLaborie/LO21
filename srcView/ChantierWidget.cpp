@@ -1,15 +1,15 @@
-#include "PiocheWidget.h"
+#include "ChantierWidget.h"
 #include <QBrush>
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
 #include <QPen>
 
-PiocheWidget::PiocheWidget(int width, int height, QWidget* parent)
+ChantierWidget::ChantierWidget(int width, int height, QWidget* parent)
     : QGraphicsView(parent)
 {
     //création de la scène
-    piocheScene = new QGraphicsScene(this);
-    setScene(piocheScene);
+    chantierScene = new QGraphicsScene(this);
+    setScene(chantierScene);
 
     //application des différentes préférences
     setFrameStyle(QFrame::NoFrame);
@@ -18,7 +18,7 @@ PiocheWidget::PiocheWidget(int width, int height, QWidget* parent)
     setFixedSize(width, height);
 
     //ajout dans la scène
-    piocheScene->setSceneRect(0, 0, width, height);
-    piocheZoneRectItem = piocheScene->addRect(0, 0, width, height, QPen(Qt::NoPen), QBrush(Qt::red));
-    piocheZoneRect = piocheZoneRectItem->rect();
+    chantierScene->setSceneRect(0, 0, width, height);
+    chantierZoneRectItem = chantierScene->addRect(0, 0, width, height, QPen(Qt::NoPen), QBrush(Qt::red));
+    chantierZoneRect = chantierZoneRectItem->rect();
 }

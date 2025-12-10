@@ -1,5 +1,5 @@
 #include "PlateauWidget.h"
-#include "PiocheWidget.h"
+#include "ChantierWidget.h"
 #include "ScorePanel.h"
 #include "ZoneJeuWidget.h"
 #include <QHBoxLayout>
@@ -22,14 +22,14 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     const int scoreWidgetSize = 250;
     const int plateauWidth = width() - colonneDroiteLargeur;
     const int plateauHeight = height();
-    const int piocheHeight = height() - scoreWidgetSize;
+    const int chantierHeight = height() - scoreWidgetSize;
 
 
     //appelle le constructeur de la zone de jeu
     zoneJeuWidget = new ZoneJeuWidget(plateauWidth, plateauHeight, this);
     layout->addWidget(zoneJeuWidget, 1);
 
-    //gère la partie droite (widget score au dessus et en dessous la scene pour la pioche)
+    //gère la partie droite (widget score au dessus et en dessous la scène pour le chantier)
     auto* panneauDroit = new QWidget(this);
     panneauDroit->setFixedWidth(colonneDroiteLargeur);
     auto* colonneDroite = new QVBoxLayout(panneauDroit);
@@ -41,7 +41,7 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     scorePanel = new ScorePanel(colonneDroiteLargeur, scoreWidgetSize, panneauDroit);
     colonneDroite->addWidget(scorePanel, 0, Qt::AlignTop);
 
-    //création de la scène pioche
-    piocheWidget = new PiocheWidget(colonneDroiteLargeur, piocheHeight, panneauDroit);
-    colonneDroite->addWidget(piocheWidget, 1);
+    //création de la scène chantier
+    chantierWidget = new ChantierWidget(colonneDroiteLargeur, chantierHeight, panneauDroit);
+    colonneDroite->addWidget(chantierWidget, 1);
 }

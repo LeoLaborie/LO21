@@ -3,21 +3,25 @@
 #include <QtMath>
 
 static int taille=50;
-TuileItem::TuileItem(QGraphicsItem* parent)
-    : QGraphicsItemGroup(parent)
+TuileItem::TuileItem(QGraphicsItem* parent,Mode m)
+    : QGraphicsItemGroup(parent),mode(m)
 {
-    setFlag(ItemIsMovable, true);
+    if (mode==Mode::ZoneJeu){
+        setFlag(ItemIsMovable, true);
+    }
+    /* setFlag(ItemIsSelectable, true); peut etre utile mais pas encore utilisé*/
     setFlag(ItemIsSelectable, true);
-    setFlag(ItemSendsGeometryChanges, true);
     setTransformOriginPoint(boundingRect().center());
 }
 
-TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent)
-    : QGraphicsItemGroup(parent)
+TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m)
+    : QGraphicsItemGroup(parent),mode(m)
 {
-    setFlag(ItemIsMovable, true);
+    if (mode==Mode::ZoneJeu){
+        setFlag(ItemIsMovable, true);
+    }
     setFlag(ItemIsSelectable, true);
-    setFlag(ItemSendsGeometryChanges, true);
+    /* setFlag(ItemSendsGeometryChanges, true); peut etre utile mais pas encore utilisé*/
     int i=0;
     for (Hexagone* h : ref.getHexagones()) {
         auto* hexItem = new HexItem(h, taille);
@@ -63,6 +67,9 @@ void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
         emit rightClicked();
 
     QGraphicsItemGroup::mousePressEvent(event);
+    if (event->button() == Qt::LeftButton && mode==Mode::Pioche){
+        emit estPiocher(indice);
+    }
 }
 
 void TuileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -86,13 +93,15 @@ void TuileItem::replacerCorrectement()
     if (!hexRef)
         return;
     const QPointF cScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF localCenter = cScene - plateauOrigin;
-    const QPointF axialF = pixelVersAxial(localCenter.x(), localCenter.y(), taille);
+    const QPointF axialF = pixelVersAxial(cScene.x(), cScene.y(), taille);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
-    const QPointF cibleScene = axialVersPixel(q, r, taille) + plateauOrigin;
+    const QPointF cibleScene = axialVersPixel(q, r, taille);
     const QPointF deltaScene = cibleScene - cScene;
     setPos(pos() + deltaScene);
 }
 
 
+void piocherTuile(int indice){
+    
+}
