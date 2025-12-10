@@ -23,7 +23,8 @@ private:
     QGraphicsScene* chantierScene = nullptr;
     QGraphicsRectItem* chantierZoneRectItem = nullptr;
     QRectF chantierZoneRect;
-    std::vector <unique_ptr TuileItem>
+    std::vector<std::unique_ptr<TuileItem>> TuilesChantier;
+
 private slots:
     void piocherTuile(int indice);
 };
