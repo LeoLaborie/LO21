@@ -21,7 +21,7 @@ public:
     /**
      * @brief Construit une tuile graphique à partir d'une tuile métier et crée les HexItem associés.
      */
-    TuileItem(Tuile& modele, QGraphicsItem* parent = nullptr,Mode m=Mode::Pioche,int tailleTuile=50,int indice=NULL);
+    TuileItem(Tuile& modele, QGraphicsItem* parent = nullptr,Mode m=Mode::Pioche,int tailleTuile=50,int indice=-1);
     void setCoordonnee(int x,int y);
     /**
      * @brief Ajoute dynamiquement un hexagone à la tuile graphique.

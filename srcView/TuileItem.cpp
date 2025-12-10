@@ -4,7 +4,12 @@
 
 
 TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile,int indice)
-    : QObject(), QGraphicsItemGroup(parent),tailleHex(tailleTuile),mode(m),indice(indice)
+    : QObject()
+    , QGraphicsItemGroup(parent)
+    , tailleHex(tailleTuile)
+    , rotationAutorisee(true)
+    , indice(indice)
+    , mode(m)
 {
     if (mode==Mode::ZoneJeu){
         setFlag(ItemIsMovable, true);
@@ -55,7 +60,7 @@ void TuileItem::setIndiceDansPioche(unsigned int nouvelIndice)
 
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::RightButton && rotationAutorisee)
+    if (event->button() == Qt::RightButton && rotationAutorisee && mode==Mode::ZoneJeu)
         emit rightClicked();
 
     QGraphicsItemGroup::mousePressEvent(event);
@@ -95,7 +100,6 @@ void TuileItem::replacerCorrectement()
 void TuileItem::setTaille(int nouvelleTaille)
 {
     tailleHex = nouvelleTaille;
-
     for (QGraphicsItem* item : childItems()) {
         HexItem* hex = dynamic_cast<HexItem*>(item);
         if (hex)

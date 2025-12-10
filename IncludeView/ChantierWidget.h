@@ -17,7 +17,7 @@ class ChantierWidget : public QGraphicsView
 public:
     ChantierWidget(int width, int height, QWidget* parent = nullptr);
     QGraphicsScene* getChantierScene() const { return chantierScene; }
-    QRectF getZoneRect() const { return chantierZoneRect; }
+   
     void ajouterTuilleDansChantier(Tuile *t);
     TuileItem* retirerTuilleDeChantier(int indice);
 
@@ -27,7 +27,6 @@ signals:
 private:
     QGraphicsScene* chantierScene = nullptr;
     QGraphicsRectItem* chantierZoneRectItem = nullptr;
-    QRectF chantierZoneRect;
     std::vector<TuileItem*> listeTuilesChantier;
     void reordonnerTuiles();
 
