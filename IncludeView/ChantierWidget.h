@@ -5,6 +5,7 @@
 #include <QGraphicsView>
 #include <QRectF>
 #include <vector>
+#include "Partie.h"
 #include <memory>
 class QGraphicsRectItem;
 /**
@@ -18,12 +19,13 @@ public:
     ChantierWidget(int width, int height, QWidget* parent = nullptr);
     QGraphicsScene* getChantierScene() const { return chantierScene; }
     QRectF getZoneRect() const { return chantierZoneRect; }
-    
+    void ajouterTuilleDansChantier(Tuile *t);
+    void retirerTuilleDeChantier(int indice);
 private:
     QGraphicsScene* chantierScene = nullptr;
     QGraphicsRectItem* chantierZoneRectItem = nullptr;
     QRectF chantierZoneRect;
-    std::vector<std::unique_ptr<TuileItem>> TuilesChantier;
+    std::vector<std::unique_ptr<TuileItem>> listeTuilesChantier;
 
 private slots:
     void piocherTuile(int indice);

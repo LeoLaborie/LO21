@@ -2,10 +2,10 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QtMath>
 
-static int taille=50;
-TuileItem::TuileItem(QGraphicsItem* parent,Mode m)
-    : QGraphicsItemGroup(parent),mode(m)
+TuileItem::TuileItem(QGraphicsItem* parent,Mode m,int tailleTuile)
+    : QGraphicsItemGroup(parent),tailleHex(tailleTuile),mode(m)
 {
+    //définit la taille utilisée pour dessiner cette tuile
     if (mode==Mode::ZoneJeu){
         setFlag(ItemIsMovable, true);
     }
@@ -14,9 +14,10 @@ TuileItem::TuileItem(QGraphicsItem* parent,Mode m)
     setTransformOriginPoint(boundingRect().center());
 }
 
-TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m)
-    : QGraphicsItemGroup(parent),mode(m)
+TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile)
+    : QGraphicsItemGroup(parent),tailleHex(tailleTuile),mode(m)
 {
+    //définit la taille utilisée pour dessiner cette tuile
     if (mode==Mode::ZoneJeu){
         setFlag(ItemIsMovable, true);
     }
@@ -24,7 +25,7 @@ TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m)
     /* setFlag(ItemSendsGeometryChanges, true); peut etre utile mais pas encore utilisé*/
     int i=0;
     for (Hexagone* h : ref.getHexagones()) {
-        auto* hexItem = new HexItem(h, taille);
+        auto* hexItem = new HexItem(h, tailleHex);
         addToGroup(hexItem);
         if (i == 0) hexRef = hexItem;
         ++i;
@@ -93,10 +94,10 @@ void TuileItem::replacerCorrectement()
     if (!hexRef)
         return;
     const QPointF cScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF axialF = pixelVersAxial(cScene.x(), cScene.y(), taille);
+    const QPointF axialF = pixelVersAxial(cScene.x(), cScene.y(), tailleHex);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
-    const QPointF cibleScene = axialVersPixel(q, r, taille);
+    const QPointF cibleScene = axialVersPixel(q, r, tailleHex);
     const QPointF deltaScene = cibleScene - cScene;
     setPos(pos() + deltaScene);
 }

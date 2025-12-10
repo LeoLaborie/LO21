@@ -44,4 +44,7 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     //création de la scène chantier
     chantierWidget = new ChantierWidget(colonneDroiteLargeur, chantierHeight, panneauDroit);
     colonneDroite->addWidget(chantierWidget, 1);
+
+    connect(chantierWidget, &ChantierWidget::tuilePiochee,
+            zoneJeuWidget, &ZoneJeuWidget::placerTuileDansZoneJeu);
 }
