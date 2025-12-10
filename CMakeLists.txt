@@ -32,7 +32,7 @@ set(LO21_HEADERS
 # Créer l'exécutable
 add_executable(lo21 ${LO21_SOURCES} ${LO21_HEADERS}
     include/PageWidget.h include/mainwindow.h include/TuileItem.h include/JeuController.h include/HexItem.h include/Sauvegarde.h include/Position.h include/ControleConsole.h include/Tuile.h include/Plateau.h include/Partie.h include/Joueur.h include/Hexagone.h include/Chantier.h include/couleurs_console.h
-    src/mainWindow.cpp src/QTlancerPartieWidget.cpp src/PageWidget.cpp src/TuileItem.cpp src/JeuController.cpp src/HexItem.cpp src/main.cpp src/Plateau.cpp src/Partie.cpp src/Joueur.cpp src/ControleConsole.cpp src/Sauvegarde.cpp src/Tuile.cpp src/Chantier.cpp src/Hexagone.cpp
+    src/mainWindow.cpp src/PageWidget.cpp src/TuileItem.cpp src/JeuController.cpp src/HexItem.cpp src/main.cpp src/Plateau.cpp src/Partie.cpp src/Joueur.cpp src/ControleConsole.cpp src/Sauvegarde.cpp src/Tuile.cpp src/Chantier.cpp src/Hexagone.cpp
     saves
 )
 target_link_libraries(lo21 PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
