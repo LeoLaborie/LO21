@@ -24,7 +24,7 @@ TypeHex stringToType(const std::string& s);
  * @brief Sauvegarde l'état complet d'une partie sur disque.
  * @param p Partie à sauvegarder.
  */
-void sauvegarderPartie(const Partie& p);
+bool sauvegarderPartie(const Partie& p);
 
 /**
  * @brief Charge une partie depuis un fichier de sauvegarde.
