@@ -44,6 +44,10 @@ public:
      */
     unsigned int getIndiceDansPioche()const {return indice;} 
     /**
+     * @brief Met à jour l'indice de la tuile dans la pioche.
+     */
+    void setIndiceDansPioche(unsigned int nouvelIndice);
+    /**
      * @brief Retourne le mode de la TuileItem.
      */
     Mode getMode() const {return mode;};

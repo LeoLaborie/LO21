@@ -21,3 +21,25 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
     zoneJeuRectItem = zoneJeuScene->addRect(0, 0, width, height, QPen(Qt::NoPen), QBrush(Qt::blue));
     zoneJeuRect = zoneJeuRectItem->rect();
 }
+void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
+{
+    if (!t) return;
+
+    // Définir la position de la tuile
+    t->setPos(x, y);
+
+    // Ajouter à la scène
+    zoneJeuScene->addItem(t);
+
+    // Stocker la tuile dans le tableau
+    tuilesZoneJeu.push_back(t);
+}
+
+void ZoneJeuWidget::placerTuileDansZoneJeu(TuileItem* tuile)
+{
+    if (!tuile)
+        return;
+
+    const QPointF centre = zoneJeuRect.center();
+    ajouterTuileDansZoneJeu(tuile, static_cast<int>(centre.x()), static_cast<int>(centre.y()));
+}

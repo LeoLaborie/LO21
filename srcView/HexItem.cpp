@@ -8,14 +8,12 @@
 #include <QFile>
 #include <QCoreApplication>
 
-
 QPointF axialVersPixel(int q, int r, double size) {
     const double rt3 = std::sqrt(3.0);
     const double px = size * (1.5 * q);
     const double py = size * ((rt3 / 2.0) * q + rt3 * r);
     return {px, py};
 }
-
 
 static QPolygonF creerHexagone(double taille) {
     QPolygonF p;
@@ -26,8 +24,6 @@ static QPolygonF creerHexagone(double taille) {
     }
     return p;
 }
-
-
 
 HexItem::HexItem(const Hexagone* modele, double taille)
     : QGraphicsPolygonItem(nullptr)
@@ -71,4 +67,10 @@ HexItem::HexItem(const Hexagone* modele, double taille)
     auto *icon = new QGraphicsPixmapItem(scaled, this);
     icon->setOffset(-scaled.width() / 2.0, -scaled.height() / 2.0);
     icon->setZValue(1);
+}
+
+void HexItem::setTaille(double nouvelleTaille)
+{
+    prepareGeometryChange();
+    setPolygon(creerHexagone(nouvelleTaille));
 }

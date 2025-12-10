@@ -6,7 +6,6 @@
 #include <QRectF>
 #include <vector>
 #include "Partie.h"
-#include <memory>
 class QGraphicsRectItem;
 /**
  * @brief Vue dédiée à l'affichage du chantier.
@@ -20,12 +19,17 @@ public:
     QGraphicsScene* getChantierScene() const { return chantierScene; }
     QRectF getZoneRect() const { return chantierZoneRect; }
     void ajouterTuilleDansChantier(Tuile *t);
-    void retirerTuilleDeChantier(int indice);
+    TuileItem* retirerTuilleDeChantier(int indice);
+
+signals:
+    void tuilePiochee(TuileItem* tuile);
+
 private:
     QGraphicsScene* chantierScene = nullptr;
     QGraphicsRectItem* chantierZoneRectItem = nullptr;
     QRectF chantierZoneRect;
-    std::vector<std::unique_ptr<TuileItem>> listeTuilesChantier;
+    std::vector<TuileItem*> listeTuilesChantier;
+    void reordonnerTuiles();
 
 private slots:
     void piocherTuile(int indice);

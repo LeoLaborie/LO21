@@ -2,22 +2,10 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QtMath>
 
-TuileItem::TuileItem(QGraphicsItem* parent,Mode m,int tailleTuile)
-    : QGraphicsItemGroup(parent),tailleHex(tailleTuile),mode(m)
-{
-    //définit la taille utilisée pour dessiner cette tuile
-    if (mode==Mode::ZoneJeu){
-        setFlag(ItemIsMovable, true);
-    }
-    /* setFlag(ItemIsSelectable, true); peut etre utile mais pas encore utilisé*/
-    setFlag(ItemIsSelectable, true);
-    setTransformOriginPoint(boundingRect().center());
-}
 
-TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile)
-    : QGraphicsItemGroup(parent),tailleHex(tailleTuile),mode(m)
+TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile,int indice)
+    : QObject(), QGraphicsItemGroup(parent),tailleHex(tailleTuile),mode(m),indice(indice)
 {
-    //définit la taille utilisée pour dessiner cette tuile
     if (mode==Mode::ZoneJeu){
         setFlag(ItemIsMovable, true);
     }
@@ -53,7 +41,6 @@ void TuileItem::rotate60()
     replacerCorrectement();
 }
 
-
 void TuileItem::setInteractivite(bool autoriserDeplacement, bool autoriserRotation)
 {
     setFlag(ItemIsMovable, autoriserDeplacement);
@@ -61,6 +48,10 @@ void TuileItem::setInteractivite(bool autoriserDeplacement, bool autoriserRotati
     rotationAutorisee = autoriserRotation;
 }
 
+void TuileItem::setIndiceDansPioche(unsigned int nouvelIndice)
+{
+    indice = nouvelIndice;
+}
 
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -88,7 +79,6 @@ QPointF pixelVersAxial(double px, double py, double size) {
     return { qf, rf };
 }
 
-
 void TuileItem::replacerCorrectement()
 {
     if (!hexRef)
@@ -102,7 +92,17 @@ void TuileItem::replacerCorrectement()
     setPos(pos() + deltaScene);
 }
 
+void TuileItem::setTaille(int nouvelleTaille)
+{
+    tailleHex = nouvelleTaille;
 
-void piocherTuile(int indice){
-    
+    for (QGraphicsItem* item : childItems()) {
+        HexItem* hex = dynamic_cast<HexItem*>(item);
+        if (hex)
+            hex->setTaille(nouvelleTaille);
+    }
+
+    prepareGeometryChange();
+    setTransformOriginPoint(boundingRect().center());
+    replacerCorrectement();
 }

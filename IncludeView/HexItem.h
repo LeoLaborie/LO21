@@ -8,11 +8,10 @@ class HexItem : public QGraphicsPolygonItem {
 private:
 public:
     HexItem(const Hexagone* model, double size = 36.0);
+    void setTaille(double nouvelleTaille);
 };
-
 
 QPointF axialVersPixel(int q, int r, double size);
 
-
-
 #endif // HEXITEM_H
+
