@@ -1,40 +1,35 @@
 #include "PlateauWidget.h"
-#include <QGraphicsScene>
-#include <QGraphicsRectItem>
-#include <QGraphicsView>
-#include <QVBoxLayout>
+#include "PiocheWidget.h"
+#include "ScorePanel.h"
+#include "ZoneJeuWidget.h"
 #include <QHBoxLayout>
-#include <QPainter>
-#include <QFrame>
-#include <QPen>
-#include <QLabel>
-#include <array>
+#include <QVBoxLayout>
 
 
 PlateauWidget::PlateauWidget(QWidget* parent)
     : QWidget(parent)
 {
+    //définit la taille de la fenetre de jeu
     setFixedSize(1920, 1080);
 
-    int colonneDroiteLargeur = 250;
-    int scoreWidgetSize = 250;
-    /* Gestion plateau */
-    plateauScene = new QGraphicsScene(this);
-    piocheScene = new QGraphicsScene(this);
-    plateauView = new QGraphicsView(plateauScene, this);
-    plateauView->setFrameStyle(QFrame::NoFrame);
-    plateauView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    plateauView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    piocheView = new QGraphicsView(piocheScene, this);
-    piocheView->setFrameStyle(QFrame::NoFrame);
-    piocheView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    piocheView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
+    //création de l'organisation de la page avec un layout central
     auto* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(plateauView, 1);
 
+    //on définit la taille qu'on va utiliser (peut etre modifié pour récuperer la taille de l'affichage sur l'ordi si on le temps )
+    const int colonneDroiteLargeur = 250;
+    const int scoreWidgetSize = 250;
+    const int plateauWidth = width() - colonneDroiteLargeur;
+    const int plateauHeight = height();
+    const int piocheHeight = height() - scoreWidgetSize;
+
+
+    //appelle le constructeur de la zone de jeu
+    zoneJeuWidget = new ZoneJeuWidget(plateauWidth, plateauHeight, this);
+    layout->addWidget(zoneJeuWidget, 1);
+
+    //gère la partie droite (widget score au dessus et en dessous la scene pour la pioche)
     auto* panneauDroit = new QWidget(this);
     panneauDroit->setFixedWidth(colonneDroiteLargeur);
     auto* colonneDroite = new QVBoxLayout(panneauDroit);
@@ -42,36 +37,11 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     colonneDroite->setSpacing(0);
     layout->addWidget(panneauDroit, 0);
 
-    /* Gestion scores */
-    panneauScores = new QWidget(panneauDroit);
-    panneauScores->setFixedSize(colonneDroiteLargeur, scoreWidgetSize);
-    panneauScores->setStyleSheet("background-color: #f0f0f0;");
-    auto* scoreLayout = new QVBoxLayout(panneauScores);
-    scoreLayout->setContentsMargins(20, 20, 20, 20);
-    scoreLayout->setSpacing(8);
-    score = new QLabel("Scores", panneauScores);
-    joueurSelect = new QLabel("Joueur actif", panneauScores);
-    for (auto* label : {score, joueurSelect}) {
-        label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        scoreLayout->addWidget(label);
-    }
-    colonneDroite->addWidget(panneauScores, 0, Qt::AlignTop);
+    //création de la widget score
+    scorePanel = new ScorePanel(colonneDroiteLargeur, scoreWidgetSize, panneauDroit);
+    colonneDroite->addWidget(scorePanel, 0, Qt::AlignTop);
 
-    /* Gestion pioche */
-    piocheView->setFixedWidth(colonneDroiteLargeur);
-    piocheView->setFixedHeight(height() - scoreWidgetSize);
-    colonneDroite->addWidget(piocheView, 1);
-
-    const int plateauWidth = width() - colonneDroiteLargeur;
-    const int plateauHeight = height();
-    plateauScene->setSceneRect(0, 0, plateauWidth, plateauHeight);
-    zonePlateauRectItem = plateauScene->addRect(0, 0, plateauWidth, plateauHeight,
-                                               QPen(Qt::NoPen), QBrush(Qt::blue));
-    zonePlateauRect = zonePlateauRectItem->rect();
-
-    const int piocheHeight = height() - scoreWidgetSize;
-    piocheScene->setSceneRect(0, 0, colonneDroiteLargeur, piocheHeight);
-    zonePiocheRectItem = piocheScene->addRect(0, 0, colonneDroiteLargeur, piocheHeight,
-                                              QPen(Qt::NoPen), QBrush(Qt::red));
-    zonePiocheRect = zonePiocheRectItem->rect(); 
+    //création de la scène pioche
+    piocheWidget = new PiocheWidget(colonneDroiteLargeur, piocheHeight, panneauDroit);
+    colonneDroite->addWidget(piocheWidget, 1);
 }

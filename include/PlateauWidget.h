@@ -1,13 +1,10 @@
 #ifndef PLATEAUWIDGET_H
 #define PLATEAUWIDGET_H
 #include <QWidget>
-#include <QGraphicsScene>
-#include <QGraphicsRectItem>
-#include <QGraphicsView>
-#include <QRectF>
-#include "Partie.h"
-#include "TuileItem.h"
-#include <QLabel>
+
+class PiocheWidget;
+class ScorePanel;
+class ZoneJeuWidget;
 
 /**
  * @brief Widget principal affichant le plateau de jeu, la pioche et les informations de score.
@@ -29,20 +26,10 @@ public:
      * @param centrer centre automatiquement la tuile dans la zone si true.
      * @return pointeur vers le TuileItem créé pour manipulations ultérieures.
      */
-
-
 private:
-    QGraphicsScene* plateauScene = nullptr;
-    QGraphicsScene* piocheScene = nullptr;
-    QGraphicsRectItem* zonePlateauRectItem = nullptr;
-    QGraphicsRectItem* zonePiocheRectItem = nullptr;
-    QRectF zonePlateauRect;
-    QRectF zonePiocheRect;
-    QGraphicsView* plateauView = nullptr;
-    QGraphicsView* piocheView = nullptr;
-    QWidget* panneauScores = nullptr;
-    QLabel * score = nullptr;
-    QLabel * joueurSelect = nullptr;
+    ZoneJeuWidget* zoneJeuWidget = nullptr;
+    PiocheWidget* piocheWidget = nullptr;
+    ScorePanel* scorePanel = nullptr;
 };
 
 #endif

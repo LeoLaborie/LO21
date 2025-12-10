@@ -27,6 +27,10 @@ set(LO21_HEADERS
     "${CMAKE_SOURCE_DIR}/include/TuileItem.h"
     "${CMAKE_SOURCE_DIR}/include/PageWidget.h"
     "${CMAKE_SOURCE_DIR}/include/PlateauWidget.h"
+    "${CMAKE_SOURCE_DIR}/include/EchapWidget.h"
+    "${CMAKE_SOURCE_DIR}/include/PiocheWidget.h"
+    "${CMAKE_SOURCE_DIR}/include/ZoneJeuWidget.h"
+    "${CMAKE_SOURCE_DIR}/include/ScorePanel.h"
 )
 
 # Créer l'exécutable
