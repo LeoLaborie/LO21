@@ -28,6 +28,7 @@ set(LO21_HEADERS
     "${CMAKE_SOURCE_DIR}/IncludeView/PageWidget.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/PlateauWidget.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/EchapWidget.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/WidgetUtilitaire.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/ChantierWidget.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/ZoneJeuWidget.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/ScorePanel.h"

@@ -19,6 +19,8 @@ public:
     void ajouterTuileDansZoneJeu(TuileItem * t,int x,int y);
     QGraphicsScene* getPlateauScene() const { return zoneJeuScene; }
     QRectF getZoneRect() const { return zoneJeuRect; }
+    void setBlocageInteractions(bool bloque);
+    bool interactionsBloquees() const { return blocageInteractions; }
 
 public slots:
     void placerTuileDansZoneJeu(TuileItem* tuile);
@@ -28,6 +30,7 @@ private:
     QGraphicsRectItem* zoneJeuRectItem = nullptr;
     QRectF zoneJeuRect;
     std::vector<TuileItem*> tuilesZoneJeu;
+    bool blocageInteractions = false;
 };
 
 #endif

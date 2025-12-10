@@ -6,6 +6,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QCursor>
 #include <QLabel>
 #include <QVector>
 #include <QFrame>
@@ -56,6 +57,7 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
     auto *layoutJoueur = new QVBoxLayout(Cadre);
 
     auto *boutonRetour = new QPushButton("Retour");
+    boutonRetour->setCursor(Qt::PointingHandCursor);
     boutonRetour->setStyleSheet("font-size:20px;");
     layoutJoueur->addWidget(boutonRetour);
     connect(boutonRetour, &QPushButton::clicked, this, [this]
@@ -135,6 +137,7 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
     layoutJoueur->addWidget(group);
 
     auto StartButton = new QPushButton("Lancer la partie");
+    StartButton->setCursor(Qt::PointingHandCursor);
     StartButton->setFixedHeight(44);
     StartButton->setStyleSheet(
         "QPushButton { font-size: 15px; font-weight: 600; color: white; background-color: #0078d4; border-radius: 8px; padding: 6px 14px; }"
@@ -188,6 +191,7 @@ chargerPartiePage::chargerPartiePage(QWidget *parent) : QWidget(parent)
     // bouton retour
     layoutLoad->addSpacing(20);
     auto *boutonRetour = new QPushButton("Retour");
+    boutonRetour->setCursor(Qt::PointingHandCursor);
     boutonRetour->setStyleSheet("font-size:20px;");
     layoutLoad->addWidget(boutonRetour);
     connect(boutonRetour, &QPushButton::clicked, this, [this]
@@ -229,6 +233,7 @@ chargerPartiePage::chargerPartiePage(QWidget *parent) : QWidget(parent)
 
     // bouton confirmer
     auto StartButton = new QPushButton("Confirmer");
+    StartButton->setCursor(Qt::PointingHandCursor);
     StartButton->setFixedHeight(44);
     StartButton->setStyleSheet(
         "QPushButton { font-size: 15px; font-weight: 600; color: white; background-color: #0078d4; border-radius: 8px; padding: 6px 14px; }"

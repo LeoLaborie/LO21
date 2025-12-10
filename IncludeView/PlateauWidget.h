@@ -7,6 +7,8 @@
 class ChantierWidget;
 class ScorePanel;
 class ZoneJeuWidget;
+class WidgetUtilitaire;
+class QShortcut;
 class Tuile;
 class Hexagone;
 
@@ -34,10 +36,14 @@ private:
     ZoneJeuWidget* zoneJeuWidget = nullptr;
     ChantierWidget* chantierWidget = nullptr;
     ScorePanel* scorePanel = nullptr;
+    WidgetUtilitaire* widgetUtilitaire = nullptr;
+    QShortcut* raccourciEchap = nullptr;
     std::vector<std::unique_ptr<Tuile>> tuilesDeTest;
     std::vector<std::unique_ptr<Hexagone>> hexagonesDeTest;
 
     void genererTuilesTests();
+    void basculerMenuEchap();
+    void gererBlocageInteractions(bool widgetActif);
 };
 
 #endif

@@ -3,10 +3,16 @@
 #include "ScorePanel.h"
 #include "ZoneJeuWidget.h"
 #include "Tuile.h"
+#include "WidgetUtilitaire.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <array>
 #include <random>
+#include <QShortcut>
+#include <QKeySequence>
+#include <QGraphicsScene>
+#include <QRect>
+#include <QPointF>
 
 //pour tester
 namespace {
@@ -103,6 +109,12 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     zoneJeuWidget = new ZoneJeuWidget(plateauWidth, plateauHeight, this);
     layout->addWidget(zoneJeuWidget, 1);
 
+    widgetUtilitaire = new WidgetUtilitaire();
+    widgetUtilitaire->attacherAScene(zoneJeuWidget->scene());
+    connect(widgetUtilitaire, &WidgetUtilitaire::visibiliteChangee,this, &PlateauWidget::gererBlocageInteractions);
+
+    raccourciEchap = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+    connect(raccourciEchap, &QShortcut::activated,this, &PlateauWidget::basculerMenuEchap);
     //gère la partie droite (widget score au dessus et en dessous la scène pour le chantier)
     auto* panneauDroit = new QWidget(this);
     panneauDroit->setFixedWidth(colonneDroiteLargeur);
@@ -126,3 +138,32 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     genererTuilesTests();
 }
 
+void PlateauWidget::basculerMenuEchap()
+{
+    //si pas définit on ne fais rien
+    if (!widgetUtilitaire || !zoneJeuWidget)
+        return;
+
+    //si la widget est déjà actives on la ferme
+    if (widgetUtilitaire->estActif())
+        widgetUtilitaire->fermerWidget();
+    else
+    {
+        //calcul la position de la widget
+        const QRect vue = zoneJeuWidget->viewport()->rect();
+        const QPointF topLeft = zoneJeuWidget->mapToScene(vue.topLeft());
+        const QPointF bottomRight = zoneJeuWidget->mapToScene(vue.bottomRight());
+        const QRectF visibleRect(topLeft, bottomRight);
+        widgetUtilitaire->afficherEchap(visibleRect);
+    }
+}
+
+void PlateauWidget::gererBlocageInteractions(bool widgetActif)
+{
+    if (zoneJeuWidget)
+        zoneJeuWidget->setBlocageInteractions(widgetActif);
+    if (chantierWidget)
+        chantierWidget->setEnabled(!widgetActif);
+    if (scorePanel)
+        scorePanel->setEnabled(!widgetActif);
+}

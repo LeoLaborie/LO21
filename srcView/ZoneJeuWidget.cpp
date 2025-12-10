@@ -27,6 +27,7 @@ void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
 
     // Définir la position de la tuile
     t->setPos(x, y);
+    t->setEnabled(!blocageInteractions);
 
     // Ajouter à la scène
     zoneJeuScene->addItem(t);
@@ -42,4 +43,16 @@ void ZoneJeuWidget::placerTuileDansZoneJeu(TuileItem* tuile)
 
     const QPointF centre = zoneJeuRect.center();
     ajouterTuileDansZoneJeu(tuile, static_cast<int>(centre.x()), static_cast<int>(centre.y()));
+}
+
+void ZoneJeuWidget::setBlocageInteractions(bool bloque)
+{
+    if (blocageInteractions == bloque)
+        return;
+    //on bloque les interaction avec les tuiles et débloque quand on veut afficher le menu de pause
+    blocageInteractions = bloque;
+    for (auto* tuile : tuilesZoneJeu) {
+        if (tuile)
+            tuile->setEnabled(!blocageInteractions);
+    }
 }
