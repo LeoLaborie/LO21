@@ -37,43 +37,63 @@ public:
      */
     class Iterator
     {
-        const std::vector<Hexagone *> &listeHex;
-        const Hexagone *hexCourant;
+        std::vector<Hexagone*> &listeHex;        // NON const
+        Hexagone *hexCourant;                    // NON const
         int nb;
         int idx = 0;
 
     public:
-        /**
-         * @brief Constructeur de l'itérateur
-         * @param h Vecteur des hexagones de la tuile
-         * @param n Nombre d'hexagones
-         */
-        Iterator(const std::vector<Hexagone *> &h, int n) : listeHex(h), nb(n)
+        Iterator(std::vector<Hexagone*> &h, int n) 
+            : listeHex(h), nb(n)
         {
             if (nb > 0)
                 hexCourant = listeHex[idx];
         }
 
-        /**
-         * @brief Vérifie si l'itérateur a atteint la fin
-         * @return true si l'itérateur est à la fin, false sinon
-         */
-        bool isDone() { return nb == 0; }
+        bool isDone() const { return nb == 0; }
 
-        /**
-         * @brief Avance l'itérateur au prochain hexagone
-         */
         void next()
         {
             nb--;
             if (nb > 0)
-                hexCourant = listeHex[idx++];
+                hexCourant = listeHex[++idx];
         }
 
-        /**
-         * @brief Retourne l'hexagone courant
-         * @return Référence constante vers l'hexagone courant
-         */
+        Hexagone &currentItem()       // IMPORTANT : version non-const
+        {
+            return *hexCourant;
+        }
+
+        const Hexagone &currentItem() const // version const si jamais
+        {
+            return *hexCourant;
+        }
+    };
+
+    class ConstIterator
+    {
+        const std::vector<Hexagone*> &listeHex;
+        const Hexagone *hexCourant;
+        int nb;
+        int idx = 0;
+
+    public:
+        ConstIterator(const std::vector<Hexagone*> &h, int n)
+            : listeHex(h), nb(n)
+        {
+            if (nb > 0)
+                hexCourant = listeHex[idx];
+        }
+
+        bool isDone() const { return nb == 0; }
+
+        void next()
+        {
+            nb--;
+            if (nb > 0)
+                hexCourant = listeHex[++idx];
+        }
+
         const Hexagone &currentItem() const
         {
             return *hexCourant;
@@ -84,9 +104,14 @@ public:
      * @brief Retourne un itérateur pour parcourir les hexagones de la tuile
      * @return Iterator : itérateur pour les hexagones
      */
-    Iterator getIterator() const
+    Iterator getIterator()
     {
-        return Iterator(getHexagones(), getNbHexa());
+        return Iterator(hex, getNbHexa());
+    }
+
+    ConstIterator getConstIterator() const
+    {
+        return ConstIterator(hex, getNbHexa());
     }
 
     /**
