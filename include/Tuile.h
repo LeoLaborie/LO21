@@ -72,6 +72,12 @@ public:
      */
     const std::vector<OffsetQR> &getOffsets() const { return offsets; }
 
+    /**
+     * @brief Retourne le nombre d'hexagones dans la tuile
+     * @return size_t : nombre d'hexagones
+     */
+    size_t getNbHexa() const { return hex.size(); }
+
     // Manipulations de la tuile
 
     /**
