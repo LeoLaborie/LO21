@@ -10,14 +10,20 @@ Joueur::Joueur(std::string nom)
     : nbrPierres(0), nbrPoints(0), nom(std::move(nom)), plateau() {}
 
 IllustreArchitecte::IllustreArchitecte(int diff)
-    : Joueur("Illustre Architecte"), difficulte(diff){};
+    : Joueur("Illustre Architecte"), difficulte(diff) {};
 
-Joueur::Joueur(const bool variantes[5], std::string nomSave, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateauSave)
-    : nbrPierres(pierres), nbrPoints(points), nom(std::move(nomSave)), plateau(Plateau::fromSave(variantes, std::move(plateauSave))), tuileEnMain(std::move(tuileMain)) {}
+Joueur::Joueur(const bool variantes[5], std::string nomSave, int pierres,
+               int points, Tuile tuileMain, std::vector<Tuile> plateauSave)
+    : nbrPierres(pierres), nbrPoints(points), nom(std::move(nomSave)),
+      plateau(Plateau::fromSave(variantes, std::move(plateauSave))),
+      tuileEnMain(std::move(tuileMain)) {}
 
-Joueur Joueur::fromSave(const bool variantes[5], std::string nom, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateau)
+Joueur Joueur::fromSave(const bool variantes[5], std::string nom, int pierres,
+                        int points, Tuile tuileMain,
+                        std::vector<Tuile> plateau)
 {
-    return Joueur(variantes, std::move(nom), pierres, points, std::move(tuileMain), std::move(plateau));
+    return Joueur(variantes, std::move(nom), pierres, points,
+                  std::move(tuileMain), std::move(plateau));
 }
 
 int Joueur::getNbrPierres() const
@@ -45,7 +51,8 @@ void IllustreArchitecte::setNbrPoints()
     nbrPoints = getPlateau().calculerPoints();
 }
 
-Tuile &Joueur::piocherTuile(int id, Chantier &chantier, IllustreArchitecte *fauxJoueur)
+Tuile &Joueur::piocherTuile(int id, Chantier &chantier,
+                            IllustreArchitecte *fauxJoueur)
 {
     if (id < 0 || id >= chantier.getTaille())
         throw std::out_of_range("ID de tuile invalide.");
@@ -111,7 +118,7 @@ int Joueur::choixTuile(const Chantier &chantier)
             texte_gras_on();
             std::cout << "ID invalide. Veuillez réessayer.\n";
             texte_reset();
-            idTuile = -1;  // Réinitialiser pour redemander
+            idTuile = -1; // Réinitialiser pour redemander
         }
         else if (idTuile > getNbrPierres())
         {
@@ -120,7 +127,7 @@ int Joueur::choixTuile(const Chantier &chantier)
             std::cout
                 << "Vous n'avez pas assez de pierres pour piocher cette tuile.\n";
             texte_reset();
-            idTuile = -1;  // Réinitialiser pour redemander
+            idTuile = -1; // Réinitialiser pour redemander
         }
     }
     return idTuile;
@@ -133,13 +140,14 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
     long unsigned int i = 0;
     do
     {
-        for (const Hexagone *h : tuile[i].getHexagones())
+        for (Tuile::ConstIterator it = tuile[i].getConstIterator(); !it.isDone(); it.next())
         {
-            if ((h->getType() == TypeHex::PHabitation ||
-                 h->getType() == TypeHex::PCaserne ||
-                 h->getType() == TypeHex::PTemple ||
-                 h->getType() == TypeHex::PMarche ||
-                 h->getType() == TypeHex::PJardin) &&
+            const Hexagone &h = it.currentItem();
+            if ((h.getType() == TypeHex::PHabitation ||
+                 h.getType() == TypeHex::PCaserne ||
+                 h.getType() == TypeHex::PTemple ||
+                 h.getType() == TypeHex::PMarche ||
+                 h.getType() == TypeHex::PJardin) &&
                 (getNbrPierres() < idTuile))
             {
                 idTuile = i;
@@ -153,8 +161,11 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
     }
     return idTuile;
 }
+
 IllustreArchitecte *
-IllustreArchitecte::fromSave(int diff, int pierres, int points, const bool variantes[5], std::vector<Tuile> plateauSave)
+IllustreArchitecte::fromSave(int diff, int pierres, int points,
+                             const bool variantes[5],
+                             std::vector<Tuile> plateauSave)
 {
     auto *ia = new IllustreArchitecte(diff);
     ia->nbrPierres = pierres;

@@ -85,7 +85,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 
     // coordonnées des hex à tester pour la tuile posée
     std::vector<coord> coords;
-    coords.reserve(t.getHexagones().size());
+    coords.reserve(t.getNbHexa());
     for (const auto &o : t.getOffsets())
         coords.push_back({p.x + o.q, p.y + o.r, p.z});
 
@@ -166,12 +166,15 @@ std::vector<Position> Plateau::getPositionsLegales(const Tuile &t) const
     if (listeTuiles.empty())
         return listeValide;
 
-    // on récupere le min et le max
-    int minX = listeTuiles[0].getHexagones()[0]->getX();
-    int maxX = listeTuiles[0].getHexagones()[0]->getX();
-    int minY = listeTuiles[0].getHexagones()[0]->getY();
-    int maxY = listeTuiles[0].getHexagones()[0]->getY();
-    int maxZ = listeTuiles[0].getHexagones()[0]->getZ();
+    // On récupère le min et le max
+    Tuile::ConstIterator it = listeTuiles[0].getConstIterator();
+    const Hexagone &firstHex = it.currentItem();
+
+    int minX = firstHex.getX();
+    int maxX = firstHex.getX();
+    int minY = firstHex.getY();
+    int maxY = firstHex.getY();
+    int maxZ = firstHex.getZ();
 
     pourChaqueHexagone([&](const Hexagone *h)
                        {
@@ -230,10 +233,10 @@ int Plateau::placerTuile(Tuile &t, Position &p)
         throw std::invalid_argument("Placement de tuile invalide.");
 
     // positionner la tuile (3 hexagones)
-    for (size_t i = 0; i < t.getHexagones().size(); ++i)
+    for (Tuile::Iterator it = t.getIterator(); !it.isDone(); it.next())
     {
-        auto *h = t.getHexagones()[i];
-        const auto &o = t.getOffsets()[i];
+        auto *h = &it.currentItem();
+        const auto &o = t.getOffsets()[it.currentIndex()];
         h->setCoord(p.x + o.q, p.y + o.r, p.z);
     }
 

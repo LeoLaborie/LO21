@@ -193,7 +193,7 @@ void lancerPartie(Partie &partie)
             std::cout << partie.getChantier();
 
             Tuile tuilePiochee;
-            const bool tuileDejaEnMain = !joueurCourant.getTuileEnMain().getHexagones().empty();
+            const bool tuileDejaEnMain = joueurCourant.getTuileEnMain().getNbHexa() > 0;
             if (!tuileDejaEnMain)
             {
                 // Choix de la tuile à piocher
