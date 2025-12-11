@@ -14,7 +14,7 @@ void ouvrirFichier(const std::string& readme)
         std::cout << "Aucun readme disponible" << std::endl;
         return;
     }
-    std::cout << f.rdbuf();
+    std::cout << f.rdbuf()<<std::endl;
 }
 int main(int argc, char* argv[])
 {

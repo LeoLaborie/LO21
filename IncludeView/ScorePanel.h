@@ -2,6 +2,7 @@
 #define SCOREPANEL_H
 
 #include <QWidget>
+#include <QVector>
 
 class QLabel;
 
@@ -14,18 +15,23 @@ class ScorePanel : public QWidget
 
     public:
         ScorePanel(int width, int height, QWidget* parent = nullptr);
-        QLabel* JgetScoreLabel() const
-        {
-            return labelScore;
-        }
         QLabel* getjoueurActifLabel() const
         {
             return labelJoueurActif;
         }
+        QLabel* getLabelPierre() const
+        {
+            return labelNombrePierre;
+        }
+        const QVector<QLabel *>& getScoreLabels() const
+        {
+            return scoreLabels;
+        }
 
     private:
-        QLabel* labelScore = nullptr;
+        QVector<QLabel *> scoreLabels;
         QLabel* labelJoueurActif = nullptr;
+        QLabel* labelNombrePierre = nullptr;
 };
 
 #endif
