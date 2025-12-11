@@ -84,7 +84,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 
     // coordonnées des hex à tester pour la tuile posée
     std::vector<coord> coords;
-    coords.reserve(t.getHexagones().size());
+    coords.reserve(t.getNbHexa());
     for (const auto &o : t.getOffsets())
         coords.push_back({p.x + o.q, p.y + o.r, p.z});
 

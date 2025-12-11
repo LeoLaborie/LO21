@@ -151,7 +151,7 @@ pour sauvegarder les hexagones de la tuile
 */
 std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
   const auto &hexs = t.getHexagones();
-  os << "TUILE " << hexs.size() << '\n';
+  os << "TUILE " << t.getNbHexa() << '\n';
 
   for (auto h : hexs)
     os <<= *h;
