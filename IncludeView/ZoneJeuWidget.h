@@ -3,6 +3,7 @@
 
 #include <QGraphicsView>
 #include <QRectF>
+#include "TuileItem.h"
 
 class QGraphicsRectItem;
 
@@ -15,14 +16,21 @@ class ZoneJeuWidget : public QGraphicsView
 
 public:
     ZoneJeuWidget(int width, int height, QWidget* parent = nullptr);
-
+    void ajouterTuileDansZoneJeu(TuileItem * t,int x,int y);
     QGraphicsScene* getPlateauScene() const { return zoneJeuScene; }
     QRectF getZoneRect() const { return zoneJeuRect; }
+    void setBlocageInteractions(bool bloque);
+    bool interactionsBloquees() const { return blocageInteractions; }
+
+public slots:
+    void placerTuileDansZoneJeu(TuileItem* tuile);
 
 private:
     QGraphicsScene* zoneJeuScene = nullptr;
     QGraphicsRectItem* zoneJeuRectItem = nullptr;
     QRectF zoneJeuRect;
+    std::vector<TuileItem*> tuilesZoneJeu;
+    bool blocageInteractions = false;
 };
 
 #endif

@@ -2,42 +2,29 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QtMath>
 
-static int taille=50;
-TuileItem::TuileItem(QGraphicsItem* parent)
-    : QGraphicsItemGroup(parent)
-{
-    setFlag(ItemIsMovable, true);
-    setFlag(ItemIsSelectable, true);
-    setFlag(ItemSendsGeometryChanges, true);
-    setTransformOriginPoint(boundingRect().center());
-}
 
-TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent)
-    : QGraphicsItemGroup(parent)
+TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile,int indice)
+    : QObject()
+    , QGraphicsItemGroup(parent)
+    , tailleHex(tailleTuile)
+    , rotationAutorisee(true)
+    , indice(indice)
+    , mode(m)
 {
-    setFlag(ItemIsMovable, true);
+    if (mode==Mode::ZoneJeu){
+        setFlag(ItemIsMovable, true);
+    }
     setFlag(ItemIsSelectable, true);
-    setFlag(ItemSendsGeometryChanges, true);
+    /* setFlag(ItemSendsGeometryChanges, true); peut etre utile mais pas encore utilisé*/
     int i=0;
     for (Hexagone* h : ref.getHexagones()) {
-        auto* hexItem = new HexItem(h, taille);
+        auto* hexItem = new HexItem(h, tailleHex);
         addToGroup(hexItem);
         if (i == 0) hexRef = hexItem;
         ++i;
     }
     setTransformOriginPoint(boundingRect().center());
-    QObject::connect(this, &TuileItem::rightClicked,
-                     this, &TuileItem::rotate60,
-                     Qt::UniqueConnection);
-}
-
-void TuileItem::addHex(HexItem* hex)
-{
-    addToGroup(hex);
-    if (!hexRef)
-        hexRef = hex;
-    prepareGeometryChange();
-    setTransformOriginPoint(boundingRect().center());
+    QObject::connect(this, &TuileItem::rightClicked,this, &TuileItem::rotate60,Qt::UniqueConnection);
 }
 
 void TuileItem::rotate60()
@@ -48,7 +35,6 @@ void TuileItem::rotate60()
     replacerCorrectement();
 }
 
-
 void TuileItem::setInteractivite(bool autoriserDeplacement, bool autoriserRotation)
 {
     setFlag(ItemIsMovable, autoriserDeplacement);
@@ -56,13 +42,20 @@ void TuileItem::setInteractivite(bool autoriserDeplacement, bool autoriserRotati
     rotationAutorisee = autoriserRotation;
 }
 
+void TuileItem::setIndiceDansPioche(unsigned int nouvelIndice)
+{
+    indice = nouvelIndice;
+}
 
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::RightButton && rotationAutorisee)
+    if (event->button() == Qt::RightButton && rotationAutorisee && mode==Mode::ZoneJeu)
         emit rightClicked();
 
     QGraphicsItemGroup::mousePressEvent(event);
+    if (event->button() == Qt::LeftButton && mode==Mode::Pioche){
+        emit estPiocher(indice);
+    }
 }
 
 void TuileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -73,6 +66,9 @@ void TuileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
+/**
+ * @brief Convertit des coordonnées pixel en coordonnées axiales approximatives.
+ */
 QPointF pixelVersAxial(double px, double py, double size) {
     const double rt3 = std::sqrt(3.0);
     const double qf = px / (1.5 * size);
@@ -80,19 +76,31 @@ QPointF pixelVersAxial(double px, double py, double size) {
     return { qf, rf };
 }
 
-
 void TuileItem::replacerCorrectement()
 {
     if (!hexRef)
         return;
     const QPointF cScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF localCenter = cScene - plateauOrigin;
-    const QPointF axialF = pixelVersAxial(localCenter.x(), localCenter.y(), taille);
+    const QPointF axialF = pixelVersAxial(cScene.x(), cScene.y(), tailleHex);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
-    const QPointF cibleScene = axialVersPixel(q, r, taille) + plateauOrigin;
+    const QPointF cibleScene = axialVersPixel(q, r, tailleHex);
     const QPointF deltaScene = cibleScene - cScene;
     setPos(pos() + deltaScene);
 }
 
-
+/**
+ * @brief Redimensionne chaque HexItem pour agrandir ou réduire la tuile.
+ */
+void TuileItem::setTaille(int nouvelleTaille)
+{
+    tailleHex = nouvelleTaille;
+    for (QGraphicsItem* item : childItems()) {
+        HexItem* hex = dynamic_cast<HexItem*>(item);
+        if (hex)
+            hex->setTaille(nouvelleTaille);
+    }
+    prepareGeometryChange();
+    setTransformOriginPoint(boundingRect().center());
+    replacerCorrectement();
+}

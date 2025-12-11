@@ -8,7 +8,9 @@
 #include <QFile>
 #include <QCoreApplication>
 
-
+/**
+ * @brief Convertit des coordonnées axiales en coordonnées pixel dans la scène.
+ */
 QPointF axialVersPixel(int q, int r, double size) {
     const double rt3 = std::sqrt(3.0);
     const double px = size * (1.5 * q);
@@ -16,7 +18,9 @@ QPointF axialVersPixel(int q, int r, double size) {
     return {px, py};
 }
 
-
+/**
+ * @brief Construit un polygone représentant un hexagone régulier de la taille donnée.
+ */
 static QPolygonF creerHexagone(double taille) {
     QPolygonF p;
     const double angle0 = 0;
@@ -26,8 +30,6 @@ static QPolygonF creerHexagone(double taille) {
     }
     return p;
 }
-
-
 
 HexItem::HexItem(const Hexagone* modele, double taille)
     : QGraphicsPolygonItem(nullptr)
@@ -71,4 +73,10 @@ HexItem::HexItem(const Hexagone* modele, double taille)
     auto *icon = new QGraphicsPixmapItem(scaled, this);
     icon->setOffset(-scaled.width() / 2.0, -scaled.height() / 2.0);
     icon->setZValue(1);
+}
+
+void HexItem::setTaille(double nouvelleTaille)
+{
+    prepareGeometryChange();
+    setPolygon(creerHexagone(nouvelleTaille));
 }
