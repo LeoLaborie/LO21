@@ -17,7 +17,7 @@ public:
     /**
      * @brief Définit le mode de fonctionnement de la TuileItem si elle est dans le pioche ou dans le zone de jeu.
      */
-    enum class Mode { Pioche, ZoneJeu };
+    enum class Mode { Pioche, Placement, ZoneJeu };
     /**
      * @brief Construit une tuile graphique à partir d'une tuile métier et crée les HexItem associés.
      */
@@ -38,10 +38,12 @@ public:
      * @brief Met à jour l'indice de la tuile dans la pioche.
      */
     void setIndiceDansPioche(unsigned int nouvelIndice);
+    unsigned int getIndiceDansPioche() const { return indice; }
     /**
      * @brief Changer le mode de la TuileItem.
      */
-    void setMode(Mode m) {mode=m;};
+    void setMode(Mode m) { mode = m; }
+    Mode modeCourant() const { return mode; }
 
     /**
      * @brief Ajuste la taille des hexagones et recalcule le centre de rotation.
@@ -53,6 +55,8 @@ public:
 signals:
     void rightClicked();
     void estPiocher(int indice);
+    void demandeValidationPlacement(TuileItem* tuile);
+    void deplacementDemarre(TuileItem* tuile);
 
 protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event)override;

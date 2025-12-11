@@ -143,8 +143,11 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     chantierWidget = new ChantierWidget(colonneDroiteLargeur, chantierHeight, panneauDroit);
     colonneDroite->addWidget(chantierWidget, 1);
 
-    connect(chantierWidget, &ChantierWidget::tuilePiochee,
-            zoneJeuWidget, &ZoneJeuWidget::placerTuileDansZoneJeu);
+    //gestion des flux entre le chantier et la zone de jeu (pioche / validation / annulation)
+    connect(chantierWidget, &ChantierWidget::tuilePiochee,zoneJeuWidget, &ZoneJeuWidget::placerTuileDansZoneJeu);
+    connect(zoneJeuWidget, &ZoneJeuWidget::validationPlacementAnnulee,chantierWidget, &ChantierWidget::remettreTuileDansChantier);
+    connect(zoneJeuWidget, &ZoneJeuWidget::validationPlacementConfirmee,this, &PlateauWidget::validerPlacementTuile);
+
 
     // alimentation de test pour valider l'enchaînement pioche -> zone de jeu
     genererTuilesTests();
@@ -178,4 +181,9 @@ void PlateauWidget::gererBlocageInteractions(bool widgetActif)
         chantierWidget->setEnabled(!widgetActif);
     if (scorePanel)
         scorePanel->setEnabled(!widgetActif);
+}
+void PlateauWidget::validerPlacementTuile(TuileItem* t)
+{
+    //TODO: brancher sur la logique métier pour enregistrer définitivement la position
+    Q_UNUSED(t);
 }

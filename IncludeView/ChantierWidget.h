@@ -24,6 +24,9 @@ public:
 signals:
     void tuilePiochee(TuileItem* tuile);
 
+public slots:
+    void remettreTuileDansChantier(TuileItem* tuile);
+
 private:
     QGraphicsScene* chantierScene = nullptr;
     QGraphicsRectItem* chantierZoneRectItem = nullptr;

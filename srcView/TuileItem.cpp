@@ -11,7 +11,8 @@ TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile,in
     , indice(indice)
     , mode(m)
 {
-    if (mode==Mode::ZoneJeu){
+    if (mode != Mode::Pioche){
+        //dès qu'on sort de la pioche, autorise le déplacement libre
         setFlag(ItemIsMovable, true);
     }
     setFlag(ItemIsSelectable, true);
@@ -31,6 +32,7 @@ void TuileItem::rotate60()
 {
     if (!rotationAutorisee)
         return;
+    //rotation en pas de 60° puis réalignement sur la grille axiale
     setRotation(rotation() + 60.0);
     replacerCorrectement();
 }
@@ -49,12 +51,17 @@ void TuileItem::setIndiceDansPioche(unsigned int nouvelIndice)
 
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::RightButton && rotationAutorisee && mode==Mode::ZoneJeu)
+    if (event->button() == Qt::RightButton && rotationAutorisee && mode != Mode::Pioche)
         emit rightClicked();
 
     QGraphicsItemGroup::mousePressEvent(event);
-    if (event->button() == Qt::LeftButton && mode==Mode::Pioche){
-        emit estPiocher(indice);
+    if (event->button() == Qt::LeftButton) {
+        if (mode == Mode::Pioche) {
+            emit estPiocher(indice);
+        } else {
+            //notifie la zone qu'un déplacement démarre pour masquer le widget de validation
+            emit deplacementDemarre(this);
+        }
     }
 }
 
@@ -62,6 +69,9 @@ void TuileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
         replacerCorrectement();
+        if (mode == Mode::Placement)
+            //en mode placement on affiche le widget de validation via ce signal
+            emit demandeValidationPlacement(this);
     }
     QGraphicsItem::mouseReleaseEvent(event);
 }

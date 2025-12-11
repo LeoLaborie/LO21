@@ -18,6 +18,7 @@
 #include "Sauvegarde.h"
 void newPartiePage::lancerLaPartie()
 {
+    //rassemble les paramètres saisis puis notifie MainWindow via envoieArgument
     int nb = NbJoueurs->value();
     QStringList pseudos;
     for (int i = 0; i < nb; ++i)
@@ -31,6 +32,7 @@ void newPartiePage::lancerLaPartie()
 
 newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
 {
+    //thème graphique partagé avec le menu principal
     setStyleSheet(
         "QWidget { color: #0f172a; }"
         "QLineEdit, QComboBox {"
@@ -93,6 +95,7 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
 
     auto updateNbPseudo = [this, GrillePseudo](int nbJoueur)
     {
+        //ajuste dynamiquement le nombre de champs de pseudo
         while (PseudoJoueurs.size() > nbJoueur) {
             auto *suppression = PseudoJoueurs.takeLast();
             GrillePseudo->removeWidget(suppression);
@@ -156,12 +159,14 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
 
 void chargerPartiePage::chargerLaPartie()
 {
+    //passe le nom sélectionné au contrôleur pour charger la sauvegarde
     emit envoieArgument(this->NomSauvegarde->currentText().toStdString());
     std::cout << this->NomSauvegarde->currentText().toStdString() << std::endl;
 }
 
 chargerPartiePage::chargerPartiePage(QWidget *parent) : QWidget(parent)
 {
+    //même charte graphique que la page précédente
     setStyleSheet("QWidget { color: #0f172a; }"
                   "QLineEdit, QSpinBox, QComboBox {"
                   "color: #0f172a;"
@@ -246,6 +251,7 @@ chargerPartiePage::chargerPartiePage(QWidget *parent) : QWidget(parent)
 
 QString recupererNomSansExtension(const std::string &nomAvecExtension)
 {
+    //simplifie l'affichage en retirant l'extension sur disque
     QString nom;
     for (char c : nomAvecExtension)
     {
@@ -263,6 +269,7 @@ void chargerPartiePage::rafraichirSauvegardes()
     {
         this->erreur->setText("Pas de sauvegardes disponible");
     }
+    //alimentation de la combo à partir des fichiers présents
     for (auto &sauvegarde : getSauvegardes())
         NomSauvegarde->addItem(recupererNomSansExtension(sauvegarde));
 }

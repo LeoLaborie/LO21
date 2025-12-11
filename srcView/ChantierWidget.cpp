@@ -3,6 +3,7 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
 #include <QPen>
+#include <algorithm>
 
 static int NB_MAX_TUILES = 4; // en attendant le controleur
 
@@ -46,10 +47,12 @@ ChantierWidget::ChantierWidget(int width, int height, QWidget* parent)
 
 
 void ChantierWidget::ajouterTuilleDansChantier(Tuile* t) {
+    //calcule dynamiquement la taille des tuiles pour qu'elles tiennent dans le chantier
     const int taille = qMin((width()  - 2.0 * 10) / (1.5 + std::sqrt(3.0)),(height() - 2.0 * 20) / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES))-10/NB_MAX_TUILES;
     const int indice = static_cast<int>(listeTuilesChantier.size());
     auto* tuile = new TuileItem(*t, nullptr, TuileItem::Mode::Pioche, taille, indice);
     connect(tuile, &TuileItem::estPiocher, this, &ChantierWidget::piocherTuile);
+    //ajout physique dans la scène puis ré-ordonnancement vertical
     chantierScene->addItem(tuile);
     listeTuilesChantier.push_back(tuile);
     reordonnerTuiles();  // va tout placer correctement
@@ -61,6 +64,7 @@ TuileItem* ChantierWidget::retirerTuilleDeChantier(int indice)
     if (indice < 0 || indice >= static_cast<int>(listeTuilesChantier.size()))
         return nullptr;
 
+    //supprime la tuile de la scène visuelle et du tableau pour la donner à la zone de jeu
     TuileItem* tuile = listeTuilesChantier[indice];
     chantierScene->removeItem(tuile);
     listeTuilesChantier.erase(listeTuilesChantier.begin() + indice);
@@ -72,13 +76,36 @@ void ChantierWidget::piocherTuile(int indice){
     if (!tuile)
         return;
 
-    tuile->setMode(TuileItem::Mode::ZoneJeu);
+    //passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu
+    tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
     emit tuilePiochee(tuile);
 }
 
+void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
+{
+    if (!tuile)
+        return;
+
+    //on récupere les informations qu'on a besion (comme l'utilisateur ne peux pas ajouter manuelement des tuiles dans le chantier pas besion de vérfier le nb max de Tuile est déjà atteint)
+    const int indexPrefere = static_cast<int>(tuile->getIndiceDansPioche());
+    const int maxIndex = static_cast<int>(listeTuilesChantier.size());
+    const int insertionIndex = std::clamp(indexPrefere, 0, maxIndex);
+
+    //on remet le mode de la tuile sur Pioche et désactive tout ce qu'on a pas besion
+    tuile->setMode(TuileItem::Mode::Pioche);
+    tuile->setInteractivite(false, false);
+    tuile->setSelected(false);
+
+    //plus qu'a la remettre et rappeler la fonction qui ordonne les TUiles dans le chaniter
+    chantierScene->addItem(tuile);
+    listeTuilesChantier.insert(listeTuilesChantier.begin() + insertionIndex, tuile);
+    reordonnerTuiles();
+}
+
 void ChantierWidget::reordonnerTuiles()
 {
+    //réaligne verticalement toutes les tuiles en conservant leur indice
     const int n = static_cast<int>(listeTuilesChantier.size());
     if (n == 0) return;
     const QRectF rect = chantierZoneRectItem->rect();
@@ -97,5 +124,3 @@ void ChantierWidget::reordonnerTuiles()
         placerTuileCentre(tuile, QPointF(xCentre, yCentre));
     }
 }
-
-

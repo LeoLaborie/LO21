@@ -10,6 +10,7 @@
 EchapWidget::EchapWidget(QWidget* parent)
     : QWidget(parent)
 {
+    //style commun aux fenêtres param/pause pour garder cohérence visuelle
     setStyleSheet("QWidget { color: #0f172a; }"
                   "QLineEdit, QSpinBox, QComboBox {"
                   "color: #0f172a;"
@@ -33,6 +34,7 @@ void EchapWidget::attacherAScene(QGraphicsScene* scene)
     if (!scene || proxy)
         return;
 
+    //on encapsule le widget dans un proxy pour pouvoir le positionner dans la scène
     proxy = scene->addWidget(this);
     proxy->setZValue(100);
     proxy->setVisible(false);
@@ -43,6 +45,7 @@ void EchapWidget::afficherEchap(const QRectF& zoneReference)
     if (!proxy)
         return;
 
+    //centre le panneau sur la zone visible et prend le focus pour capter les touches
     mettreAJourPosition(zoneReference);
     proxy->setVisible(true);
     actif = true;
@@ -55,6 +58,7 @@ void EchapWidget::fermerWidget()
     if (!proxy || !actif)
         return;
 
+    //masque simplement le proxy et notifie le PlateauWidget pour réactiver les interactions
     proxy->setVisible(false);
     actif = false;
     emit visibiliteChangee(false);
@@ -65,6 +69,7 @@ void EchapWidget::mettreAJourPosition(const QRectF& zoneReference)
     if (!proxy)
         return;
 
+    //positionne le cadre au centre de la zone visible
     const double x = zoneReference.center().x() - width() / 2.0;
     const double y = zoneReference.center().y() - height() / 2.0;
     proxy->setPos(x, y);
@@ -72,6 +77,7 @@ void EchapWidget::mettreAJourPosition(const QRectF& zoneReference)
 
 void EchapWidget::construireInterface()
 {
+    //mise en place du conteneur transparent centré dans la scène
     auto* layoutCentral = new QVBoxLayout(this);
     layoutCentral->setContentsMargins(0, 0, 0, 0);
     layoutCentral->setAlignment(Qt::AlignCenter);

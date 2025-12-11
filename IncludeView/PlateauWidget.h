@@ -11,6 +11,7 @@ class EchapWidget;
 class QShortcut;
 class Tuile;
 class Hexagone;
+class TuileItem;
 
 /**
  * @brief Widget principal affichant le plateau de jeu, le chantier et les informations de score.
@@ -36,7 +37,8 @@ signals:
     void demandeParametres();
     void demandeRetourMenu();
     void demandeQuitter();
-
+private slots:
+    void validerPlacementTuile(TuileItem *t);
 private:
     ZoneJeuWidget* zoneJeuWidget = nullptr;
     ChantierWidget* chantierWidget = nullptr;
