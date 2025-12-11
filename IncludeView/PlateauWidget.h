@@ -2,6 +2,7 @@
 #define PLATEAUWIDGET_H
 #include <QWidget>
 #include <memory>
+#include <QStackedWidget>
 #include <vector>
 
 class ChantierWidget;
@@ -26,7 +27,7 @@ public:
     /**
      * @brief Construit le widget et installe les vues/scènes du plateau et du chantier.
      */
-    explicit PlateauWidget(QWidget* parent = nullptr);
+    explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
     /**
      * @brief Ajoute graphiquement une tuile dans la scène principale.
      * @param t modèle métier servant de source pour les HexItem.
@@ -38,10 +39,21 @@ signals:
     void demandeRetourMenu();
     void demandeQuitter();
     void placementTermine(); //pour que le controleur passe au tour suivant
+
+public slots:
+    /**
+     * @brief Affiche la scène correspondant au joueur demandé.
+     * @param index Indice du joueur actif (0-based).
+     */
+    void afficherPlateauJoueur(int index);
+
 private slots:
     void validerPlacementTuile(TuileItem *t);
 private:
+    QStackedWidget* stackPlateaux = nullptr;
+    std::vector<ZoneJeuWidget*> zonesParJoueur;
     ZoneJeuWidget* zoneJeuWidget = nullptr;
+    int joueurActif = 0;
     ChantierWidget* chantierWidget = nullptr;
     ScorePanel* scorePanel = nullptr;
     EchapWidget* echapWidget = nullptr;

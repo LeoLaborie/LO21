@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <array>
+#include <algorithm>
 #include <random>
 #include <QShortcut>
 #include <QKeySequence>
@@ -86,7 +87,7 @@ void PlateauWidget::genererTuilesTests()
 }
 //fin de pour tester
 
-PlateauWidget::PlateauWidget(QWidget* parent)
+PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     : QWidget(parent)
 {
     //définit la taille de la fenetre de jeu
@@ -105,9 +106,20 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     const int chantierHeight = height() - scoreWidgetSize;
 
 
-    //appelle le constructeur de la zone de jeu
-    zoneJeuWidget = new ZoneJeuWidget(plateauWidth, plateauHeight, this);
-    layout->addWidget(zoneJeuWidget, 1);
+    //pile contenant une ZoneJeuWidget par joueur pour passer rapidement d'un plateau à l'autre
+    stackPlateaux = new QStackedWidget(this);
+    const int nbScenes = std::max(1, nbJoueurs);
+    zonesParJoueur.reserve(nbScenes);
+    for (int i = 0; i < nbScenes; ++i) {
+        auto* zone = new ZoneJeuWidget(plateauWidth, plateauHeight, this);
+        zonesParJoueur.push_back(zone);
+        stackPlateaux->addWidget(zone);
+    }
+    //zone par défaut = premier joueur
+    zoneJeuWidget = zonesParJoueur.front();
+    stackPlateaux->setCurrentWidget(zoneJeuWidget);
+    layout->addWidget(stackPlateaux, 1);
+
 
     echapWidget = new EchapWidget();
     echapWidget->attacherAScene(zoneJeuWidget->scene());
@@ -144,9 +156,16 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     colonneDroite->addWidget(chantierWidget, 1);
 
     //gestion des flux entre le chantier et la zone de jeu (pioche / validation / annulation)
-    connect(chantierWidget, &ChantierWidget::tuilePiochee,zoneJeuWidget, &ZoneJeuWidget::placerTuileDansZoneJeu);
-    connect(zoneJeuWidget, &ZoneJeuWidget::validationPlacementAnnulee,chantierWidget, &ChantierWidget::remettreTuileDansChantier);
-    connect(zoneJeuWidget, &ZoneJeuWidget::validationPlacementConfirmee,this, &PlateauWidget::validerPlacementTuile);
+    connect(chantierWidget, &ChantierWidget::tuilePiochee, this, [this](TuileItem* tuile) {
+        if (zoneJeuWidget)
+            zoneJeuWidget->placerTuileDansZoneJeu(tuile);
+    });
+    for (auto* zone : zonesParJoueur) {
+        connect(zone, &ZoneJeuWidget::validationPlacementAnnulee,
+                chantierWidget, &ChantierWidget::remettreTuileDansChantier);
+        connect(zone, &ZoneJeuWidget::validationPlacementConfirmee,
+                this, &PlateauWidget::validerPlacementTuile);
+    }
 
 
     // alimentation de test pour valider l'enchaînement pioche -> zone de jeu
@@ -194,4 +213,17 @@ void PlateauWidget::validerPlacementTuile(TuileItem* t)
         chantierWidget->setEnabled(true);
     emit placementTermine();
     std::cout<<t->getNiveauGraphique()<<std::endl;
+}
+
+void PlateauWidget::afficherPlateauJoueur(int index)
+{
+    if (!stackPlateaux || zonesParJoueur.empty())
+        return;
+    if (index < 0 || index >= static_cast<int>(zonesParJoueur.size()))
+        return;
+    joueurActif = index;
+    zoneJeuWidget = zonesParJoueur[index];
+    stackPlateaux->setCurrentIndex(index);
+    if (echapWidget && zoneJeuWidget)
+        echapWidget->attacherAScene(zoneJeuWidget->scene());
 }

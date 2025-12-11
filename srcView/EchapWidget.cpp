@@ -31,8 +31,16 @@ EchapWidget::EchapWidget(QWidget* parent)
 
 void EchapWidget::attacherAScene(QGraphicsScene* scene)
 {
-    if (!scene || proxy)
+    if (!scene)
         return;
+
+    //si on change de scène on détruit l'ancien proxy avant d'en créer un nouveau
+    if (proxy) {
+        proxy->setWidget(nullptr);
+        delete proxy;
+        proxy = nullptr;
+        actif = false;
+    }
 
     //on encapsule le widget dans un proxy pour pouvoir le positionner dans la scène
     proxy = scene->addWidget(this);
