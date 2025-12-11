@@ -4,3 +4,4 @@
 
 Partie CreerNouvellePartie();
 void controleConsole();
+void lancerPartie(Partie& partie);

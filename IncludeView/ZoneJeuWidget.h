@@ -3,8 +3,11 @@
 
 #include <QGraphicsView>
 #include <QRectF>
+#include "TuileItem.h"
 
 class QGraphicsRectItem;
+class QGraphicsProxyWidget;
+class ValiderPlacementWidget;
 
 /**
  * @brief Vue principale contenant la scène du plateau de jeu.
@@ -15,14 +18,36 @@ class ZoneJeuWidget : public QGraphicsView
 
 public:
     ZoneJeuWidget(int width, int height, QWidget* parent = nullptr);
-
+    void ajouterTuileDansZoneJeu(TuileItem * t,int x,int y);
     QGraphicsScene* getPlateauScene() const { return zoneJeuScene; }
     QRectF getZoneRect() const { return zoneJeuRect; }
+    void setBlocageInteractions(bool bloque);
+    bool interactionsBloquees() const { return blocageInteractions; }
+
+public slots:
+    void placerTuileDansZoneJeu(TuileItem* tuile);
+
+signals:
+    void validationPlacementConfirmee(TuileItem* tuile);
+    void validationPlacementAnnulee(TuileItem* tuile);
 
 private:
     QGraphicsScene* zoneJeuScene = nullptr;
     QGraphicsRectItem* zoneJeuRectItem = nullptr;
     QRectF zoneJeuRect;
+    std::vector<TuileItem*> tuilesZoneJeu;
+    bool blocageInteractions = false;
+    ValiderPlacementWidget* validerPlacementWidget = nullptr;
+    QGraphicsProxyWidget* validerPlacementProxy = nullptr;
+    TuileItem* tuileEnValidation = nullptr;
+
+    void masquerWidgetValidation();
+
+private slots:
+    void afficherWidgetValidation(TuileItem* tuile);
+    void gererConfirmationPlacement();
+    void gererAnnulationPlacement();
+    void gererDebutDeplacement(TuileItem* tuile);
 };
 
 #endif

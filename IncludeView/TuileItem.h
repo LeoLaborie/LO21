@@ -13,23 +13,15 @@
  */
 class TuileItem : public QObject ,public QGraphicsItemGroup {
     Q_OBJECT
-    HexItem* hexRef = nullptr;
-    QPointF plateauOrigin{0,0};
-    bool rotationAutorisee = true;
 public:
     /**
-     * @brief Construit une tuile graphique vide pour une éventuelle composition manuelle.
+     * @brief Définit le mode de fonctionnement de la TuileItem si elle est dans le pioche ou dans le zone de jeu.
      */
-    explicit TuileItem(QGraphicsItem* parent = nullptr);
+    enum class Mode { Pioche, Placement, ZoneJeu };
     /**
      * @brief Construit une tuile graphique à partir d'une tuile métier et crée les HexItem associés.
      */
-    TuileItem(Tuile& modele, QGraphicsItem* parent = nullptr);
-    void setCoordonnee(int x,int y);
-    /**
-     * @brief Ajoute dynamiquement un hexagone à la tuile graphique.
-     */
-    void addHex(HexItem* hex);
+    TuileItem(Tuile& modele, QGraphicsItem* parent = nullptr,Mode m=Mode::Pioche,int tailleTuile=50,int indice=-1);
     /**
      * @brief Pivote la tuile de 60° autour de son centre si l'interaction est autorisée.
      */
@@ -38,25 +30,51 @@ public:
      * @brief Repositionne la tuile pour que la référence tombe exactement sur la grille axiale.
      */
     void replacerCorrectement();
-    void debugMarkers();
-    /**
-     * @brief Définit l'origine (repère) utilisée pour convertir axial <-> pixels.
-     */
-    void setPlateauOrigin(const QPointF& origin) { plateauOrigin = origin; }
     /**
      * @brief Active/désactive le déplacement et la rotation de la tuile.
      */
     void setInteractivite(bool autoriserDeplacement, bool autoriserRotation);
     /**
-     * @brief Déplace la tuile pour que la référence soit posée sur les coordonnées axiales (q,r).
+     * @brief Met à jour l'indice de la tuile dans la pioche.
      */
-    void positionnerSurAxial(int q, int r);
+    void setIndiceDansPioche(unsigned int nouvelIndice);
+    unsigned int getIndiceDansPioche() const { return indice; }
+    /**
+     * @brief Changer le mode de la TuileItem.
+     */
+    void setMode(Mode m) { mode = m; }
+    Mode modeCourant() const { return mode; }
+
+    /**
+     * @brief Ajuste la taille des hexagones et recalcule le centre de rotation.
+     *
+     * @param nouvelleTaille diamètre utilisé pour redimensionner chaque HexItem.
+     */
+    void setTaille(int nouvelleTaille);
+    /**
+     * @brief Définit le niveau visuel de la tuile (hauteur affichée).
+     */
+    void setNiveauGraphique(int niveau);
+    int getNiveauGraphique() const { return niveauHauteur; }
+
 signals:
     void rightClicked();
+    void estPiocher(int indice);
+    void demandeValidationPlacement(TuileItem* tuile);
+    void deplacementDemarre(TuileItem* tuile);
 
 protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event)override;
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+
+private:
+    HexItem* hexRef = nullptr;
+    int tailleHex = 50;
+    bool rotationAutorisee = true;
+    unsigned int indice; //utiliser que quand la tuile item est dans la pioche sinon inutile
+    Mode mode;
+    int niveauHauteur = 0;
+    static constexpr double decalageHauteurPixels = 12.0;
 };
 
 #endif // TUILEITEM_H

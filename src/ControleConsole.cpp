@@ -103,9 +103,8 @@ void controleConsole()
     afficher_curseur();
     texte_couleur(ROUGE);
     texte_gras_on();
-    bool choixMode = false;
     Partie partie;
-    while (!choixMode)
+    while (true)
     {
         int choix;
         int Choixsauvegarde = -1;
@@ -120,7 +119,7 @@ void controleConsole()
         {
         case 1:
             partie = CreerNouvellePartie();
-            choixMode = true;
+            lancerPartie(partie);
             break;
         case 2:
         {
@@ -150,9 +149,20 @@ void controleConsole()
                     std::cout << "\n choix invalide \n";
                 }
             }
-            partie = Partie::FromSave("saves/" + sauvegardes[Choixsauvegarde]);
-            choixMode = true;
-            texte_reset();
+            try
+            {
+                partie = Partie::FromSave("saves/" + sauvegardes[Choixsauvegarde]);
+                texte_reset();
+                lancerPartie(partie);
+                
+            }
+            catch (const std::exception &e)
+            {
+                texte_couleur(ROUGE);
+                texte_gras_on();
+                std::cout << "\nErreur lors du chargement de la sauvegarde : " << e.what() << "\n\n";
+                texte_reset();
+            }
             break;
         }
         case 0:
@@ -161,7 +171,9 @@ void controleConsole()
             break;
         }
     }
+}
 
+void lancerPartie(Partie& partie){
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -255,11 +267,50 @@ void controleConsole()
                     char sauvegarderAvantQuitter;
                     std::cout << "Voulez-vous sauvegarder avant de quitter ? (o/n) : ";
                     std::cin >> sauvegarderAvantQuitter;
+
                     if (sauvegarderAvantQuitter == 'o' || sauvegarderAvantQuitter == 'O')
                     {
-                        sauvegarderPartie(partie);
+                        try
+                        {
+                            if (sauvegarderPartie(partie))
+                            {
+                                texte_couleur(JAUNE);
+                                texte_gras_on();
+                                std::cout << "\nSauvegarde effectuée avec succès.\n";
+                                texte_reset();
+                            }
+                            else
+                            {
+                                texte_couleur(ROUGE);
+                                texte_gras_on();
+                                std::cout << "\nErreur : la sauvegarde a échoué.\n";
+                                texte_reset();
+                            }
+                        }
+                        catch (const std::exception &e)
+                        {
+                            texte_couleur(ROUGE);
+                            texte_gras_on();
+                            std::cout << "\nException lors de la sauvegarde : " << e.what() << "\n";
+                            texte_reset();
+                        }
+
+                        // Après sauvegarde → quitter la partie et revenir au menu
+                        return;
                     }
-                    return;
+
+                    if (sauvegarderAvantQuitter == 'n' || sauvegarderAvantQuitter == 'N')
+                    {
+                        // Quitter sans sauvegarder
+                        return;
+                    }
+
+                    // Si l’utilisateur a tapé autre chose
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
+                    std::cout << "\nRéponse invalide, retour au jeu.\n";
+                    texte_reset();
+                    break;
                 }
                 default:
                     texte_reset();

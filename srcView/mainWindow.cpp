@@ -10,6 +10,7 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
+    //panneau central contenant toutes les pages (menu, plateau…)
     auto* stack = new QStackedWidget(this);
     setCentralWidget(stack);
 
@@ -40,6 +41,7 @@ MainWindow::MainWindow(QWidget* parent)
     col->addStretch();
 
 
+    //les différentes pages sont instanciées une seule fois et stockées dans le stack
     auto * newGamePage = new newPartiePage(stack);
     newGamePage->setObjectName("NewGamePage");
     auto* loadPage    = new chargerPartiePage(stack);
@@ -69,6 +71,7 @@ MainWindow::MainWindow(QWidget* parent)
     )").arg(background);
     stack->setStyleSheet(stylesheet);
 
+    //navigation principale entre les différentes pages
     connect(newGame,  &QPushButton::clicked, stack, [stack,newGamePage]{ stack->setCurrentWidget(newGamePage); });
     connect(loadGame, &QPushButton::clicked, stack, [stack,loadPage]{    stack->setCurrentWidget(loadPage); });
     connect(setting,  &QPushButton::clicked, stack, [stack,settingsPage]{stack->setCurrentWidget(settingsPage); });
@@ -88,8 +91,19 @@ MainWindow::MainWindow(QWidget* parent)
         stack->setCurrentWidget(menuPage);
     });
 
+    //rafraîchit automatiquement les sauvegardes lorsqu'on entre dans la page de chargement
     connect(stack, &QStackedWidget::currentChanged, loadPage, [stack, loadPage](int index){
         if (stack->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes();
+    });
+
+    connect(plateau, &PlateauWidget::demandeParametres, stack, [stack, settingsPage]{
+        stack->setCurrentWidget(settingsPage);
+    });
+    connect(plateau, &PlateauWidget::demandeRetourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+    connect(plateau, &PlateauWidget::demandeQuitter, this, [this]{
+        close();
     });
 }
