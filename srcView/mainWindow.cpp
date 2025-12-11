@@ -6,17 +6,18 @@
 #include "PageWidget.h"
 #include "PlateauWidget.h"
 #include <QStackedWidget>
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
     //panneau central contenant toutes les pages (menu, plateau…)
-    auto* stack = new QStackedWidget(this);
-    setCentralWidget(stack);
+    stackWidget = new QStackedWidget(this);
+    setCentralWidget(stackWidget);
 
-    QWidget* menuPage = new QWidget(stack);
+    menuPage = new QWidget(stackWidget);
     menuPage->setObjectName("MenuPage");
-    stack->addWidget(menuPage);
+    stackWidget->addWidget(menuPage);
 
     auto* root = new QVBoxLayout(menuPage);
     root->setContentsMargins(24,140,24,24);
@@ -42,18 +43,15 @@ MainWindow::MainWindow(QWidget* parent)
 
 
     //les différentes pages sont instanciées une seule fois et stockées dans le stack
-    auto * newGamePage = new newPartiePage(stack);
+    auto * newGamePage = new newPartiePage(stackWidget);
     newGamePage->setObjectName("NewGamePage");
-    auto* loadPage    = new chargerPartiePage(stack);
+    auto* loadPage    = new chargerPartiePage(stackWidget);
     loadPage->setObjectName("LoadPage");
-    QWidget* settingsPage= new QWidget(stack);
+    settingsPage= new QWidget(stackWidget);
     settingsPage->setObjectName("SettingsPage");
-    auto* plateau = new PlateauWidget(stack);
-
-    stack->addWidget(newGamePage);
-    stack->addWidget(loadPage);
-    stack->addWidget(settingsPage);
-    stack->addWidget(plateau);
+    stackWidget->addWidget(newGamePage);
+    stackWidget->addWidget(loadPage);
+    stackWidget->addWidget(settingsPage);
 
     const QString background = QCoreApplication::applicationDirPath() + "/img/akropolis.png";
     const QString stylesheet = QString(R"(
@@ -69,41 +67,63 @@ MainWindow::MainWindow(QWidget* parent)
         QPushButton:hover  { background: #3b7bf0; }
         QPushButton:pressed{ background: #2a5ec2; }
     )").arg(background);
-    stack->setStyleSheet(stylesheet);
+    stackWidget->setStyleSheet(stylesheet);
 
     //navigation principale entre les différentes pages
-    connect(newGame,  &QPushButton::clicked, stack, [stack,newGamePage]{ stack->setCurrentWidget(newGamePage); });
-    connect(loadGame, &QPushButton::clicked, stack, [stack,loadPage]{    stack->setCurrentWidget(loadPage); });
-    connect(setting,  &QPushButton::clicked, stack, [stack,settingsPage]{stack->setCurrentWidget(settingsPage); });
+    connect(newGame,  &QPushButton::clicked, this, [this,newGamePage]{ stackWidget->setCurrentWidget(newGamePage); });
+    connect(loadGame, &QPushButton::clicked, this, [this,loadPage]{    stackWidget->setCurrentWidget(loadPage); });
+    connect(setting,  &QPushButton::clicked, this, [this]{ stackWidget->setCurrentWidget(settingsPage); });
     connect(quitter,  &QPushButton::clicked, this,  &QWidget::close);
-    connect(newGamePage, &newPartiePage::envoieArgument,this, [stack, plateau](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
-            //plateau->initialiser(nb, pseudos, variantes); à faire 
-            stack->setCurrentWidget(plateau);});
-    connect(loadPage, &chargerPartiePage::envoieArgument,this, [stack, plateau](std::string nomSauvegarde){
-            //plateau->initialiser(nom sauvegarxede); à faire 
-            stack->setCurrentWidget(plateau);          
+    connect(newGamePage, &newPartiePage::envoieArgument,this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
+            creerLePlateau(nb);
+            if (plateauWidget)
+                stackWidget->setCurrentWidget(plateauWidget);
+    });
+    connect(loadPage, &chargerPartiePage::envoieArgument,this, [this](std::string nomSauvegarde){
+        //utiliser le controleur pour récuperer le nombre de joueurs    
+        creerLePlateau(1);
+            if (plateauWidget)
+                stackWidget->setCurrentWidget(plateauWidget);
     });
 
-    connect(newGamePage, &newPartiePage::retourMenu, stack, [stack, menuPage]{
-        stack->setCurrentWidget(menuPage);
+    connect(newGamePage, &newPartiePage::retourMenu, this, [this]{
+        stackWidget->setCurrentWidget(menuPage);
     });
-    connect(loadPage, &chargerPartiePage::retourMenu, stack, [stack, menuPage]{
-        stack->setCurrentWidget(menuPage);
+    connect(loadPage, &chargerPartiePage::retourMenu, this, [this]{
+        stackWidget->setCurrentWidget(menuPage);
     });
 
     //rafraîchit automatiquement les sauvegardes lorsqu'on entre dans la page de chargement
-    connect(stack, &QStackedWidget::currentChanged, loadPage, [stack, loadPage](int index){
-        if (stack->widget(index) == loadPage)
+    connect(stackWidget, &QStackedWidget::currentChanged, this, [this, loadPage](int index){
+        if (stackWidget->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes();
     });
+}
 
-    connect(plateau, &PlateauWidget::demandeParametres, stack, [stack, settingsPage]{
-        stack->setCurrentWidget(settingsPage);
+void MainWindow::creerLePlateau(int nbJoueurs)
+{
+    if (!stackWidget)
+        return;
+
+    //si il y déjà un plateau on le détruit
+    if (plateauWidget) {
+        stackWidget->removeWidget(plateauWidget);
+        plateauWidget->deleteLater();
+        plateauWidget = nullptr;
+    }
+    //on créer le nb plateau pour chaque joueuers et on connect les signals aux slots
+    plateauWidget = new PlateauWidget(stackWidget, std::max(1, nbJoueurs));
+    stackWidget->addWidget(plateauWidget);
+
+    connect(plateauWidget, &PlateauWidget::demandeParametres, this, [this]{
+        if (stackWidget && settingsPage)
+            stackWidget->setCurrentWidget(settingsPage);
     });
-    connect(plateau, &PlateauWidget::demandeRetourMenu, stack, [stack, menuPage]{
-        stack->setCurrentWidget(menuPage);
+    connect(plateauWidget, &PlateauWidget::demandeRetourMenu, this, [this]{
+        if (stackWidget && menuPage)
+            stackWidget->setCurrentWidget(menuPage);
     });
-    connect(plateau, &PlateauWidget::demandeQuitter, this, [this]{
+    connect(plateauWidget, &PlateauWidget::demandeQuitter, this, [this]{
         close();
     });
 }
