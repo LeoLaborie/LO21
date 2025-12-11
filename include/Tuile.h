@@ -144,12 +144,6 @@ public:
     // Getters
 
     /**
-     * @brief Retourne les hexagones de la tuile
-     * @return const std::vector<Hexagone *>& : référence constante vers le vecteur des hexagones
-     */
-    const std::vector<Hexagone *> &getHexagones() const { return hex; }
-
-    /**
      * @brief Retourne les offsets de la tuile
      * @return const std::vector<OffsetQR>& : référence constante vers le vecteur des offsets
      */
