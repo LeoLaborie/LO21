@@ -59,12 +59,12 @@ public:
                 hexCourant = listeHex[++idx];
         }
 
-        Hexagone &currentItem()       // IMPORTANT : version non-const
+        int currentIndex() const
         {
-            return *hexCourant;
+            return idx;
         }
 
-        const Hexagone &currentItem() const // version const si jamais
+        Hexagone &currentItem()
         {
             return *hexCourant;
         }
@@ -92,6 +92,11 @@ public:
             nb--;
             if (nb > 0)
                 hexCourant = listeHex[++idx];
+        }
+
+        int currentIndex() const
+        {
+            return idx;
         }
 
         const Hexagone &currentItem() const

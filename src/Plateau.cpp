@@ -232,11 +232,10 @@ int Plateau::placerTuile(Tuile &t, Position &p)
         throw std::invalid_argument("Placement de tuile invalide.");
 
     // positionner la tuile (3 hexagones)
-    int i = 0;
     for (Tuile::Iterator it = t.getIterator(); !it.isDone(); it.next())
     {
         auto *h = &it.currentItem();
-        const auto &o = t.getOffsets()[i++];
+        const auto &o = t.getOffsets()[it.currentIndex()];
         h->setCoord(p.x + o.q, p.y + o.r, p.z);
     }
 
