@@ -7,6 +7,8 @@
 #include <QMainWindow>
 #include "Partie.h"
 #include "PlateauWidget.h"
+#include  "Tuile.h"
+#include "Position.h"
 
 
 class ControllerView
@@ -16,25 +18,28 @@ public:
     static void freeInstance();
     void executerGraphique();
 
-    bool chargerDepuisSauvegarde(Partie &partie);
-    void boucleDeJeu(Partie &partie);
-    void traiterTourHumain(Partie &partie);
-    void traiterTourIA(Partie &partie);
-    bool phaseManipulationTuile(Joueur &joueur, Partie &partie, Tuile &tuilePiochee);
-    void phasePlacementTuile(Joueur &joueur);
-    Position demanderPosition() const;
-    bool confirmerQuitter(Partie &partie);
+    bool chargerDepuisSauvegarde();
+    // bool phaseManipulationTuile(Joueur &joueur, Tuile &tuilePiochee);
+    // void phasePlacementTuile(Joueur &joueur);
+    // Position demanderPosition() const;
+    bool confirmerQuitter();
     void afficherMessageTemporaire(const QString& message);
+    void initPlateau();
 
 public slots:
     //void recupArgument(int nb, const QStringList& pseudos, const QVector<bool>& variantes);//rajouter si on veut utiliser toutes les tuiles
     void creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes);
     void chargerDepuisSauvegarde(std::string nomSauvegarde);
+    void Toursuivant();
+    void joueurPiocheTuile(int& idTuile);
+    void joueurPlaceTuiel(Position& p);
+
 
 private:
     static ControllerView* instance;
     PlateauWidget& plateau;
-    explicit ControllerView(PlateauWidget& p):plateau(p){}
+    Partie& partie;
+    explicit ControllerView(PlateauWidget& pl, Partie& pa):plateau(pl),partie(pa){}
     ~ControllerView()=default;
 };
 

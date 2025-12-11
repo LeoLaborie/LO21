@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget* parent)
     QWidget* settingsPage= new QWidget(stack);
     settingsPage->setObjectName("SettingsPage");
     auto* plateau = new PlateauWidget(stack);
-    ControllerView* controller = ControllerView::giveInstance();
+    ControllerView* controller = ControllerView::giveInstance(*plateau);
 
     stack->addWidget(newGamePage);
     stack->addWidget(loadPage);
