@@ -49,7 +49,6 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     joueurLabel->setStyleSheet("font-weight: 600; color: #111; text-decoration: underline;");
     joueurLayout->addWidget(joueurLabel);
     labelJoueurActif = new QLabel(tr("-"), this);
-    labelJoueurActif->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     joueurLayout->addWidget(labelJoueurActif, 1);
     scoreLayout->addLayout(joueurLayout);
 
@@ -62,7 +61,6 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
 
     //gestion label du nombre de score
     labelNombrePierre = new QLabel("0", this);
-    labelNombrePierre->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     labelNombrePierre->setStyleSheet("font-size: 16px; font-weight: bold;");
     pierreLayout->addWidget(labelNombrePierre);
         
@@ -80,7 +78,6 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     //creaton du bloc scores
     auto* blocScoresWidget = new QWidget(this);
     blocScoresWidget->setObjectName("scoreBloc");
-    blocScoresWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     auto* blocScoresLayout = new QVBoxLayout(blocScoresWidget);
     blocScoresLayout->setContentsMargins(6, 6, 6, 6);
     blocScoresLayout->setSpacing(4);
@@ -113,7 +110,7 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
             QPixmap pix(basePath + images[i]);
             if (!pix.isNull())
             {
-                imageLabel->setPixmap(pix.scaled(imageLabel->size(), Qt::KeepAspectRatio));
+                imageLabel->setPixmap(pix.scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
             }
             ligne->addWidget(imageLabel);
         }
