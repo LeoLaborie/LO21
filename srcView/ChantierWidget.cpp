@@ -5,7 +5,7 @@
 #include <QPen>
 #include <algorithm>
 
-static int NB_MAX_TUILES = 4; // en attendant le controleur
+static int NB_MAX_TUILES = 6; // en attendant le controleur
 
 namespace {
 void placerTuileCentre(TuileItem* tuile, const QPointF& centreScene)

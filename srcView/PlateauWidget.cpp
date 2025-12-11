@@ -56,7 +56,7 @@ void PlateauWidget::genererTuilesTests()
     if (!chantierWidget)
         return;
 
-    constexpr int nbTuiles = 4;
+    constexpr int nbTuiles = 6;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> rotations(0, 5);
@@ -212,6 +212,10 @@ void PlateauWidget::validerPlacementTuile(TuileItem* t)
     if (chantierWidget)
         chantierWidget->setEnabled(true);
     emit placementTermine();
+    if (!zonesParJoueur.empty()) {
+        joueurActif = (joueurActif + 1) % static_cast<int>(zonesParJoueur.size());
+        afficherPlateauJoueur(joueurActif);
+    }
     std::cout<<t->getNiveauGraphique()<<std::endl;
 }
 

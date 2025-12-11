@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
     //panneau central contenant toutes les pages (menu, plateau…)
     stackWidget = new QStackedWidget(this);
+    resize(1920, 1080);
     setCentralWidget(stackWidget);
 
     menuPage = new QWidget(stackWidget);
