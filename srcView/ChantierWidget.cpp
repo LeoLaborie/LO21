@@ -80,6 +80,8 @@ void ChantierWidget::piocherTuile(int indice){
     tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
     emit tuilePiochee(tuile);
+    //tant que la tuile n'est pas validée/annulée on bloque la pioche
+    setEnabled(false);
 }
 
 void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
@@ -101,6 +103,7 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
     chantierScene->addItem(tuile);
     listeTuilesChantier.insert(listeTuilesChantier.begin() + insertionIndex, tuile);
     reordonnerTuiles();
+    setEnabled(true);
 }
 
 void ChantierWidget::reordonnerTuiles()

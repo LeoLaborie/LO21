@@ -51,6 +51,11 @@ public:
      * @param nouvelleTaille diamètre utilisé pour redimensionner chaque HexItem.
      */
     void setTaille(int nouvelleTaille);
+    /**
+     * @brief Définit le niveau visuel de la tuile (hauteur affichée).
+     */
+    void setNiveauGraphique(int niveau);
+    int getNiveauGraphique() const { return niveauHauteur; }
 
 signals:
     void rightClicked();
@@ -68,6 +73,8 @@ private:
     bool rotationAutorisee = true;
     unsigned int indice; //utiliser que quand la tuile item est dans la pioche sinon inutile
     Mode mode;
+    int niveauHauteur = 0;
+    static constexpr double decalageHauteurPixels = 12.0;
 };
 
 #endif // TUILEITEM_H

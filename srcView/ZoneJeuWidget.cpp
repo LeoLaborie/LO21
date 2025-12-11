@@ -125,9 +125,6 @@ void ZoneJeuWidget::gererAnnulationPlacement()
         return;
     }
 
-    //on libère le grab souris avant de retirer la tuile de la scène
-    if (zoneJeuScene && zoneJeuScene->mouseGrabberItem() == tuile)
-        tuile->ungrabMouse();
     zoneJeuScene->removeItem(tuile);
     auto it = std::find(tuilesZoneJeu.begin(), tuilesZoneJeu.end(), tuile);
     if (it != tuilesZoneJeu.end())

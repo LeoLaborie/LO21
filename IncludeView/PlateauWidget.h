@@ -37,6 +37,7 @@ signals:
     void demandeParametres();
     void demandeRetourMenu();
     void demandeQuitter();
+    void placementTermine(); //pour que le controleur passe au tour suivant
 private slots:
     void validerPlacementTuile(TuileItem *t);
 private:

@@ -175,6 +175,7 @@ void PlateauWidget::basculerMenuEchap()
 
 void PlateauWidget::gererBlocageInteractions(bool widgetActif)
 {
+    //on désactive tt ou réactive tous en fonction du bool passé en paramètre
     if (zoneJeuWidget)
         zoneJeuWidget->setBlocageInteractions(widgetActif);
     if (chantierWidget)
@@ -184,6 +185,13 @@ void PlateauWidget::gererBlocageInteractions(bool widgetActif)
 }
 void PlateauWidget::validerPlacementTuile(TuileItem* t)
 {
-    //TODO: brancher sur la logique métier pour enregistrer définitivement la position
-    Q_UNUSED(t);
+    if (!t)
+        return;
+    //vérification du placement pour le controleur à faire et définir un niveau ensuite
+    t->setSelected(false);
+    t->setInteractivite(false, false);
+    if (chantierWidget)
+        chantierWidget->setEnabled(true);
+    emit placementTermine();
+    std::cout<<t->getNiveauGraphique()<<std::endl;
 }
