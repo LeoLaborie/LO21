@@ -43,14 +43,26 @@ public:
         int idx = 0;
 
     public:
+        /**
+         * @brief Constructeur de l'itérateur
+         * @param h Vecteur des hexagones de la tuile
+         * @param n Nombre d'hexagones
+         */
         Iterator(const std::vector<Hexagone *> &h, int n) : listeHex(h), nb(n)
         {
             if (nb > 0)
                 hexCourant = listeHex[idx];
         }
 
+        /**
+         * @brief Vérifie si l'itérateur a atteint la fin
+         * @return true si l'itérateur est à la fin, false sinon
+         */
         bool isDone() { return nb == 0; }
 
+        /**
+         * @brief Avance l'itérateur au prochain hexagone
+         */
         void next()
         {
             nb--;
@@ -58,6 +70,10 @@ public:
                 hexCourant = listeHex[idx++];
         }
 
+        /**
+         * @brief Retourne l'hexagone courant
+         * @return Référence constante vers l'hexagone courant
+         */
         const Hexagone &currentItem() const
         {
             return *hexCourant;
