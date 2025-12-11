@@ -15,8 +15,8 @@ ValiderPlacementWidget::ValiderPlacementWidget(QWidget* parent)
     layout->setSpacing(10);
 
     // création des boutons de décision autour du placement
-    boutonConfirmer = new QPushButton(tr("Confirmer"), this);
-    boutonAnnuler = new QPushButton(tr("Annuler"), this);
+    boutonConfirmer = new QPushButton("Confirmer", this);
+    boutonAnnuler = new QPushButton("Annuler", this);
     boutonConfirmer->setObjectName("btnConfirmerPlacement");
     boutonAnnuler->setObjectName("btnAnnulerPlacement");
 

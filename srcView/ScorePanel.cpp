@@ -48,7 +48,7 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     auto* joueurLabel = new QLabel(tr("Joueur courant :"), this);
     joueurLabel->setStyleSheet("font-weight: 600; color: #111; text-decoration: underline;");
     joueurLayout->addWidget(joueurLabel);
-    labelJoueurActif = new QLabel(tr("-"), this);
+    labelJoueurActif = new QLabel("joueur 1      &", this);
     joueurLayout->addWidget(labelJoueurActif, 1);
     scoreLayout->addLayout(joueurLayout);
 
@@ -98,7 +98,6 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
         ligne->addWidget(libelle, 1);
 
         auto* valeurLabel = new QLabel("0", blocScoresWidget);
-        valeurLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         valeurLabel->setStyleSheet("font-size: 18px; font-weight: bold;");
         ligne->addWidget(valeurLabel);
 
