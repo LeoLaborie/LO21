@@ -76,13 +76,22 @@ MainWindow::MainWindow(QWidget* parent)
     connect(setting,  &QPushButton::clicked, this, [this]{ stackWidget->setCurrentWidget(settingsPage); });
     connect(quitter,  &QPushButton::clicked, this,  &QWidget::close);
     connect(newGamePage, &newPartiePage::envoieArgument,this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes){
+            // -> Le contrôleur doit lancer ici la création de la Partie (nb, pseudos, variantes)
             creerLePlateau(nb);
+
+
+
+
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget);
     });
     connect(loadPage, &chargerPartiePage::envoieArgument,this, [this](std::string nomSauvegarde){
-        //utiliser le controleur pour récuperer le nombre de joueurs    
+        // -> Le contrôleur doit ici charger la Partie depuis la sauvegarde indiquée
         creerLePlateau(1);
+
+
+
+
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget);
     });
@@ -115,6 +124,12 @@ void MainWindow::creerLePlateau(int nbJoueurs)
     //on créer le nb plateau pour chaque joueuers et on connect les signals aux slots
     plateauWidget = new PlateauWidget(stackWidget, std::max(1, nbJoueurs));
     stackWidget->addWidget(plateauWidget);
+    stackWidget->setMinimumSize(plateauWidget->size());
+    resize(plateauWidget->size());
+
+
+
+
 
     connect(plateauWidget, &PlateauWidget::demandeParametres, this, [this]{
         if (stackWidget && settingsPage)

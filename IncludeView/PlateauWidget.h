@@ -1,7 +1,6 @@
 #ifndef PLATEAUWIDGET_H
 #define PLATEAUWIDGET_H
 #include <QWidget>
-#include <memory>
 #include <QStackedWidget>
 #include <vector>
 
@@ -16,8 +15,8 @@ class TuileItem;
 
 /**
  * @brief Widget principal affichant le plateau de jeu, le chantier et les informations de score.
- * Il encapsule deux scènes graphiques distinctes (plateau/chantier) afin de gérer
- * indépendamment le zoom et l'affichage.
+ * Le contrôleur doit indiquer le nombre de joueurs lors de la création et
+ * alimenter le chantier en TuileItem pour chaque tour.
  */
 class PlateauWidget : public QWidget
 {
@@ -29,10 +28,8 @@ public:
      */
     explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
     /**
-     * @brief Ajoute graphiquement une tuile dans la scène principale.
-     * @param t modèle métier servant de source pour les HexItem.
-     * @param centrer centre automatiquement la tuile dans la zone si true.
-     * @return pointeur vers le TuileItem créé pour manipulations ultérieures.
+     * @brief Le contrôleur doit appeler afficherPlateauJoueur(index)
+     * avant d'envoyer une TuileItem dans la zone choisie.
      */
 signals:
     void demandeParametres();
@@ -58,10 +55,8 @@ private:
     ScorePanel* scorePanel = nullptr;
     EchapWidget* echapWidget = nullptr;
     QShortcut* raccourciEchap = nullptr;
-    std::vector<std::unique_ptr<Tuile>> tuilesDeTest;
-    std::vector<std::unique_ptr<Hexagone>> hexagonesDeTest;
-
-    void genererTuilesTests();
+    // Le contrôleur doit alimenter le chantier et gérer la pile métier,
+    // le widget ne crée plus de tuiles de test.
     void basculerMenuEchap();
     void gererBlocageInteractions(bool widgetActif);
 };
