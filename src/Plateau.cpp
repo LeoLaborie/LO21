@@ -1,4 +1,5 @@
 #include "Plateau.h"
+
 #include <algorithm>
 #include <unordered_map>
 #include <utility>
@@ -70,7 +71,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
     std::vector<const Tuile *> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
-    int supports_par_hex = 0; // pour vérifier qu’on pose bien sur 3 hexagones en hauteur
+    int supports_par_hex = 0;  // pour vérifier qu’on pose bien sur 3 hexagones en hauteur
 
     int dx[6] = {+1, +1, 0, -1, -1, 0};
     int dy[6] = {0, -1, -1, 0, +1, +1};
@@ -91,7 +92,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
     for (const auto &h : coords)
     {
         bool supportTrouve = false;
-        bool hexDejaComptePourBord = false; // pour ne compter chaque hex qu'une seule fois
+        bool hexDejaComptePourBord = false;  // pour ne compter chaque hex qu'une seule fois
         bool superposition = false;
 
         if (h.z > 0)
@@ -139,7 +140,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
             return false;
 
         if (h.z > 0 && !supportTrouve)
-            return false; // chaque hex doit avoir son support direct
+            return false;  // chaque hex doit avoir son support direct
     }
 
     if (surElever)
@@ -464,10 +465,8 @@ int Plateau::calculerPointsMarche(const Hexagone *h) const
 
         if (variantesScores[1])
         {
-
             for (const auto &voisin : h->getVoisins())
             {
-
                 if (voisin->getType() == TypeHex::PMarche)
                 {
                     nbpoint += h->getZ();

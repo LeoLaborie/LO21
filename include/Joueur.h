@@ -1,12 +1,13 @@
 #ifndef JOUEUR_H
 #define JOUEUR_H
 
-#include <vector>
 #include <iostream>
 #include <utility>
+#include <vector>
+
+#include "Chantier.h"
 #include "Plateau.h"
 #include "Tuile.h"
-#include "Chantier.h"
 #include "couleurs_console.h"
 
 class Partie;
@@ -19,6 +20,7 @@ class IllustreArchitecte;
 class Joueur
 {
     friend class Partie;
+
 protected:
     int nbrPierres{};
     int nbrPoints{};
@@ -31,7 +33,7 @@ protected:
      * @param variantesScore Tableau des variantes de score
      * @param nom Nom du joueur
      */
-    explicit Joueur(const bool variantesScore[5], std::string nom); // le joueur est créé au début de la partie, par la partie (composition)
+    explicit Joueur(const bool variantesScore[5], std::string nom);  // le joueur est créé au début de la partie, par la partie (composition)
 
     /**
      * @brief Constructeur de Joueur
@@ -56,7 +58,10 @@ public:
      * @brief Retourne le nom du joueur
      * @return const std::string& : référence constante vers le nom du joueur
      */
-    const std::string &getNom() const { return nom; }
+    const std::string &getNom() const
+    {
+        return nom;
+    }
 
     /**
      * @brief Retourne le nombre de pierres du joueur
@@ -68,19 +73,28 @@ public:
      * @brief Retourne le plateau du joueur
      * @return Plateau& : référence vers le plateau du joueur
      */
-    Plateau &getPlateau() { return plateau; }
+    Plateau &getPlateau()
+    {
+        return plateau;
+    }
 
     /**
      * @brief Retourne le plateau constant du joueur
      * @return const Plateau& : référence constante vers le plateau du joueur
      */
-    const Plateau &getPlateau() const { return plateau; }
+    const Plateau &getPlateau() const
+    {
+        return plateau;
+    }
 
     /**
      * @brief Retourne la tuile en main du joueur
      * @return const Tuile& : référence constante vers la tuile en main du joueur
      */
-    const Tuile &getTuileEnMain() const { return tuileEnMain; }
+    const Tuile &getTuileEnMain() const
+    {
+        return tuileEnMain;
+    }
 
     /**
      * @brief Retourne le nombre de points du joueur
@@ -105,7 +119,10 @@ public:
      * @brief Définit la tuile en main du joueur
      * @param t Tuile à définir comme tuile en main
      */
-    void setTuileEnMain(const Tuile &t) { tuileEnMain = t; }
+    void setTuileEnMain(const Tuile &t)
+    {
+        tuileEnMain = t;
+    }
 
     // Autres méthodes
 
@@ -151,8 +168,7 @@ public:
      * @param tuileMain Tuile en main.
      * @param plateau Tuiles présentes sur le plateau.
      */
-    static Joueur fromSave(const bool variantes[5], std::string nom, int pierres, int points,
-                           Tuile tuileMain, std::vector<Tuile> plateau);
+    static Joueur fromSave(const bool variantes[5], std::string nom, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateau);
 };
 
 /**
@@ -163,7 +179,7 @@ class IllustreArchitecte : public Joueur
     friend class Partie;
 
 private:
-    int difficulte{}; // Si c'est le faux joueur, c'est etre 1 et 3
+    int difficulte{};  // Si c'est le faux joueur, c'est etre 1 et 3
     ~IllustreArchitecte() = default;
 
     /**
@@ -186,7 +202,7 @@ public:
      * @return Référence vers la tuile piochée
      */
     Tuile &piocherTuile(int id, Chantier &chantier);
-    
+
     /**
      * @brief Reconstruit un Illustre Architecte depuis une sauvegarde.
      * @param diff Difficulté (1 à 3).
@@ -195,8 +211,7 @@ public:
      * @param variantes Variantes de score actives.
      * @param plateau Tuiles du plateau.
      */
-    static IllustreArchitecte *fromSave(int diff,int pierres,int points,const bool variantes[5],
-    std::vector<Tuile> plateau);
+    static IllustreArchitecte *fromSave(int diff, int pierres, int points, const bool variantes[5], std::vector<Tuile> plateau);
 
     /**
      * @brief Permet au joueur IA de choisir une tuile dans le chantier
@@ -215,7 +230,10 @@ public:
      * @brief Retourne la difficulté de l'IA
      * @return int : difficulté de l'IA
      */
-    int getdifficulte() { return difficulte; }
+    int getdifficulte()
+    {
+        return difficulte;
+    }
 };
 
 #endif

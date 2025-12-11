@@ -12,13 +12,19 @@ class ValiderPlacementWidget : public QWidget
 {
     Q_OBJECT
 
-public:
-    explicit ValiderPlacementWidget(QWidget* parent = nullptr);
+    public:
+        explicit ValiderPlacementWidget(QWidget* parent = nullptr);
 
-    QPushButton* getBoutonConfirmer() const { return boutonConfirmer; }
-    QPushButton* getBoutonAnnuler() const { return boutonAnnuler; }
+        QPushButton* getBoutonConfirmer() const
+        {
+            return boutonConfirmer;
+        }
+        QPushButton* getBoutonAnnuler() const
+        {
+            return boutonAnnuler;
+        }
 
-signals:
+    signals:
     void confirmationDemandee();
     void annulationDemandee();
 
@@ -27,4 +33,4 @@ private:
     QPushButton* boutonAnnuler = nullptr;
 };
 
-#endif // WIDGETUTILITAIRE_H
+#endif  // WIDGETUTILITAIRE_H

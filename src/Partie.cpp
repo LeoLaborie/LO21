@@ -10,18 +10,9 @@ Partie::Partie(int nbJoueursInit,
                Chantier chantierInit,
                std::vector<std::vector<Tuile>> pilesInit,
                std::vector<Joueur> joueursInit)
-    : nbrJoueurs(nbJoueursInit),
-      maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)),
-      mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)),
-      nbrTours(nbToursInit),
-      taillepaquet(nbJoueursInit + 1),
-      fauxJoueur(nullptr),
-      chantier(std::move(chantierInit)),
-      joueurs(std::move(joueursInit)),
-      piles(std::move(pilesInit))
-{}
-
-
+    : nbrJoueurs(nbJoueursInit), maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)), mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)), nbrTours(nbToursInit), taillepaquet(nbJoueursInit + 1), fauxJoueur(nullptr), chantier(std::move(chantierInit)), joueurs(std::move(joueursInit)), piles(std::move(pilesInit))
+{
+}
 
 Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile)
 {
@@ -57,7 +48,7 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
     genererTuilesParties(varianteFullTuile);
 }
 
-    void Partie::creerFauxJoueur()
+void Partie::creerFauxJoueur()
 {
     nbrJoueurs++;
     int difficulte;
@@ -111,7 +102,7 @@ void Partie::addTuileInChantierFromPiles()
 {
     std::vector<Tuile> pileActuel = piles.back();
     piles.pop_back();
-    for (int i = 0; i < nbrJoueurs + 1; i++) // nbrJoeurs + 1 = nombre de tuiles dans une pile
+    for (int i = 0; i < nbrJoueurs + 1; i++)  // nbrJoeurs + 1 = nombre de tuiles dans une pile
     {
         chantier.ajouterTuile(pileActuel.back());
         pileActuel.pop_back();
@@ -127,7 +118,7 @@ std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent
         if (quantite > 0)
         {
             if (type == "HexagoneJaune" && marcheDejaPresent)
-                continue; // Interdiction du 2e marché
+                continue;  // Interdiction du 2e marché
             for (int i = 0; i < quantite; i++)
             {
                 pool.push_back(type);
@@ -160,7 +151,7 @@ void Partie::genererTuilesParties(bool fullTuiles)
     int tuilesParPile = getNbrJoueurs() + 1;
     int nombreDePiles = 12;
     if (nbrJoueurs < 4)
-    { // Variante du nombre de piles en fonction du nombre de joueurs
+    {  // Variante du nombre de piles en fonction du nombre de joueurs
         if (fullTuiles)
         {
             stock = &cartes[4];

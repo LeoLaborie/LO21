@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <string>
+
 #include "Partie.h"
 
 /**
@@ -66,10 +67,9 @@ std::ostream& operator<<=(std::ostream& os, const Tuile& t);
  */
 std::istream& operator>>=(std::istream& is, Tuile& t);
 
-
 /**
  * @brief Récupere le nom de toutes les sauvegardes.
  * @return std::vector des noms.
  */
 std::vector<std::string> getSauvegardes();
-#endif 
+#endif

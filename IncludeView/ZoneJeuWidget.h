@@ -3,6 +3,7 @@
 
 #include <QGraphicsView>
 #include <QRectF>
+
 #include "TuileItem.h"
 
 class QGraphicsRectItem;
@@ -16,18 +17,27 @@ class ZoneJeuWidget : public QGraphicsView
 {
     Q_OBJECT
 
-public:
-    ZoneJeuWidget(int width, int height, QWidget* parent = nullptr);
-    void ajouterTuileDansZoneJeu(TuileItem * t,int x,int y);
-    QGraphicsScene* getPlateauScene() const { return zoneJeuScene; }
-    QRectF getZoneRect() const { return zoneJeuRect; }
-    void setBlocageInteractions(bool bloque);
-    bool interactionsBloquees() const { return blocageInteractions; }
+    public:
+        ZoneJeuWidget(int width, int height, QWidget* parent = nullptr);
+        void ajouterTuileDansZoneJeu(TuileItem * t, int x, int y);
+        QGraphicsScene* getPlateauScene() const
+        {
+            return zoneJeuScene;
+        }
+        QRectF getZoneRect() const
+        {
+            return zoneJeuRect;
+        }
+        void setBlocageInteractions(bool bloque);
+        bool interactionsBloquees() const
+        {
+            return blocageInteractions;
+        }
 
-public slots:
-    void placerTuileDansZoneJeu(TuileItem* tuile);
+    public slots:
+        void placerTuileDansZoneJeu(TuileItem * tuile);
 
-signals:
+    signals:
     void validationPlacementConfirmee(TuileItem* tuile);
     void validationPlacementAnnulee(TuileItem* tuile);
 

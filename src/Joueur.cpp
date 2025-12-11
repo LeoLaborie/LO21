@@ -1,10 +1,10 @@
 #include "Joueur.h"
+
 #include <limits>
 #include <utility>
 
 Joueur::Joueur(const bool variantesScore[5], std::string nom)
-    : nbrPierres(0), nbrPoints(0), nom(std::move(nom)),
-      plateau(variantesScore) {}
+    : nbrPierres(0), nbrPoints(0), nom(std::move(nom)), plateau(variantesScore) {}
 
 Joueur::Joueur(std::string nom)
     : nbrPierres(0), nbrPoints(0), nom(std::move(nom)), plateau() {}
@@ -26,13 +26,25 @@ Joueur Joueur::fromSave(const bool variantes[5], std::string nom, int pierres,
                   std::move(tuileMain), std::move(plateau));
 }
 
-int Joueur::getNbrPierres() const { return nbrPierres; }
+int Joueur::getNbrPierres() const
+{
+    return nbrPierres;
+}
 
-int Joueur::getNbrPoints() const { return nbrPoints; }
+int Joueur::getNbrPoints() const
+{
+    return nbrPoints;
+}
 
-void Joueur::setNbrPierres(int nbr) { nbrPierres = nbr; }
+void Joueur::setNbrPierres(int nbr)
+{
+    nbrPierres = nbr;
+}
 
-void Joueur::setNbrPoints() { nbrPoints = getPlateau().calculerPoints(); }
+void Joueur::setNbrPoints()
+{
+    nbrPoints = getPlateau().calculerPoints();
+}
 
 void IllustreArchitecte::setNbrPoints()
 {

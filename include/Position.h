@@ -10,4 +10,4 @@ struct Position
     int x, y, z;
 };
 
-#endif // POSITION_H
+#endif  // POSITION_H

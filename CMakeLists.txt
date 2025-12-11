@@ -34,6 +34,16 @@ set(LO21_HEADERS
     "${CMAKE_SOURCE_DIR}/IncludeView/HexItem.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/WidgetUtilitaire.h"
 )
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wconversion          # conversions implicites potentiellement dangereuses
+    -Wsign-conversion     # conversions signées/non signées
+    -Wold-style-cast      # cast C interdit en C++
+    -Wshadow              # variables qui masquent d'autres variables
+)
+
 
 # Créer l'exécutable
 add_executable(lo21 ${LO21_SOURCES} ${LO21_HEADERS})

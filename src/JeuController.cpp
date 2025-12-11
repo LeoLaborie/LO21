@@ -9,14 +9,14 @@
 
 namespace
 {
-void afficherMessageErreurSaisie(const std::string &message)
-{
-    texte_couleur(ROUGE);
-    texte_gras_on();
-    std::cout << message << '\n';
-    texte_reset();
-}
-} // namespace
+    void afficherMessageErreurSaisie(const std::string &message)
+    {
+        texte_couleur(ROUGE);
+        texte_gras_on();
+        std::cout << message << '\n';
+        texte_reset();
+    }
+}  // namespace
 
 void JeuController::executerConsole()
 {
@@ -44,27 +44,27 @@ void JeuController::executerConsole()
 
         switch (choix)
         {
-        case 1:
-        {
-            Partie partie = creerNouvellePartie();
-            boucleDeJeu(partie);
-            break;
-        }
-        case 2:
-        {
-            Partie partie;
-            if (chargerDepuisSauvegarde(partie))
+            case 1:
             {
+                Partie partie = creerNouvellePartie();
                 boucleDeJeu(partie);
+                break;
             }
-            break;
-        }
-        case 0:
-            quitter = true;
-            break;
-        default:
-            afficherMessageErreurSaisie("Choix invalide, veuillez réessayer.");
-            break;
+            case 2:
+            {
+                Partie partie;
+                if (chargerDepuisSauvegarde(partie))
+                {
+                    boucleDeJeu(partie);
+                }
+                break;
+            }
+            case 0:
+                quitter = true;
+                break;
+            default:
+                afficherMessageErreurSaisie("Choix invalide, veuillez réessayer.");
+                break;
         }
     }
 }
@@ -234,7 +234,8 @@ bool JeuController::boucleDeJeu(Partie &partie)
 void JeuController::traiterTourHumain(Partie &partie)
 {
     Joueur &joueur = partie.getJoueurMain();
-    std::cout << "Tour de :\n" << joueur;
+    std::cout << "Tour de :\n"
+              << joueur;
     std::cout << partie.getChantier();
 
     Tuile tuilePiochee;
@@ -248,7 +249,8 @@ void JeuController::traiterTourHumain(Partie &partie)
             try
             {
                 tuilePiochee = joueur.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
-                std::cout << "\nTuile piochée :\n\n" << tuilePiochee;
+                std::cout << "\nTuile piochée :\n\n"
+                          << tuilePiochee;
                 piocheOK = true;
             }
             catch (const std::exception &e)
@@ -283,7 +285,8 @@ void JeuController::traiterTourIA(Partie &partie)
     try
     {
         tuilePiochee = ia->piocherTuile(idTuile, partie.getChantier());
-        std::cout << "\nTuile piochée par l'IA :\n\n" << tuilePiochee;
+        std::cout << "\nTuile piochée par l'IA :\n\n"
+                  << tuilePiochee;
     }
     catch (const std::exception &e)
     {
@@ -304,31 +307,33 @@ bool JeuController::phaseManipulationTuile(Joueur &joueur, Partie &partie, Tuile
         std::cin >> rep;
         switch (rep)
         {
-        case 'o':
-        case 'O':
-            tuilePiochee.pivoterTuile();
-            std::cout << "\nTuile après pivot :\n\n" << tuilePiochee;
-            break;
-        case 'a':
-        case 'A':
-            std::cout << "\nAperçu tuile :\n\n" << tuilePiochee;
-            break;
-        case 'p':
-        case 'P':
-            phaseRotation = false;
-            break;
-        case 's':
-        case 'S':
-            sauvegarderPartie(partie);
-            break;
-        case 'q':
-        case 'Q':
-            if (confirmerQuitter(partie))
-                return false;
-            break;
-        default:
-            afficherMessageErreurSaisie("Choix invalide.");
-            break;
+            case 'o':
+            case 'O':
+                tuilePiochee.pivoterTuile();
+                std::cout << "\nTuile après pivot :\n\n"
+                          << tuilePiochee;
+                break;
+            case 'a':
+            case 'A':
+                std::cout << "\nAperçu tuile :\n\n"
+                          << tuilePiochee;
+                break;
+            case 'p':
+            case 'P':
+                phaseRotation = false;
+                break;
+            case 's':
+            case 'S':
+                sauvegarderPartie(partie);
+                break;
+            case 'q':
+            case 'Q':
+                if (confirmerQuitter(partie))
+                    return false;
+                break;
+            default:
+                afficherMessageErreurSaisie("Choix invalide.");
+                break;
         }
     }
     return true;

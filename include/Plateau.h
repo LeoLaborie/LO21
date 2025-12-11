@@ -1,12 +1,13 @@
 #ifndef PLATEAU_H
 #define PLATEAU_H
 
-#include <vector>
 #include <algorithm>
 #include <iostream>
-#include "Tuile.h"
+#include <vector>
+
 #include "Hexagone.h"
 #include "Position.h"
+#include "Tuile.h"
 #include "couleurs_console.h"
 
 // Déclarations anticipées pour l'amitié
@@ -36,7 +37,7 @@ private:
      * @brief Constructeur de Plateau
      * @param variantesScore Tableau des variantes de score
      */
-    explicit Plateau(const bool variantesScore[5]); // Les plateaux sont définis par le constructeur de Joueur
+    explicit Plateau(const bool variantesScore[5]);  // Les plateaux sont définis par le constructeur de Joueur
 
     /**
      * @brief Constructeur par défaut de Plateau
@@ -73,14 +74,20 @@ public:
      * @brief Retourne les tuiles du plateau
      * @return const std::vector<Tuile>& : référence constante vers le vecteur de tuiles
      */
-    const std::vector<Tuile> &getTuiles() const { return listeTuiles; };
+    const std::vector<Tuile> &getTuiles() const
+    {
+        return listeTuiles;
+    };
 
     // TODO: Méthode jamais utilisée
     /**
      * @brief Retourne les variantes de score du plateau
      * @return const bool* : pointeur constant vers le tableau des variantes de score
      */
-    const bool *getVarianteScores() const { return variantesScores; };
+    const bool *getVarianteScores() const
+    {
+        return variantesScores;
+    };
 
     // Calcul des points
 

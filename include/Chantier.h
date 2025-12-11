@@ -1,9 +1,10 @@
 #ifndef CHANTIER_H
 #define CHANTIER_H
 
-#include <vector>
 #include <iostream>
 #include <utility>
+#include <vector>
+
 #include "Tuile.h"
 #include "couleurs_console.h"
 
@@ -15,11 +16,12 @@ class Chantier
 {
 private:
     std::vector<Tuile> tuilesChantier;
+
 public:
     /**
      * @brief Constructeur par défaut de Chantier
      */
-    Chantier() {};
+    Chantier(){};
 
     /**
      * @brief Destructeur de Chantier
@@ -32,13 +34,19 @@ public:
      * @brief Retourne le nombre de tuiles dans le chantier
      * @return int : nombre de tuiles dans le chantier
      */
-    int getTaille() const { return tuilesChantier.size(); }
+    int getTaille() const
+    {
+        return tuilesChantier.size();
+    }
 
     /**
      * @brief Retourne les tuiles du chantier
      * @return const std::vector<Tuile>& : référence constante vers le vecteur de tuiles
      */
-    const std::vector<Tuile> &getTuiles() const { return tuilesChantier; }
+    const std::vector<Tuile>& getTuiles() const
+    {
+        return tuilesChantier;
+    }
 
     // Manipulations
 
@@ -46,7 +54,10 @@ public:
      * @brief Ajoute une tuile au chantier
      * @param t Tuile à ajouter
      */
-    void ajouterTuile(const Tuile &t) { tuilesChantier.push_back(t); }
+    void ajouterTuile(const Tuile& t)
+    {
+        tuilesChantier.push_back(t);
+    }
 
     /**
      * @brief Retire une tuile du chantier
@@ -60,13 +71,15 @@ public:
      * @param c Chantier à afficher
      * @return Flux de sortie modifié
      */
-    friend std::ostream& operator<<(std::ostream& os,const Chantier& c){
+    friend std::ostream& operator<<(std::ostream& os, const Chantier& c)
+    {
         os << "\nChantier contient " << c.tuilesChantier.size() << " tuiles :\n";
-        for (size_t i = 0; i < c.tuilesChantier.size(); i++) {
+        for (size_t i = 0; i < c.tuilesChantier.size(); i++)
+        {
             texte_gras_on();
             os << "\n\t ---- " << i << " ----\n\n";
             texte_reset();
-            os<<c.tuilesChantier[i];
+            os << c.tuilesChantier[i];
         }
         os << std::endl;
         return os;
@@ -77,7 +90,8 @@ public:
      * @param chantier Tuiles à remettre dans le chantier.
      * @return Chantier contenant les tuiles chargées.
      */
-    static Chantier fromSave(std::vector<Tuile> chantier) {
+    static Chantier fromSave(std::vector<Tuile> chantier)
+    {
         Chantier c;
         c.tuilesChantier = std::move(chantier);
         return c;

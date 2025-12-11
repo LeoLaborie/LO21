@@ -1,24 +1,24 @@
 #include "PageWidget.h"
-#include <iostream>
+
 #include <QCheckBox>
+#include <QComboBox>
+#include <QCompleter>
+#include <QCursor>
 #include <QFrame>
-#include <QLineEdit>
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QPushButton>
-#include <QCursor>
 #include <QLabel>
-#include <QVector>
-#include <QFrame>
-#include <QGridLayout>
-#include <QCompleter>
-#include <QComboBox>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QSignalBlocker>
+#include <QVector>
+#include <iostream>
 #include <string>
+
 #include "Sauvegarde.h"
 void newPartiePage::lancerLaPartie()
 {
-    //rassemble les paramètres saisis puis notifie MainWindow via envoieArgument
+    // rassemble les paramètres saisis puis notifie MainWindow via envoieArgument
     int nb = NbJoueurs->value();
     QStringList pseudos;
     for (int i = 0; i < nb; ++i)
@@ -30,9 +30,10 @@ void newPartiePage::lancerLaPartie()
     emit envoieArgument(nb, pseudos, variantes);
 }
 
-newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
+newPartiePage::newPartiePage(QWidget *parent)
+    : QWidget(parent)
 {
-    //thème graphique partagé avec le menu principal
+    // thème graphique partagé avec le menu principal
     setStyleSheet(
         "QWidget { color: #0f172a; }"
         "QLineEdit, QComboBox {"
@@ -42,8 +43,7 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
         "    border-radius: 6px;"
         "    selection-background-color: #0a84ff;"
         "    selection-color: #ffffff;"
-        "}"
-    );
+        "}");
 
     setAttribute(Qt::WA_StyledBackground, true);
     auto *LayoutCentral = new QVBoxLayout(this);
@@ -63,7 +63,7 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
     boutonRetour->setStyleSheet("font-size:20px;");
     layoutJoueur->addWidget(boutonRetour);
     connect(boutonRetour, &QPushButton::clicked, this, [this]
-    { emit retourMenu(); });
+            { emit retourMenu(); });
 
     layoutJoueur->setContentsMargins(32, 32, 32, 32);
     layoutJoueur->setSpacing(18);
@@ -95,14 +95,16 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
 
     auto updateNbPseudo = [this, GrillePseudo](int nbJoueur)
     {
-        //ajuste dynamiquement le nombre de champs de pseudo
-        while (PseudoJoueurs.size() > nbJoueur) {
+        // ajuste dynamiquement le nombre de champs de pseudo
+        while (PseudoJoueurs.size() > nbJoueur)
+        {
             auto *suppression = PseudoJoueurs.takeLast();
             GrillePseudo->removeWidget(suppression);
             suppression->deleteLater();
         }
 
-        while (PseudoJoueurs.size() < nbJoueur) {
+        while (PseudoJoueurs.size() < nbJoueur)
+        {
             auto *ChampPseudo = new QLineEdit();
             ChampPseudo->setText("Joueur " + QString::number(PseudoJoueurs.size() + 1));
             ChampPseudo->setFixedHeight(34);
@@ -127,10 +129,10 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
     LayoutVarianteScore->setContentsMargins(20, 28, 20, 12);
     LayoutVarianteScore->setSpacing(10);
 
-    QStringList variantes = {"Jouer avec toutes les tuiles", "Variante score habitation", "Variante score marché",
-                             "Variante score caserne", "Variante score temple", "Variante score jardin"};
+    QStringList variantes = {"Jouer avec toutes les tuiles", "Variante score habitation", "Variante score marché", "Variante score caserne", "Variante score temple", "Variante score jardin"};
 
-    for (const QString &v : variantes) {
+    for (const QString &v : variantes)
+    {
         auto *checkbox = new QCheckBox(v);
         LayoutVarianteScore->addWidget(checkbox);
         variantesOptions.append(checkbox);
@@ -159,23 +161,25 @@ newPartiePage::newPartiePage(QWidget *parent) : QWidget(parent)
 
 void chargerPartiePage::chargerLaPartie()
 {
-    //passe le nom sélectionné au contrôleur pour charger la sauvegarde
+    // passe le nom sélectionné au contrôleur pour charger la sauvegarde
     emit envoieArgument(this->NomSauvegarde->currentText().toStdString());
     std::cout << this->NomSauvegarde->currentText().toStdString() << std::endl;
 }
 
-chargerPartiePage::chargerPartiePage(QWidget *parent) : QWidget(parent)
+chargerPartiePage::chargerPartiePage(QWidget *parent)
+    : QWidget(parent)
 {
-    //même charte graphique que la page précédente
-    setStyleSheet("QWidget { color: #0f172a; }"
-                  "QLineEdit, QSpinBox, QComboBox {"
-                  "color: #0f172a;"
-                  "background: #ffffff;"
-                  "border: 1px solid #d0d5dd;"
-                  "border-radius: 6px;"
-                  "selection-background-color: #0a84ff;"
-                  "selection-color: #ffffff;"
-                  "}");
+    // même charte graphique que la page précédente
+    setStyleSheet(
+        "QWidget { color: #0f172a; }"
+        "QLineEdit, QSpinBox, QComboBox {"
+        "color: #0f172a;"
+        "background: #ffffff;"
+        "border: 1px solid #d0d5dd;"
+        "border-radius: 6px;"
+        "selection-background-color: #0a84ff;"
+        "selection-color: #ffffff;"
+        "}");
 
     setAttribute(Qt::WA_StyledBackground, true);
 
@@ -251,7 +255,7 @@ chargerPartiePage::chargerPartiePage(QWidget *parent) : QWidget(parent)
 
 QString recupererNomSansExtension(const std::string &nomAvecExtension)
 {
-    //simplifie l'affichage en retirant l'extension sur disque
+    // simplifie l'affichage en retirant l'extension sur disque
     QString nom;
     for (char c : nomAvecExtension)
     {
@@ -269,7 +273,7 @@ void chargerPartiePage::rafraichirSauvegardes()
     {
         this->erreur->setText("Pas de sauvegardes disponible");
     }
-    //alimentation de la combo à partir des fichiers présents
+    // alimentation de la combo à partir des fichiers présents
     for (auto &sauvegarde : getSauvegardes())
         NomSauvegarde->addItem(recupererNomSansExtension(sauvegarde));
 }
