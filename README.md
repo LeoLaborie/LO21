@@ -26,6 +26,8 @@ L’exécutable accepte un unique argument déterminant le mode de lancement :
 - `-c` ou `-C` : lance le contrôleur console.
 - `-h`, `-H` ou `--help` : affiche ce fichier README directement dans le terminal.
 
+Si aucun argument n'est fournis le jeu se lance en interface Graphique.
+
 Exemples :
 
 ```bash
@@ -40,3 +42,7 @@ Exemples :
 - `srcView/` et `IncludeView/` : widgets Qt, contrôleur console, widgets utilitaires.
 - `img/` : ressources graphiques copiées aux côtés de l’exécutable.
 - `saves/` : fichiers de sauvegarde générés au runtime.
+
+## Crédit
+
+Thibault de Boutray , Léo Laborie , Dimitri Périgois et Jules Chiron

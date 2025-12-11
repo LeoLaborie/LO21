@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        std::cout << "Argument invalide : \n -C -c : Lancer le mode console. \n -H -h : Readme. \n -G -g : Lancer l'interface graphique. \n Acun argument : Lancer l'interface graphique. \n Pour plus d'information ce référer au Readme."
+        std::cout << "Argument invalide : \n -C -c : Lancer le mode console. \n -H -h : Readme. \n -G -g : Lancer l'interface graphique. \n Acun argument : Lancer l'interface graphique. \n Pour plus d'information se référer au Readme."
                   << std::endl;
     }
 }
