@@ -6,6 +6,8 @@
 #include "TuileItem.h"
 
 class QGraphicsRectItem;
+class QGraphicsProxyWidget;
+class ValiderPlacementWidget;
 
 /**
  * @brief Vue principale contenant la scène du plateau de jeu.
@@ -25,12 +27,27 @@ public:
 public slots:
     void placerTuileDansZoneJeu(TuileItem* tuile);
 
+signals:
+    void validationPlacementConfirmee(TuileItem* tuile);
+    void validationPlacementAnnulee(TuileItem* tuile);
+
 private:
     QGraphicsScene* zoneJeuScene = nullptr;
     QGraphicsRectItem* zoneJeuRectItem = nullptr;
     QRectF zoneJeuRect;
     std::vector<TuileItem*> tuilesZoneJeu;
     bool blocageInteractions = false;
+    ValiderPlacementWidget* validerPlacementWidget = nullptr;
+    QGraphicsProxyWidget* validerPlacementProxy = nullptr;
+    TuileItem* tuileEnValidation = nullptr;
+
+    void masquerWidgetValidation();
+
+private slots:
+    void afficherWidgetValidation(TuileItem* tuile);
+    void gererConfirmationPlacement();
+    void gererAnnulationPlacement();
+    void gererDebutDeplacement(TuileItem* tuile);
 };
 
 #endif

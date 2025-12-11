@@ -5,6 +5,7 @@
 #include "ControleConsole.h"
 
 
+//petite fonction utilitaire pour afficher un fichier texte dans la console (README notamment)
 void ouvrirFichier(const std::string& readme){
     std::ifstream f(readme);
     if (!f)
@@ -16,7 +17,7 @@ void ouvrirFichier(const std::string& readme){
 }
 int main(int argc, char *argv[])
 {
-    
+    //par défaut on lance l'interface graphique si aucun argument n'est fourni
     std::string argument;
     if (argc==1){
        argument ="-g";
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
         argument=argv[1];
     }
     if (argument=="-C" || argument=="-c"){
+        //mode console, délègue totalement au contrôleur texte
         controleConsole();
         return 0;
     }
@@ -33,6 +35,7 @@ int main(int argc, char *argv[])
             return 0;
     }
     if (argument=="-g" || argument=="-G"){
+        //mode graphique standard
         QApplication app(argc, argv);
         MainWindow w;
         w.resize(1920, 1080);

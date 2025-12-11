@@ -143,8 +143,11 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     chantierWidget = new ChantierWidget(colonneDroiteLargeur, chantierHeight, panneauDroit);
     colonneDroite->addWidget(chantierWidget, 1);
 
-    connect(chantierWidget, &ChantierWidget::tuilePiochee,
-            zoneJeuWidget, &ZoneJeuWidget::placerTuileDansZoneJeu);
+    //gestion des flux entre le chantier et la zone de jeu (pioche / validation / annulation)
+    connect(chantierWidget, &ChantierWidget::tuilePiochee,zoneJeuWidget, &ZoneJeuWidget::placerTuileDansZoneJeu);
+    connect(zoneJeuWidget, &ZoneJeuWidget::validationPlacementAnnulee,chantierWidget, &ChantierWidget::remettreTuileDansChantier);
+    connect(zoneJeuWidget, &ZoneJeuWidget::validationPlacementConfirmee,this, &PlateauWidget::validerPlacementTuile);
+
 
     // alimentation de test pour valider l'enchaînement pioche -> zone de jeu
     genererTuilesTests();
@@ -172,10 +175,23 @@ void PlateauWidget::basculerMenuEchap()
 
 void PlateauWidget::gererBlocageInteractions(bool widgetActif)
 {
+    //on désactive tt ou réactive tous en fonction du bool passé en paramètre
     if (zoneJeuWidget)
         zoneJeuWidget->setBlocageInteractions(widgetActif);
     if (chantierWidget)
         chantierWidget->setEnabled(!widgetActif);
     if (scorePanel)
         scorePanel->setEnabled(!widgetActif);
+}
+void PlateauWidget::validerPlacementTuile(TuileItem* t)
+{
+    if (!t)
+        return;
+    //vérification du placement pour le controleur à faire et définir un niveau ensuite
+    t->setSelected(false);
+    t->setInteractivite(false, false);
+    if (chantierWidget)
+        chantierWidget->setEnabled(true);
+    emit placementTermine();
+    std::cout<<t->getNiveauGraphique()<<std::endl;
 }

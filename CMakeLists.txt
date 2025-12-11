@@ -32,6 +32,7 @@ set(LO21_HEADERS
     "${CMAKE_SOURCE_DIR}/IncludeView/ZoneJeuWidget.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/ScorePanel.h"
     "${CMAKE_SOURCE_DIR}/IncludeView/HexItem.h"
+    "${CMAKE_SOURCE_DIR}/IncludeView/WidgetUtilitaire.h"
 )
 
 # Créer l'exécutable
