@@ -31,19 +31,24 @@ private:
     std::vector<OffsetQR> offsets;
 
 public:
+    /**
+     * @class Iterator
+     * @brief Itérateur pour parcourir les hexagones d'une tuile
+     */
     class Iterator
     {
-        const std::vector<Hexagone *> listeHex;
+        const std::vector<Hexagone *> &listeHex;
         const Hexagone *hexCourant;
         int nb;
         int idx = 0;
 
     public:
-        Iterator(const std::vector<Hexagone *> h, int n) : listeHex(h), nb(n)
+        Iterator(const std::vector<Hexagone *> &h, int n) : listeHex(h), nb(n)
         {
             if (nb > 0)
                 hexCourant = listeHex[idx];
         }
+
         bool isDone() { return nb == 0; }
 
         void next()
@@ -59,6 +64,10 @@ public:
         }
     };
 
+    /**
+     * @brief Retourne un itérateur pour parcourir les hexagones de la tuile
+     * @return Iterator : itérateur pour les hexagones
+     */
     Iterator getIterator() const
     {
         return Iterator(getHexagones(), getNbHexa());
