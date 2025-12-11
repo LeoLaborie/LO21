@@ -20,7 +20,7 @@ TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile,in
     /* setFlag(ItemSendsGeometryChanges, true); peut etre utile mais pas encore utilisé*/
     int i=0;
     for(Tuile::ConstIterator it = ref.getConstIterator(); !it.isDone(); it.next()){
-        auto* hexItem = new HexItem(&it.currentItem(), taille);
+        auto* hexItem = new HexItem(&it.currentItem(), tailleHex);
         addToGroup(hexItem);
         if (i == 0) hexRef = hexItem;
         ++i;
