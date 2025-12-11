@@ -113,7 +113,7 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
             QPixmap pix(basePath + images[i]);
             if (!pix.isNull())
             {
-                imageLabel->setPixmap(pix.scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                imageLabel->setPixmap(pix.scaled(imageLabel->size(), Qt::KeepAspectRatio));
             }
             ligne->addWidget(imageLabel);
         }
@@ -122,6 +122,4 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
         //ajout dans le vector du label
         scoreLabels.append(valeurLabel);
     }
-
-    scoreLayout->addStretch(1);
 }
