@@ -1,8 +1,8 @@
 #ifndef ECHAPWIDGET_H
 #define ECHAPWIDGET_H
 
-#include <QWidget>
 #include <QRectF>
+#include <QWidget>
 
 class QGraphicsScene;
 class QGraphicsProxyWidget;
@@ -15,15 +15,18 @@ class EchapWidget : public QWidget
 {
     Q_OBJECT
 
-public:
-    explicit EchapWidget(QWidget* parent = nullptr);
+    public:
+        explicit EchapWidget(QWidget* parent = nullptr);
 
-    void attacherAScene(QGraphicsScene* scene);
-    void afficherEchap(const QRectF& zoneReference);
-    void fermerWidget();
-    bool estActif() const { return actif; }
+        void attacherAScene(QGraphicsScene * scene);
+        void afficherEchap(const QRectF& zoneReference);
+        void fermerWidget();
+        bool estActif() const
+        {
+            return actif;
+        }
 
-signals:
+    signals:
     void visibiliteChangee(bool actif);
     void demandeParametres();
     void demandeRetourMenu();
@@ -38,4 +41,4 @@ private:
     bool actif = false;
 };
 
-#endif // ECHAPWIDGET_H
+#endif  // ECHAPWIDGET_H

@@ -1,10 +1,11 @@
 #ifndef TUILE_H
 #define TUILE_H
 
-#include <vector>
+#include <algorithm>
 #include <iostream>
 #include <map>
-#include <algorithm>
+#include <vector>
+
 #include "Hexagone.h"
 
 struct OffsetQR
@@ -64,13 +65,19 @@ public:
      * @brief Retourne les hexagones de la tuile
      * @return const std::vector<Hexagone *>& : référence constante vers le vecteur des hexagones
      */
-    const std::vector<Hexagone *> &getHexagones() const { return hex; }
+    const std::vector<Hexagone *> &getHexagones() const
+    {
+        return hex;
+    }
 
     /**
      * @brief Retourne les offsets de la tuile
      * @return const std::vector<OffsetQR>& : référence constante vers le vecteur des offsets
      */
-    const std::vector<OffsetQR> &getOffsets() const { return offsets; }
+    const std::vector<OffsetQR> &getOffsets() const
+    {
+        return offsets;
+    }
 
     // Manipulations de la tuile
 

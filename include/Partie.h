@@ -1,15 +1,17 @@
 #ifndef PARTIE_H
 #define PARTIE_H
 
-#include <vector>
 #include <math.h>
-#include <stdexcept>
-#include <random>
+
 #include <map>
+#include <random>
+#include <stdexcept>
 #include <string>
-#include "Tuile.h"
+#include <vector>
+
 #include "Chantier.h"
 #include "Joueur.h"
+#include "Tuile.h"
 
 /**
  * @class Partie
@@ -19,8 +21,8 @@ class Partie
 {
 private:
     int nbrJoueurs = 0;
-    int maitreArchitecte = 0; // indice du joueur maître architecte
-    int mainJoueur = 0;       // indice du joueur dont c’est le tour
+    int maitreArchitecte = 0;  // indice du joueur maître architecte
+    int mainJoueur = 0;        // indice du joueur dont c’est le tour
     int nbrTours = 0;
     int taillepaquet = 0;
 
@@ -37,9 +39,9 @@ private:
            int maitreArchitecte,
            int mainJoueur,
            Chantier chantier,
-            std::vector<std::vector<Tuile>> piles,
-            std::vector<Joueur> joueurs);
-           
+           std::vector<std::vector<Tuile>> piles,
+           std::vector<Joueur> joueurs);
+
 public:
     /**
      * * @brief Constructeur de Partie
@@ -51,9 +53,9 @@ public:
     Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile);
     /**
      * @brief constructeur de base de partie utiliser pour créer la partie dans le main
-    */ 
-     Partie(): nbrJoueurs(0),maitreArchitecte(0),mainJoueur(0),
-      nbrTours(0),taillepaquet(0),fauxJoueur(nullptr),chantier(), joueurs(),piles(){}
+     */
+    Partie()
+        : nbrJoueurs(0), maitreArchitecte(0), mainJoueur(0), nbrTours(0), taillepaquet(0), fauxJoueur(nullptr), chantier(), joueurs(), piles() {}
     /**
      * @brief Destructeur de Partie
      */
@@ -65,67 +67,100 @@ public:
      * @brief Retourne le nombre de joueurs dans la partie
      * @return int : nombre de joueurs
      */
-    int getNbrJoueurs() const { return nbrJoueurs; }
+    int getNbrJoueurs() const
+    {
+        return nbrJoueurs;
+    }
 
     /**
      * @brief Retourne l'indice du maître architecte
      * @return int : indice du maître architecte
      */
-    int getMaitreArchitecte() const { return maitreArchitecte; }
+    int getMaitreArchitecte() const
+    {
+        return maitreArchitecte;
+    }
 
     /**
      * @brief Retourne le joueur dont c'est le tour
      * @return Joueur& : référence vers le joueur dont c'est le tour
      */
-    Joueur &getJoueurMain() { return joueurs.at(mainJoueur); }
+    Joueur &getJoueurMain()
+    {
+        return joueurs.at(mainJoueur);
+    }
 
     /**
      * @brief Retourne l'indice du joueur dont c'est le tour
      * @return int : indice du joueur dont c'est le tour
      */
-    int getMainJoueur() const { return mainJoueur; }
+    int getMainJoueur() const
+    {
+        return mainJoueur;
+    }
 
     /**
      * @brief Retourne la taille du paquet de tuiles
      * @return int : taille du paquet de tuiles
      */
-    int getTaillePaquet() const { return taillepaquet; }
+    int getTaillePaquet() const
+    {
+        return taillepaquet;
+    }
 
     /**
      * @brief Retourne le chantier de la partie
      * @return Chantier& : référence vers le chantier
      */
-    Chantier &getChantier() { return chantier; }
+    Chantier &getChantier()
+    {
+        return chantier;
+    }
 
     /**
      * @brief Retourne le chantier constant de la partie
      * @return const Chantier& : référence constante vers le chantier
      */
-    const Chantier &getChantier() const { return chantier; }
+    const Chantier &getChantier() const
+    {
+        return chantier;
+    }
 
     /**
      * @brief Retourne les joueurs de la partie
      * @return const std::vector<Joueur>& : référence constante vers le vecteur des joueurs
      */
-    const std::vector<Joueur> &getJoueurs() const { return joueurs; }
+    const std::vector<Joueur> &getJoueurs() const
+    {
+        return joueurs;
+    }
 
     /**
      * @brief Retourne les piles de tuiles de la partie
      * @return const std::vector<std::vector<Tuile>>& : référence constante vers le vecteur des piles de tuiles
      */
-    const std::vector<std::vector<Tuile>> &getPile() const { return piles; };
+    const std::vector<std::vector<Tuile>> &getPile() const
+    {
+        return piles;
+    };
 
     /**
      * @brief Retourne le nombre de tours effectués dans la partie
      * @return int : nombre de tours
      */
-    int getNbrTours() const { return nbrTours; }
+    int getNbrTours() const
+    {
+        return nbrTours;
+    }
 
     /**
      * @brief Retourne le nombre de piles restantes dans la partie
      * @return int : nombre de piles
      */
-    int getNbrPiles() const { return piles.size(); }
+    int getNbrPiles() const
+    {
+        return piles.size();
+    }
 
     // Setters
 
@@ -133,7 +168,10 @@ public:
      * @brief Définit l'indice du maître architecte
      * @param i Indice du maître architecte
      */
-    void setMaitreArchitecte(int i) { maitreArchitecte = i % (nbrJoueurs > 0 ? nbrJoueurs : 1); }
+    void setMaitreArchitecte(int i)
+    {
+        maitreArchitecte = i % (nbrJoueurs > 0 ? nbrJoueurs : 1);
+    }
 
     /**
      * @brief Définit le prochain joueur dont c'est le tour
@@ -156,7 +194,10 @@ public:
      * @brief Indique s'il reste des piles de tuiles
      * @return bool : true s'il reste des piles, false sinon
      */
-    bool pilesRestantes() const { return !piles.empty(); }
+    bool pilesRestantes() const
+    {
+        return !piles.empty();
+    }
 
     /**
      * @brief Génère les tuiles pour la partie
@@ -178,7 +219,10 @@ public:
      * @brief Indique si un faux joueur (Illustre Architecte) est présent
      * @return bool : true si un faux joueur est présent, false sinon
      */
-    bool fauxJoueurPresent() const { return fauxJoueur != nullptr; }
+    bool fauxJoueurPresent() const
+    {
+        return fauxJoueur != nullptr;
+    }
 
     /**
      * @brief Crée un faux joueur (Illustre Architecte)
@@ -189,7 +233,10 @@ public:
      * @brief Retourne le faux joueur (Illustre Architecte)
      * @return IllustreArchitecte* : pointeur vers le faux joueur
      */
-    IllustreArchitecte *getFauxJoueur() const { return fauxJoueur; }
+    IllustreArchitecte *getFauxJoueur() const
+    {
+        return fauxJoueur;
+    }
 
     /**
      * @brief Charge une partie sauvegardée depuis un fichier.
@@ -197,7 +244,7 @@ public:
      * @return Partie reconstruite à partir du fichier.
      * @throws std::runtime_error si le fichier est introuvable ou invalide.
      */
-    static Partie FromSave(const std::string& nomFichier);
+    static Partie FromSave(const std::string &nomFichier);
 };
 
 #endif

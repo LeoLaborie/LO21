@@ -11,16 +11,16 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
-    explicit MainWindow(QWidget* parent = nullptr);
+    public:
+        explicit MainWindow(QWidget* parent = nullptr);
 
-private:
-    void creerLePlateau(int nbJoueurs);
+    private:
+        void creerLePlateau(int nbJoueurs);
 
-    QStackedWidget* stackWidget = nullptr;
-    PlateauWidget* plateauWidget = nullptr;
-    QWidget* menuPage = nullptr;
-    QWidget* settingsPage = nullptr;
+        QStackedWidget* stackWidget = nullptr;
+        PlateauWidget* plateauWidget = nullptr;
+        QWidget* menuPage = nullptr;
+        QWidget* settingsPage = nullptr;
 };
 
 #endif

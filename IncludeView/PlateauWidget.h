@@ -1,7 +1,7 @@
 #ifndef PLATEAUWIDGET_H
 #define PLATEAUWIDGET_H
-#include <QWidget>
 #include <QStackedWidget>
+#include <QWidget>
 #include <vector>
 
 class ChantierWidget;
@@ -22,20 +22,20 @@ class PlateauWidget : public QWidget
 {
     Q_OBJECT
 
-public:
-    /**
-     * @brief Construit le widget et installe les vues/scènes du plateau et du chantier.
-     */
-    explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
-    /**
-     * @brief Le contrôleur doit appeler afficherPlateauJoueur(index)
-     * avant d'envoyer une TuileItem dans la zone choisie.
-     */
-signals:
+    public:
+        /**
+         * @brief Construit le widget et installe les vues/scènes du plateau et du chantier.
+         */
+        explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
+        /**
+         * @brief Le contrôleur doit appeler afficherPlateauJoueur(index)
+         * avant d'envoyer une TuileItem dans la zone choisie.
+         */
+    signals:
     void demandeParametres();
     void demandeRetourMenu();
     void demandeQuitter();
-    void placementTermine(); //pour que le controleur passe au tour suivant
+    void placementTermine();  // pour que le controleur passe au tour suivant
 
 public slots:
     /**
@@ -45,7 +45,8 @@ public slots:
     void afficherPlateauJoueur(int index);
 
 private slots:
-    void validerPlacementTuile(TuileItem *t);
+    void validerPlacementTuile(TuileItem* t);
+
 private:
     QStackedWidget* stackPlateaux = nullptr;
     std::vector<ZoneJeuWidget*> zonesParJoueur;

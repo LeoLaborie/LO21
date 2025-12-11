@@ -1,12 +1,13 @@
+#include "ControleConsole.h"
+
 #include <iostream>
 #include <limits>
 #include <string>
 #include <vector>
 
-#include "ControleConsole.h"
 #include "Position.h"
-#include "couleurs_console.h"
 #include "Sauvegarde.h"
+#include "couleurs_console.h"
 
 Partie CreerNouvellePartie()
 {
@@ -40,7 +41,7 @@ Partie CreerNouvellePartie()
             // saisie non entière (ex: 't')
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            choixVarianteTuiles = 0; // force à rester dans la boucle
+            choixVarianteTuiles = 0;  // force à rester dans la boucle
         }
 
         if (choixVarianteTuiles != 1 && choixVarianteTuiles != 2)
@@ -117,63 +118,63 @@ void controleConsole()
         std::cin.clear();
         switch (choix)
         {
-        case 1:
-            partie = CreerNouvellePartie();
-            lancerPartie(partie);
-            break;
-        case 2:
-        {
-            const auto sauvegardes = getSauvegardes();
-            if (sauvegardes.empty())
+            case 1:
+                partie = CreerNouvellePartie();
+                lancerPartie(partie);
+                break;
+            case 2:
             {
-                texte_couleur(ROUGE);
-                texte_gras_on();
-                std::cout << "\nAucune sauvegarde disponible.\n\n";
-                texte_reset();
+                const auto sauvegardes = getSauvegardes();
+                if (sauvegardes.empty())
+                {
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
+                    std::cout << "\nAucune sauvegarde disponible.\n\n";
+                    texte_reset();
+                    break;
+                }
+
+                std::cout << "Listes des sauvegardes :" << std::endl;
+                for (const auto &fichier : sauvegardes)
+                {
+                    std::cout << "[" << indiceSauvegarde << "]" << fichier << std::endl;
+                    indiceSauvegarde++;
+                }
+                while (Choixsauvegarde < 0 || Choixsauvegarde >= indiceSauvegarde)
+                {
+                    std::cout << " Choisissez le numéro de la sauvegarde: ";
+                    std::cin >> Choixsauvegarde;
+                    std::cin.clear();
+                    if (Choixsauvegarde < 0 || Choixsauvegarde >= indiceSauvegarde)
+                    {
+                        std::cout << "\n choix invalide \n";
+                    }
+                }
+                try
+                {
+                    partie = Partie::FromSave("saves/" + sauvegardes[Choixsauvegarde]);
+                    texte_reset();
+                    lancerPartie(partie);
+                }
+                catch (const std::exception &e)
+                {
+                    texte_couleur(ROUGE);
+                    texte_gras_on();
+                    std::cout << "\nErreur lors du chargement de la sauvegarde : " << e.what() << "\n\n";
+                    texte_reset();
+                }
                 break;
             }
-
-            std::cout << "Listes des sauvegardes :" << std::endl;
-            for (const auto &fichier : sauvegardes)
-            {
-                std::cout << "[" << indiceSauvegarde << "]" << fichier << std::endl;
-                indiceSauvegarde++;
-            }
-            while (Choixsauvegarde < 0 || Choixsauvegarde >= indiceSauvegarde)
-            {
-                std::cout << " Choisissez le numéro de la sauvegarde: ";
-                std::cin >> Choixsauvegarde;
-                std::cin.clear();
-                if (Choixsauvegarde < 0 || Choixsauvegarde >= indiceSauvegarde)
-                {
-                    std::cout << "\n choix invalide \n";
-                }
-            }
-            try
-            {
-                partie = Partie::FromSave("saves/" + sauvegardes[Choixsauvegarde]);
-                texte_reset();
-                lancerPartie(partie);
-                
-            }
-            catch (const std::exception &e)
-            {
-                texte_couleur(ROUGE);
-                texte_gras_on();
-                std::cout << "\nErreur lors du chargement de la sauvegarde : " << e.what() << "\n\n";
-                texte_reset();
-            }
-            break;
-        }
-        case 0:
-            return;
-        default:
-            break;
+            case 0:
+                return;
+            default:
+                break;
         }
     }
 }
 
-void lancerPartie(Partie& partie){
+void lancerPartie(Partie &partie)
+{
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -207,7 +208,7 @@ void lancerPartie(Partie& partie){
                     {
                         tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
                         std::cout << "\nTuile piochée :\n\n";
-                        std::cout << tuilePiochee; // operator<< respecte les offsets
+                        std::cout << tuilePiochee;  // operator<< respecte les offsets
                         piocheReussie = true;
                     }
                     catch (const std::exception &e)
@@ -234,88 +235,88 @@ void lancerPartie(Partie& partie){
                 std::cin >> rep;
                 switch (rep)
                 {
-                case 'o':
-                case 'O':
-                {
-                    tuilePiochee.pivoterTuile();
-                    std::cout << "\nTuile après pivot :\n\n";
-                    std::cout << tuilePiochee;
-                    break;
-                }
-                case 'a':
-                case 'A':
-                {
-                    std::cout << "\nAperçu tuile :\n\n";
-                    std::cout << tuilePiochee;
-                    break;
-                }
-                case 'p':
-                case 'P':
-                {
-                    phaseRotation = false; // on passe à la phase de placement
-                    break;
-                }
-                case 's':
-                case 'S':
-                {
-                    sauvegarderPartie(partie);
-                    break;
-                }
-                case 'q':
-                case 'Q':
-                {
-                    char sauvegarderAvantQuitter;
-                    std::cout << "Voulez-vous sauvegarder avant de quitter ? (o/n) : ";
-                    std::cin >> sauvegarderAvantQuitter;
-
-                    if (sauvegarderAvantQuitter == 'o' || sauvegarderAvantQuitter == 'O')
+                    case 'o':
+                    case 'O':
                     {
-                        try
+                        tuilePiochee.pivoterTuile();
+                        std::cout << "\nTuile après pivot :\n\n";
+                        std::cout << tuilePiochee;
+                        break;
+                    }
+                    case 'a':
+                    case 'A':
+                    {
+                        std::cout << "\nAperçu tuile :\n\n";
+                        std::cout << tuilePiochee;
+                        break;
+                    }
+                    case 'p':
+                    case 'P':
+                    {
+                        phaseRotation = false;  // on passe à la phase de placement
+                        break;
+                    }
+                    case 's':
+                    case 'S':
+                    {
+                        sauvegarderPartie(partie);
+                        break;
+                    }
+                    case 'q':
+                    case 'Q':
+                    {
+                        char sauvegarderAvantQuitter;
+                        std::cout << "Voulez-vous sauvegarder avant de quitter ? (o/n) : ";
+                        std::cin >> sauvegarderAvantQuitter;
+
+                        if (sauvegarderAvantQuitter == 'o' || sauvegarderAvantQuitter == 'O')
                         {
-                            if (sauvegarderPartie(partie))
+                            try
                             {
-                                texte_couleur(JAUNE);
-                                texte_gras_on();
-                                std::cout << "\nSauvegarde effectuée avec succès.\n";
-                                texte_reset();
+                                if (sauvegarderPartie(partie))
+                                {
+                                    texte_couleur(JAUNE);
+                                    texte_gras_on();
+                                    std::cout << "\nSauvegarde effectuée avec succès.\n";
+                                    texte_reset();
+                                }
+                                else
+                                {
+                                    texte_couleur(ROUGE);
+                                    texte_gras_on();
+                                    std::cout << "\nErreur : la sauvegarde a échoué.\n";
+                                    texte_reset();
+                                }
                             }
-                            else
+                            catch (const std::exception &e)
                             {
                                 texte_couleur(ROUGE);
                                 texte_gras_on();
-                                std::cout << "\nErreur : la sauvegarde a échoué.\n";
+                                std::cout << "\nException lors de la sauvegarde : " << e.what() << "\n";
                                 texte_reset();
                             }
+
+                            // Après sauvegarde → quitter la partie et revenir au menu
+                            return;
                         }
-                        catch (const std::exception &e)
+
+                        if (sauvegarderAvantQuitter == 'n' || sauvegarderAvantQuitter == 'N')
                         {
-                            texte_couleur(ROUGE);
-                            texte_gras_on();
-                            std::cout << "\nException lors de la sauvegarde : " << e.what() << "\n";
-                            texte_reset();
+                            // Quitter sans sauvegarder
+                            return;
                         }
 
-                        // Après sauvegarde → quitter la partie et revenir au menu
-                        return;
+                        // Si l’utilisateur a tapé autre chose
+                        texte_couleur(ROUGE);
+                        texte_gras_on();
+                        std::cout << "\nRéponse invalide, retour au jeu.\n";
+                        texte_reset();
+                        break;
                     }
-
-                    if (sauvegarderAvantQuitter == 'n' || sauvegarderAvantQuitter == 'N')
-                    {
-                        // Quitter sans sauvegarder
-                        return;
-                    }
-
-                    // Si l’utilisateur a tapé autre chose
-                    texte_couleur(ROUGE);
-                    texte_gras_on();
-                    std::cout << "\nRéponse invalide, retour au jeu.\n";
-                    texte_reset();
-                    break;
-                }
-                default:
-                    texte_reset();
-                    std::cout << "\n Choix invalide veuillez réessayer" << std::endl;
-                    break;
+                    default:
+                        texte_reset();
+                        std::cout << "\n Choix invalide veuillez réessayer" << std::endl;
+                        break;
                 }
             }
 

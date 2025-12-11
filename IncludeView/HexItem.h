@@ -2,12 +2,14 @@
 #define HEXITEM_H
 #pragma once
 #include <QGraphicsPolygonItem>
+
 #include "Hexagone.h"
 
 /**
  * @brief Représentation graphique d'un Hexagone métier dans la scène Qt.
  */
-class HexItem : public QGraphicsPolygonItem {
+class HexItem : public QGraphicsPolygonItem
+{
 public:
     /**
      * @brief Crée l'hexagone graphique en positionnant et texturant l'item selon son modèle.
@@ -30,4 +32,4 @@ public:
  */
 QPointF axialVersPixel(int q, int r, double size);
 
-#endif // HEXITEM_H
+#endif  // HEXITEM_H

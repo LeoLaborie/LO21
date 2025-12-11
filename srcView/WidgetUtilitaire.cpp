@@ -1,11 +1,12 @@
 #include "WidgetUtilitaire.h"
+
 #include <QHBoxLayout>
 #include <QPushButton>
 
 ValiderPlacementWidget::ValiderPlacementWidget(QWidget* parent)
     : QWidget(parent)
 {
-    //widget léger translucide qui flotte au-dessus des tuiles
+    // widget léger translucide qui flotte au-dessus des tuiles
     setAttribute(Qt::WA_TranslucentBackground);
     setAutoFillBackground(false);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -13,7 +14,7 @@ ValiderPlacementWidget::ValiderPlacementWidget(QWidget* parent)
     layout->setContentsMargins(8, 8, 8, 8);
     layout->setSpacing(10);
 
-    //création des boutons de décision autour du placement
+    // création des boutons de décision autour du placement
     boutonConfirmer = new QPushButton(tr("Confirmer"), this);
     boutonAnnuler = new QPushButton(tr("Annuler"), this);
     boutonConfirmer->setObjectName("btnConfirmerPlacement");
@@ -22,7 +23,7 @@ ValiderPlacementWidget::ValiderPlacementWidget(QWidget* parent)
     layout->addWidget(boutonConfirmer);
     layout->addWidget(boutonAnnuler);
 
-    //style commun reprenant les couleurs Akropolis et les états hover/pressed
+    // style commun reprenant les couleurs Akropolis et les états hover/pressed
     const char* styleBoutons =
         "QPushButton#btnConfirmerPlacement {"
         "  font-size: 14px;"
@@ -51,8 +52,8 @@ ValiderPlacementWidget::ValiderPlacementWidget(QWidget* parent)
     boutonConfirmer->setCursor(Qt::PointingHandCursor);
     boutonAnnuler->setCursor(Qt::PointingHandCursor);
 
-    //propagation directe des clics aux signaux publics
-    connect(boutonConfirmer, &QPushButton::clicked,this, &ValiderPlacementWidget::confirmationDemandee);
-    connect(boutonAnnuler, &QPushButton::clicked,this, &ValiderPlacementWidget::annulationDemandee);
+    // propagation directe des clics aux signaux publics
+    connect(boutonConfirmer, &QPushButton::clicked, this, &ValiderPlacementWidget::confirmationDemandee);
+    connect(boutonAnnuler, &QPushButton::clicked, this, &ValiderPlacementWidget::annulationDemandee);
     setStyleSheet("background-color: transparent;");
 }

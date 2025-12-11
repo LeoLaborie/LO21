@@ -19,7 +19,7 @@
 #define INVERSER 7
 #define HIDDEN 8
 
-#define GRAS_OFF 21 //on rajoute 20 pour OFF
+#define GRAS_OFF 21  // on rajoute 20 pour OFF
 #define SOULIGNE_OFF 24
 #define CLIGNOTE_OFF 25
 
@@ -44,30 +44,30 @@
 #define F_CYAN 46
 #define F_BLANC 47
 
-
 /*MACRO FONCTIONS*/
-#define effacer_ecran()         printf("\033[H\033[2J")
-#define texte_reset()         printf("\033[%dm",RESET)
-#define texte_couleur(coul)     printf("\033[%dm",coul)
-#define texte_fond(coul)      printf("\033[%dm",coul+10)
+#define effacer_ecran() printf("\033[H\033[2J")
+#define texte_reset() printf("\033[%dm", RESET)
+#define texte_couleur(coul) printf("\033[%dm", coul)
+#define texte_fond(coul) printf("\033[%dm", coul + 10)
 
-#define cacher_curseur()        printf("\033[?25l")
-#define afficher_curseur()      printf("\033[?25h")
+#define cacher_curseur() printf("\033[?25l")
+#define afficher_curseur() printf("\033[?25h")
 
-#define texte_effet(effet)      printf("\033[%dm",effet)
+#define texte_effet(effet) printf("\033[%dm", effet)
 
-#define texte_souligne_on()     printf("\033[%dm",SOULIGNE)
-#define texte_souligne_off()    printf("\033[%dm",SOULIGNE_OFF)
-#define texte_gras_on()         printf("\033[%dm",GRAS)
-#define texte_gras_off()        printf("\033[%dm",GRAS_OFF) //TO DO : marche pas :'(
-#define texte_clignote_on()     printf("\033[%dm",CLIGNOTE)
-#define texte_clignote_off()    printf("\033[%dm",CLIGNOTE_OFF)
-#define inverser_fond_texte()   printf("\033[%dm",INVERSER)
+#define texte_souligne_on() printf("\033[%dm", SOULIGNE)
+#define texte_souligne_off() printf("\033[%dm", SOULIGNE_OFF)
+#define texte_gras_on() printf("\033[%dm", GRAS)
+#define texte_gras_off() printf("\033[%dm", GRAS_OFF)  // TO DO : marche pas :'(
+#define texte_clignote_on() printf("\033[%dm", CLIGNOTE)
+#define texte_clignote_off() printf("\033[%dm", CLIGNOTE_OFF)
+#define inverser_fond_texte() printf("\033[%dm", INVERSER)
 
-#define afficher_texte(texte,coul_texte,coul_fond,effet)	texte_couleur(coul_texte);  \
-															texte_fond(coul_fond);		\
-															texte_effet(effet);         \
-															printf("%s",texte);         \
-															texte_reset()
+#define afficher_texte(texte, coul_texte, coul_fond, effet) \
+    texte_couleur(coul_texte);                              \
+    texte_fond(coul_fond);                                  \
+    texte_effet(effet);                                     \
+    printf("%s", texte);                                    \
+    texte_reset()
 
 #endif
