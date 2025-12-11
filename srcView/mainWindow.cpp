@@ -127,8 +127,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
     stackWidget->setMinimumSize(plateauWidget->size());
     resize(plateauWidget->size());
 
-
-
+    // -> Connecter ici PlateauWidget aux signaux du contrôleur (pioche, placements, tours, scores).
 
 
     connect(plateauWidget, &PlateauWidget::demandeParametres, this, [this]{
