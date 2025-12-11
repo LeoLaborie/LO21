@@ -238,7 +238,7 @@ void JeuController::traiterTourHumain(Partie &partie)
     std::cout << partie.getChantier();
 
     Tuile tuilePiochee;
-    const bool tuileDejaEnMain = !joueur.getTuileEnMain().getHexagones().empty();
+    const bool tuileDejaEnMain = joueur.getTuileEnMain().getNbHexa() > 0;
     if (!tuileDejaEnMain)
     {
         int idTuile = joueur.choixTuile(partie.getChantier());

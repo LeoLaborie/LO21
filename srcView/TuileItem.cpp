@@ -19,8 +19,8 @@ TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent,Mode m,int tailleTuile,in
     setFlag(ItemIsSelectable, true);
     /* setFlag(ItemSendsGeometryChanges, true); peut etre utile mais pas encore utilisé*/
     int i=0;
-    for (Hexagone* h : ref.getHexagones()) {
-        auto* hexItem = new HexItem(h, tailleHex);
+    for(Tuile::ConstIterator it = ref.getConstIterator(); !it.isDone(); it.next()){
+        auto* hexItem = new HexItem(&it.currentItem(), taille);
         addToGroup(hexItem);
         if (i == 0) hexRef = hexItem;
         ++i;

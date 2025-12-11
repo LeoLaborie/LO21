@@ -51,9 +51,9 @@ public:
     template <typename F>
     void pourChaqueHexagone(F f)
     {
-        for (auto &tuile : listeTuiles)
-            for (auto &hex : tuile.getHexagones())
-                f(hex);
+        for (Tuile &tuile : listeTuiles)
+            for(Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
+                f(&it.currentItem());
     }
 
     /**
@@ -63,9 +63,9 @@ public:
     template <typename F>
     void pourChaqueHexagone(F f) const
     {
-        for (const auto &tuile : listeTuiles)
-            for (auto hex : tuile.getHexagones())
-                f(hex);
+        for (const Tuile &tuile : listeTuiles)
+            for(Tuile::ConstIterator it = tuile.getConstIterator(); !it.isDone(); it.next())
+                f(&it.currentItem());
     }
 
     // Getters

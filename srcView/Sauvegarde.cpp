@@ -150,14 +150,14 @@ std::istream &operator>>=(std::istream &is, Hexagone &h) {
 pour sauvegarder les hexagones de la tuile
 */
 std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
-  const auto &hexs = t.getHexagones();
-  os << "TUILE " << hexs.size() << '\n';
+    os << "TUILE " << t.getNbHexa() << '\n';
 
-  for (auto h : hexs)
-    os <<= *h;
+    for(Tuile::ConstIterator it = t.getConstIterator(); !it.isDone(); it.next())
+        os <<= it.currentItem();
 
-  return os;
+    return os;
 }
+
 // de même pour le chargement on utilise l'opérator surchager précédemment
 std::istream &operator>>=(std::istream &is, Tuile &tuile) {
   std::string ligne;
