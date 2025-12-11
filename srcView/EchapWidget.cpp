@@ -1,11 +1,13 @@
-#include <QPushButton>
-#include <QCursor>
 #include "EchapWidget.h"
-#include <QVBoxLayout>
-#include <QLabel>
+#include <QCursor>
 #include <QFrame>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsScene>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
-EchapWidget::EchapWidget(QWidget * parent)
+EchapWidget::EchapWidget(QWidget* parent)
     : QWidget(parent)
 {
     setStyleSheet("QWidget { color: #0f172a; }"
@@ -19,11 +21,62 @@ EchapWidget::EchapWidget(QWidget * parent)
                   "}");
 
     setAttribute(Qt::WA_StyledBackground, true);
-    auto *layoutCentral = new QVBoxLayout(this);
+    setAttribute(Qt::WA_TranslucentBackground, true);
+    setFocusPolicy(Qt::StrongFocus);
+
+    construireInterface();
+    adjustSize();
+}
+
+void EchapWidget::attacherAScene(QGraphicsScene* scene)
+{
+    if (!scene || proxy)
+        return;
+
+    proxy = scene->addWidget(this);
+    proxy->setZValue(100);
+    proxy->setVisible(false);
+}
+
+void EchapWidget::afficherEchap(const QRectF& zoneReference)
+{
+    if (!proxy)
+        return;
+
+    mettreAJourPosition(zoneReference);
+    proxy->setVisible(true);
+    actif = true;
+    emit visibiliteChangee(true);
+    setFocus();
+}
+
+void EchapWidget::fermerWidget()
+{
+    if (!proxy || !actif)
+        return;
+
+    proxy->setVisible(false);
+    actif = false;
+    emit visibiliteChangee(false);
+}
+
+void EchapWidget::mettreAJourPosition(const QRectF& zoneReference)
+{
+    if (!proxy)
+        return;
+
+    const double x = zoneReference.center().x() - width() / 2.0;
+    const double y = zoneReference.center().y() - height() / 2.0;
+    proxy->setPos(x, y);
+}
+
+void EchapWidget::construireInterface()
+{
+    auto* layoutCentral = new QVBoxLayout(this);
     layoutCentral->setContentsMargins(0, 0, 0, 0);
     layoutCentral->setAlignment(Qt::AlignCenter);
 
-    auto *cadre = new QFrame();
+    auto* cadre = new QFrame();
     cadre->setObjectName("newGameCadre");
     cadre->setMaximumWidth(420);
     cadre->setStyleSheet(
@@ -31,17 +84,17 @@ EchapWidget::EchapWidget(QWidget * parent)
     );
     layoutCentral->addWidget(cadre, 0, Qt::AlignCenter);
 
-    auto *layoutMenu = new QVBoxLayout(cadre);
+    auto* layoutMenu = new QVBoxLayout(cadre);
     layoutMenu->setContentsMargins(32, 32, 32, 32);
     layoutMenu->setSpacing(16);
 
-    auto *titre = new QLabel("Pause");
+    auto* titre = new QLabel("Pause");
     titre->setAlignment(Qt::AlignCenter);
     titre->setStyleSheet("font-size: 32px; font-weight: 700;");
     layoutMenu->addWidget(titre);
 
     auto creerBouton = [] (const QString& texte) {
-        auto *btn = new QPushButton(texte);
+        auto* btn = new QPushButton(texte);
         btn->setFixedHeight(48);
         btn->setMinimumWidth(260);
         btn->setCursor(Qt::PointingHandCursor);
@@ -54,12 +107,13 @@ EchapWidget::EchapWidget(QWidget * parent)
         return btn;
     };
 
-    auto *boutonReprendre = creerBouton("Reprendre");
-    auto *boutonParametres = creerBouton("Paramètres");
-    auto *boutonMenu = creerBouton("Menu");
-    auto *boutonSauvegarder = creerBouton("Sauvegarder");
+    auto* boutonReprendre = creerBouton("Reprendre");
+    auto* boutonParametres = creerBouton("Paramètres");
+    auto* boutonMenu = creerBouton("Menu");
+    auto* boutonSauvegarder = creerBouton("Sauvegarder");
     boutonSauvegarder->setContentsMargins(0, 0, 0, 8);
-    auto *boutonQuitter = new QPushButton("Quitter");
+
+    auto* boutonQuitter = new QPushButton("Quitter");
     boutonQuitter->setObjectName("btnQuitterEchap");
     boutonQuitter->setFixedHeight(48);
     boutonQuitter->setMinimumWidth(260);
@@ -78,7 +132,7 @@ EchapWidget::EchapWidget(QWidget * parent)
     layoutMenu->addSpacing(20);
     layoutMenu->addWidget(boutonQuitter);
 
-    connect(boutonReprendre, &QPushButton::clicked, this, &EchapWidget::demandeFermeture);
+    connect(boutonReprendre, &QPushButton::clicked, this, &EchapWidget::fermerWidget);
     connect(boutonParametres, &QPushButton::clicked, this, &EchapWidget::demandeParametres);
     connect(boutonMenu, &QPushButton::clicked, this, &EchapWidget::demandeRetourMenu);
     connect(boutonSauvegarder, &QPushButton::clicked, this, &EchapWidget::demandeSauvegarde);

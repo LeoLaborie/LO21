@@ -7,7 +7,7 @@
 class ChantierWidget;
 class ScorePanel;
 class ZoneJeuWidget;
-class WidgetUtilitaire;
+class EchapWidget;
 class QShortcut;
 class Tuile;
 class Hexagone;
@@ -32,11 +32,16 @@ public:
      * @param centrer centre automatiquement la tuile dans la zone si true.
      * @return pointeur vers le TuileItem créé pour manipulations ultérieures.
      */
+signals:
+    void demandeParametres();
+    void demandeRetourMenu();
+    void demandeQuitter();
+
 private:
     ZoneJeuWidget* zoneJeuWidget = nullptr;
     ChantierWidget* chantierWidget = nullptr;
     ScorePanel* scorePanel = nullptr;
-    WidgetUtilitaire* widgetUtilitaire = nullptr;
+    EchapWidget* echapWidget = nullptr;
     QShortcut* raccourciEchap = nullptr;
     std::vector<std::unique_ptr<Tuile>> tuilesDeTest;
     std::vector<std::unique_ptr<Hexagone>> hexagonesDeTest;

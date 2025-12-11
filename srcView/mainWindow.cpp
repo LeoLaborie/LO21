@@ -92,4 +92,14 @@ MainWindow::MainWindow(QWidget* parent)
         if (stack->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes();
     });
+
+    connect(plateau, &PlateauWidget::demandeParametres, stack, [stack, settingsPage]{
+        stack->setCurrentWidget(settingsPage);
+    });
+    connect(plateau, &PlateauWidget::demandeRetourMenu, stack, [stack, menuPage]{
+        stack->setCurrentWidget(menuPage);
+    });
+    connect(plateau, &PlateauWidget::demandeQuitter, this, [this]{
+        close();
+    });
 }

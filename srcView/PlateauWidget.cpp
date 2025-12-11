@@ -3,7 +3,7 @@
 #include "ScorePanel.h"
 #include "ZoneJeuWidget.h"
 #include "Tuile.h"
-#include "WidgetUtilitaire.h"
+#include "EchapWidget.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <array>
@@ -109,9 +109,21 @@ PlateauWidget::PlateauWidget(QWidget* parent)
     zoneJeuWidget = new ZoneJeuWidget(plateauWidth, plateauHeight, this);
     layout->addWidget(zoneJeuWidget, 1);
 
-    widgetUtilitaire = new WidgetUtilitaire();
-    widgetUtilitaire->attacherAScene(zoneJeuWidget->scene());
-    connect(widgetUtilitaire, &WidgetUtilitaire::visibiliteChangee,this, &PlateauWidget::gererBlocageInteractions);
+    echapWidget = new EchapWidget();
+    echapWidget->attacherAScene(zoneJeuWidget->scene());
+    connect(echapWidget, &EchapWidget::visibiliteChangee,this, &PlateauWidget::gererBlocageInteractions);
+    connect(echapWidget, &EchapWidget::demandeParametres, this, [this]{
+        echapWidget->fermerWidget();
+        emit demandeParametres();
+    });
+    connect(echapWidget, &EchapWidget::demandeRetourMenu, this, [this]{
+        echapWidget->fermerWidget();
+        emit demandeRetourMenu();
+    });
+    connect(echapWidget, &EchapWidget::demandeQuitter, this, [this]{
+        echapWidget->fermerWidget();
+        emit demandeQuitter();
+    });
 
     raccourciEchap = new QShortcut(QKeySequence(Qt::Key_Escape), this);
     connect(raccourciEchap, &QShortcut::activated,this, &PlateauWidget::basculerMenuEchap);
@@ -141,12 +153,12 @@ PlateauWidget::PlateauWidget(QWidget* parent)
 void PlateauWidget::basculerMenuEchap()
 {
     //si pas définit on ne fais rien
-    if (!widgetUtilitaire || !zoneJeuWidget)
+    if (!echapWidget || !zoneJeuWidget)
         return;
 
     //si la widget est déjà actives on la ferme
-    if (widgetUtilitaire->estActif())
-        widgetUtilitaire->fermerWidget();
+    if (echapWidget->estActif())
+        echapWidget->fermerWidget();
     else
     {
         //calcul la position de la widget
@@ -154,7 +166,7 @@ void PlateauWidget::basculerMenuEchap()
         const QPointF topLeft = zoneJeuWidget->mapToScene(vue.topLeft());
         const QPointF bottomRight = zoneJeuWidget->mapToScene(vue.bottomRight());
         const QRectF visibleRect(topLeft, bottomRight);
-        widgetUtilitaire->afficherEchap(visibleRect);
+        echapWidget->afficherEchap(visibleRect);
     }
 }
 
