@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "Hexagone.h"
@@ -28,7 +29,7 @@ inline void rotation60deg(OffsetQR &o)
 class Tuile
 {
 private:
-    std::vector<Hexagone *> hex;
+    std::vector<std::shared_ptr<Hexagone>> hex;
     std::vector<OffsetQR> offsets;
 
 public:
@@ -38,7 +39,7 @@ public:
      */
     class Iterator
     {
-        std::vector<Hexagone *> &listeHex; // NON const
+        std::vector<std::shared_ptr<Hexagone>> &listeHex; // NON const
         Hexagone *hexCourant;              // NON const
         int nb;
         int idx = 0;
@@ -49,11 +50,11 @@ public:
          * @param h Vecteur de pointeurs vers les hexagones
          * @param n Nombre d'hexagones
          */
-        Iterator(std::vector<Hexagone *> &h, int n)
+        Iterator(std::vector<std::shared_ptr<Hexagone>> &h, int n)
             : listeHex(h), nb(n)
         {
             if (nb > 0)
-                hexCourant = listeHex[idx];
+                hexCourant = listeHex[idx].get();
         }
 
         /**
@@ -69,7 +70,7 @@ public:
         {
             nb--;
             if (nb > 0)
-                hexCourant = listeHex[++idx];
+                hexCourant = listeHex[++idx].get();
         }
 
         /**
@@ -97,7 +98,7 @@ public:
      */
     class ConstIterator
     {
-        const std::vector<Hexagone *> &listeHex;
+        const std::vector<std::shared_ptr<Hexagone>> &listeHex;
         const Hexagone *hexCourant;
         int nb;
         int idx = 0;
@@ -108,11 +109,11 @@ public:
          * @param h Vecteur constant de pointeurs vers les hexagones
          * @param n Nombre d'hexagones
          */
-        ConstIterator(const std::vector<Hexagone *> &h, int n)
+        ConstIterator(const std::vector<std::shared_ptr<Hexagone>> &h, int n)
             : listeHex(h), nb(n)
         {
             if (nb > 0)
-                hexCourant = listeHex[idx];
+                hexCourant = listeHex[idx].get();
         }
 
         /**
@@ -128,7 +129,7 @@ public:
         {
             nb--;
             if (nb > 0)
-                hexCourant = listeHex[++idx];
+                hexCourant = listeHex[++idx].get();
         }
 
         /**
@@ -269,7 +270,7 @@ public:
     void afficherDetails() const
     {
         std::cout << ' ';
-        for (const auto *h : hex)
+        for (const auto &h : hex)
         {
             h->afficher(false);
             std::cout << ' ';

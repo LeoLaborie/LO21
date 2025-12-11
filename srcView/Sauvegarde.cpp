@@ -479,8 +479,8 @@ Partie Partie::FromSave(const std::string &nomFichier)
 
     if (present == 1)
     {
-        partie.fauxJoueur =
-            IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
+        partie.fauxJoueur.reset(
+            IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux)));
     }
 
     return partie;

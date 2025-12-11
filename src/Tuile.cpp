@@ -10,7 +10,12 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4)
     hex2->setVoisins({hex1, hex3, hex4});
     hex3->setVoisins({hex1, hex2, hex4});
     hex4->setVoisins({hex1, hex2, hex3});
-    hex = {hex1, hex2, hex3, hex4};
+    hex.clear();
+    hex.reserve(4);
+    hex.emplace_back(hex1);
+    hex.emplace_back(hex2);
+    hex.emplace_back(hex3);
+    hex.emplace_back(hex4);
 
     offsets.clear();
     offsets.reserve(4);
@@ -30,7 +35,11 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3)
     hex2->setVoisins({hex1, hex3});
     hex3->setVoisins({hex1, hex2});
 
-    hex = {hex1, hex2, hex3};
+    hex.clear();
+    hex.reserve(3);
+    hex.emplace_back(hex1);
+    hex.emplace_back(hex2);
+    hex.emplace_back(hex3);
 
     offsets.clear();
     offsets.reserve(3);

@@ -20,7 +20,7 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
         throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
 
     nbrJoueurs = nbJouer;
-    fauxJoueur = nullptr;
+    fauxJoueur.reset();
 
     // creation des joueurs
     joueurs.clear();
@@ -62,9 +62,8 @@ void Partie::creerFauxJoueur()
         texte_reset();
         std::cin >> difficulte;
     }
-    IllustreArchitecte *f = new IllustreArchitecte{difficulte};
-    f->setNbrPierres(2);
-    fauxJoueur = f;
+    fauxJoueur.reset(new IllustreArchitecte(difficulte));
+    fauxJoueur->setNbrPierres(2);
 }
 
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)

@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include <map>
+#include <memory>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -26,7 +27,7 @@ private:
     int nbrTours = 0;
     int taillepaquet = 0;
 
-    IllustreArchitecte *fauxJoueur;
+    std::unique_ptr<IllustreArchitecte> fauxJoueur;
 
     Chantier chantier;
     std::vector<Joueur> joueurs;
@@ -43,6 +44,10 @@ private:
            std::vector<Joueur> joueurs);
 
 public:
+    Partie(const Partie &) = delete;
+    Partie &operator=(const Partie &) = delete;
+    Partie(Partie &&) noexcept = default;
+    Partie &operator=(Partie &&) noexcept = default;
     /**
      * * @brief Constructeur de Partie
      * @param nbJouer Nombre de joueurs
@@ -221,7 +226,7 @@ public:
      */
     bool fauxJoueurPresent() const
     {
-        return fauxJoueur != nullptr;
+        return static_cast<bool>(fauxJoueur);
     }
 
     /**
@@ -235,7 +240,7 @@ public:
      */
     IllustreArchitecte *getFauxJoueur() const
     {
-        return fauxJoueur;
+        return fauxJoueur.get();
     }
 
     /**
