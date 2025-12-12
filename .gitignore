@@ -63,3 +63,4 @@ build/
 bin/
 .qt/
 *autogen/
+compile_commands.json
