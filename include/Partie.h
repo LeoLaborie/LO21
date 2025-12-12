@@ -13,6 +13,7 @@
 #include "Chantier.h"
 #include "Joueur.h"
 #include "Tuile.h"
+#include "RulesFactory.h"
 
 /**
  * @class Partie
@@ -32,6 +33,7 @@ private:
     Chantier chantier;
     std::vector<Joueur> joueurs;
     std::vector<std::vector<Tuile>> piles;
+    std::unique_ptr<IRulesFactory> rulesFactory;
     /**
      * @brief Constructeur privé utilisé uniquement pour reconstruire une partie depuis une sauvegarde.
      */
@@ -56,6 +58,10 @@ public:
      * @param varianteFullTuile Indique si la variante Full Tuile est activée
      */
     Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile);
+    /**
+     * @brief Constructeur utilisant une factory de règles complète.
+     */
+    Partie(int nbJouer, std::vector<std::string> &pseudo, std::unique_ptr<IRulesFactory> rulesFactory);
     /**
      * @brief constructeur de base de partie utiliser pour créer la partie dans le main
      */

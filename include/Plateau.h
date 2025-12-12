@@ -199,6 +199,7 @@ public:
      */
     static Plateau fromSave(const bool variantes[5], std::vector<Tuile> tuiles);
 
+
 private:
     void initialiserStrategies(const bool variantesScore[5]);
 };

@@ -14,10 +14,20 @@ Partie::Partie(int nbJoueursInit,
 {
 }
 
-Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile)
+Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, std::unique_ptr<IRulesFactory> factory)
 {
     if (nbJouer <= 0 || nbJouer > 4)
         throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
+
+    if (!factory)
+        factory = std::make_unique<RulesFactoryClassique>();
+
+    rulesFactory = std::move(factory);
+    Ruleset regles = rulesFactory->creerRuleset();
+
+    bool variantesScore[5] = {};
+    for (int i = 0; i < 5; ++i)
+        variantesScore[i] = regles.variantesScore[i];
 
     nbrJoueurs = nbJouer;
     fauxJoueur.reset();
@@ -45,7 +55,15 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
     nbrTours = 0;
     taillepaquet = 1 + nbrJoueurs;
 
-    genererTuilesParties(varianteFullTuile);
+    if (auto generateur = rulesFactory->creerGenerateurTuiles())
+        generateur->generer(*this);
+    else
+        genererTuilesParties(regles.fullTuiles);
+}
+
+Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile)
+    : Partie(nbJouer, pseudo, std::make_unique<RulesFactoryPersonnalisee>(variantesScore, varianteFullTuile))
+{
 }
 
 void Partie::creerFauxJoueur()
