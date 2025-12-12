@@ -3,6 +3,8 @@
 #include <QCoreApplication>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <algorithm>
@@ -15,7 +17,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
     // panneau central contenant toutes les pages (menu, plateau…)
     stackWidget = new QStackedWidget(this);
-    resize(1920, 1080);
+    resize(QGuiApplication::primaryScreen()->availableGeometry().size()); 
     setCentralWidget(stackWidget);
 
     menuPage = new QWidget(stackWidget);
