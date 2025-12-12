@@ -1,8 +1,6 @@
 #ifndef SCORESTRATEGY_H
 #define SCORESTRATEGY_H
 
-#include <functional>
-
 struct MarcheContext
 {
     int hauteur = 0;
@@ -30,14 +28,14 @@ struct JardinContext
     bool conditionVariante = false;
 };
 
-class HabitationScoreStrategy
+class ScoreHabitationStrategy
 {
 public:
-    virtual ~HabitationScoreStrategy() = default;
+    virtual ~ScoreHabitationStrategy() = default;
     virtual int calculer(int scorePlusGrandQuartier) const = 0;
 };
 
-class HabitationClassiqueStrategy : public HabitationScoreStrategy
+class SHClassique : public ScoreHabitationStrategy
 {
 public:
     int calculer(int scorePlusGrandQuartier) const override
@@ -46,7 +44,7 @@ public:
     }
 };
 
-class HabitationVarianteStrategy : public HabitationScoreStrategy
+class SHVariante : public ScoreHabitationStrategy
 {
 public:
     int calculer(int scorePlusGrandQuartier) const override
@@ -57,14 +55,14 @@ public:
     }
 };
 
-class MarcheScoreStrategy
+class ScoreMarcheStrategy
 {
 public:
-    virtual ~MarcheScoreStrategy() = default;
+    virtual ~ScoreMarcheStrategy() = default;
     virtual int calculer(const MarcheContext &ctx) const = 0;
 };
 
-class MarcheClassiqueStrategy : public MarcheScoreStrategy
+class SMClassique : public ScoreMarcheStrategy
 {
 public:
     int calculer(const MarcheContext &ctx) const override
@@ -75,7 +73,7 @@ public:
     }
 };
 
-class MarcheVarianteStrategy : public MarcheScoreStrategy
+class SMVariante : public ScoreMarcheStrategy
 {
 public:
     int calculer(const MarcheContext &ctx) const override
@@ -89,14 +87,14 @@ public:
     }
 };
 
-class CaserneScoreStrategy
+class ScoreCaserneStrategy
 {
 public:
-    virtual ~CaserneScoreStrategy() = default;
+    virtual ~ScoreCaserneStrategy() = default;
     virtual int calculer(const CaserneContext &ctx) const = 0;
 };
 
-class CaserneClassiqueStrategy : public CaserneScoreStrategy
+class SCClassique : public ScoreCaserneStrategy
 {
 public:
     int calculer(const CaserneContext &ctx) const override
@@ -107,7 +105,7 @@ public:
     }
 };
 
-class CaserneVarianteStrategy : public CaserneScoreStrategy
+class SCVariante : public ScoreCaserneStrategy
 {
 public:
     int calculer(const CaserneContext &ctx) const override
@@ -120,14 +118,14 @@ public:
     }
 };
 
-class TempleScoreStrategy
+class ScoreTempleStrategy
 {
 public:
-    virtual ~TempleScoreStrategy() = default;
+    virtual ~ScoreTempleStrategy() = default;
     virtual int calculer(const TempleContext &ctx) const = 0;
 };
 
-class TempleClassiqueStrategy : public TempleScoreStrategy
+class STClassique : public ScoreTempleStrategy
 {
 public:
     int calculer(const TempleContext &ctx) const override
@@ -138,7 +136,7 @@ public:
     }
 };
 
-class TempleVarianteStrategy : public TempleScoreStrategy
+class STVariante : public ScoreTempleStrategy
 {
 public:
     int calculer(const TempleContext &ctx) const override
@@ -151,14 +149,14 @@ public:
     }
 };
 
-class JardinScoreStrategy
+class ScoreJardinStrategy
 {
 public:
-    virtual ~JardinScoreStrategy() = default;
+    virtual ~ScoreJardinStrategy() = default;
     virtual int calculer(const JardinContext &ctx) const = 0;
 };
 
-class JardinClassiqueStrategy : public JardinScoreStrategy
+class SJClassique : public ScoreJardinStrategy
 {
 public:
     int calculer(const JardinContext &ctx) const override
@@ -167,7 +165,7 @@ public:
     }
 };
 
-class JardinVarianteStrategy : public JardinScoreStrategy
+class SJVariante : public ScoreJardinStrategy
 {
 public:
     int calculer(const JardinContext &ctx) const override
@@ -298,7 +296,7 @@ inline int calculJardinVariante(const JardinContext &ctx)
 /**
  * @brief Crée et configure toutes les stratégies en fonction des variantes actives.
  */
-inline ScoreStrategies makeScoreStrategies(const bool variantes[5])
+inline ScoreStrategies ChoisirScoreStrategies(const bool variantes[5])
 {
     ScoreStrategies strategies;
     strategies.habitation = variantes[0] ? &calculHabitationVariante : &calculHabitationClassique;

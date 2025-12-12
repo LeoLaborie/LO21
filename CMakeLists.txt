@@ -37,11 +37,6 @@ set(LO21_HEADERS
 add_compile_options(
     -Wall
     -Wextra
-    -Wpedantic
-    -Wconversion          # conversions implicites potentiellement dangereuses
-    -Wsign-conversion     # conversions signées/non signées
-    -Wold-style-cast      # cast C interdit en C++
-    -Wshadow              # variables qui masquent d'autres variables
 )
 
 

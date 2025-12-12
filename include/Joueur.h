@@ -48,6 +48,8 @@ protected:
     Joueur(const bool variantes[5], std::string nom, int pierres, int points, Tuile tuileMain, std::vector<Tuile> plateau);
 
 public:
+    Joueur(const Joueur &) = default;
+    Joueur &operator=(const Joueur &) = default;
     /**
      * @brief Destructeur de Joueur
      */

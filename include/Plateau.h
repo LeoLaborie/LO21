@@ -47,10 +47,8 @@ private:
     explicit Plateau();
 
 public:
-    Plateau(const Plateau &other);
-    Plateau &operator=(const Plateau &other);
-    Plateau(Plateau &&) noexcept = default;
-    Plateau &operator=(Plateau &&) noexcept = default;
+    Plateau(const Plateau &);
+    Plateau &operator=(const Plateau &);
     /**
      * @brief Applique une fonction à chaque hexagone du plateau
      * @param f Fonction à appliquer
@@ -84,8 +82,6 @@ public:
     {
         return listeTuiles;
     };
-
-    // TODO: Méthode jamais utilisée
     /**
      * @brief Retourne les variantes de score du plateau
      * @return const bool* : pointeur constant vers le tableau des variantes de score

@@ -51,7 +51,7 @@ void Plateau::initialiserStrategies(const bool vs[5])
 {
     for (int i = 0; i < 5; ++i)
         variantesScores[i] = vs[i];
-    scoreStrategies = makeScoreStrategies(variantesScores);
+    scoreStrategies = ChoisirScoreStrategies(variantesScores);
 }
 
 void Plateau::updateVoisins()
