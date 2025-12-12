@@ -8,6 +8,7 @@
 #include "Hexagone.h"
 #include "Position.h"
 #include "Tuile.h"
+#include "ScoreStrategy.h"
 #include "couleurs_console.h"
 
 // Déclarations anticipées pour l'amitié
@@ -33,6 +34,7 @@ class Plateau
 private:
     std::vector<Tuile> listeTuiles;
     bool variantesScores[5];
+    ScoreStrategies scoreStrategies;
     /**
      * @brief Constructeur de Plateau
      * @param variantesScore Tableau des variantes de score
@@ -45,6 +47,10 @@ private:
     explicit Plateau();
 
 public:
+    Plateau(const Plateau &other);
+    Plateau &operator=(const Plateau &other);
+    Plateau(Plateau &&) noexcept = default;
+    Plateau &operator=(Plateau &&) noexcept = default;
     /**
      * @brief Applique une fonction à chaque hexagone du plateau
      * @param f Fonction à appliquer
@@ -196,5 +202,8 @@ public:
      * @return Plateau réhydraté.
      */
     static Plateau fromSave(const bool variantes[5], std::vector<Tuile> tuiles);
+
+private:
+    void initialiserStrategies(const bool variantesScore[5]);
 };
 #endif

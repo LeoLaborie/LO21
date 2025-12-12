@@ -6,10 +6,7 @@
 
 Plateau::Plateau(const bool vs[5])
 {
-    for (int i = 0; i < 5; i++)
-    {
-        variantesScores[i] = vs[i];
-    }
+    initialiserStrategies(vs);
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
@@ -19,9 +16,27 @@ Plateau::Plateau(const bool vs[5])
 
 Plateau::Plateau()
 {
+    bool vs[5] = {};
+    initialiserStrategies(vs);
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
+}
+
+Plateau::Plateau(const Plateau &other)
+    : listeTuiles(other.listeTuiles)
+{
+    initialiserStrategies(other.variantesScores);
+}
+
+Plateau &Plateau::operator=(const Plateau &other)
+{
+    if (this != &other)
+    {
+        listeTuiles = other.listeTuiles;
+        initialiserStrategies(other.variantesScores);
+    }
+    return *this;
 }
 
 Plateau Plateau::fromSave(const bool variantes[5], std::vector<Tuile> tuiles)
@@ -30,6 +45,13 @@ Plateau Plateau::fromSave(const bool variantes[5], std::vector<Tuile> tuiles)
     p.listeTuiles = std::move(tuiles);
     p.updateVoisins();
     return p;
+}
+
+void Plateau::initialiserStrategies(const bool vs[5])
+{
+    for (int i = 0; i < 5; ++i)
+        variantesScores[i] = vs[i];
+    scoreStrategies = makeScoreStrategies(variantesScores);
 }
 
 void Plateau::updateVoisins()
@@ -428,54 +450,47 @@ int Plateau::calculerPointsia(int &diff) const
 
 int Plateau::calculerPointsCaserne(const Hexagone *h) const
 {
-    int multi = 1;
-    if (variantesScores[2] && h->getVoisins().size() <= 3)
-        multi = 2;
-    return (h->getVoisins().size() <= 5) ? (h->getZ() + 1) * multi : 0;
+    CaserneContext ctx;
+    ctx.nbVoisins = static_cast<int>(h->getVoisins().size());
+    ctx.placementValide = ctx.nbVoisins <= 5;
+    ctx.baseScore = ctx.placementValide ? (h->getZ() + 1) : 0;
+    return scoreStrategies.caserne->calculer(ctx);
 }
 
 int Plateau::calculerPointsTemple(const Hexagone *h) const
 {
-    int mult = 1;
-    if (variantesScores[3] && h->getZ() >= 1)
-        mult = 2;
-    return (h->getVoisins().size() == 6) ? (h->getZ() + 1) * mult : 0;
+    TempleContext ctx;
+    ctx.estEntoure = h->getVoisins().size() == 6;
+    ctx.estEnHauteur = h->getZ() >= 1;
+    ctx.baseScore = ctx.estEntoure ? (h->getZ() + 1) : 0;
+    return scoreStrategies.temple->calculer(ctx);
 }
 
 int Plateau::calculerPointsJardin(const Hexagone *h) const
 {
-    return (h->getZ() + 1) + conditionVarianteJardin(h) * variantesScores[4] * (h->getZ() + 1);
+    JardinContext ctx;
+    ctx.baseScore = h->getZ() + 1;
+    ctx.conditionVariante = conditionVarianteJardin(h);
+    return scoreStrategies.jardin->calculer(ctx);
 }
 
 int Plateau::calculerPointsMarche(const Hexagone *h) const
 {
-    int nbpoint = 0;
-    bool voisinMarche = false;
+    MarcheContext ctx;
+    ctx.hauteur = h->getZ();
     for (const auto &voisin : h->getVoisins())
     {
         if (voisin->getType() == TypeHex::Marche)
         {
-            voisinMarche = true;
+            ctx.aVoisinMarche = true;
             break;
         }
-    }
-    if (!voisinMarche)
-    {
-        nbpoint += h->getZ();
-
-        if (variantesScores[1])
+        if (voisin->getType() == TypeHex::PMarche)
         {
-            for (const auto &voisin : h->getVoisins())
-            {
-                if (voisin->getType() == TypeHex::PMarche)
-                {
-                    nbpoint += h->getZ();
-                    break;
-                }
-            }
+            ctx.voisinPlaceMarche = true;
         }
     }
-    return nbpoint;
+    return scoreStrategies.marche->calculer(ctx);
 }
 
 int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const
@@ -513,9 +528,7 @@ int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) c
         if (tailleQuartier == plusGrosQuartier && scorePlusgrosQuartier < scoreQuartier)
             scorePlusgrosQuartier = scoreQuartier;
     }
-    if (scorePlusgrosQuartier >= 10 && variantesScores[0])
-        scorePlusgrosQuartier *= 2;
-    return scorePlusgrosQuartier;
+    return scoreStrategies.habitation->calculer(scorePlusgrosQuartier);
 }
 
 bool Plateau::conditionVarianteJardin(const Hexagone *q) const
