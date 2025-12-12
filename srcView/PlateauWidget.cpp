@@ -8,6 +8,8 @@
 #include <QShortcut>
 #include <QVBoxLayout>
 #include <algorithm>
+#include <QGuiApplication>
+#include <QScreen>
 
 #include "ChantierWidget.h"
 #include "EchapWidget.h"
@@ -18,17 +20,16 @@
 PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     : QWidget(parent)
 {
-    // définit la taille de la fenetre de jeu
-    setFixedSize(1920, 1080);
-
+    // définit la taille de la fenetre de jeu en fonction de la taille de l'écran
+    resize(QGuiApplication::primaryScreen()->availableGeometry().size());              
     // création de l'organisation de la page avec un layout central
     auto* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
     // on définit la taille qu'on va utiliser (peut etre modifié pour récuperer la taille de l'affichage sur l'ordi si on le temps )
-    const int colonneDroiteLargeur = 250;
-    const int scoreWidgetSize = 250;
+    const int colonneDroiteLargeur = static_cast<int>(width() / 8);
+    const int scoreWidgetSize = static_cast<int>(height() / 4.5);
     const int plateauWidth = width() - colonneDroiteLargeur;
     const int plateauHeight = height();
     const int chantierHeight = height() - scoreWidgetSize;
