@@ -97,7 +97,7 @@ void EchapWidget::construireInterface()
     cadre->setObjectName("newGameCadre");
     cadre->setMaximumWidth(420);
     cadre->setStyleSheet(
-        "#newGameCadre {background-color: #fafafa; border: 1px solid #dcdcdc; border-radius: 18px;}");
+        "#newGameCadre {background-color: #fafafa; border: 2px solid #000000; border-radius: 18px;}");
     layoutCentral->addWidget(cadre, 0, Qt::AlignCenter);
 
     auto* layoutMenu = new QVBoxLayout(cadre);
