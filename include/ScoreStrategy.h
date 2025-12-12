@@ -1,7 +1,7 @@
 #ifndef SCORESTRATEGY_H
 #define SCORESTRATEGY_H
 
-#include <memory>
+#include <functional>
 
 struct MarcheContext
 {
@@ -179,28 +179,133 @@ public:
     }
 };
 
+/**
+ * @brief Représente l'ensemble des fonctions de calcul utilisées pour chaque type d'hexagone.
+ * Chaque pointeur est configuré en fonction de la variante activée ou non.
+ */
 struct ScoreStrategies
 {
-    std::unique_ptr<HabitationScoreStrategy> habitation;
-    std::unique_ptr<MarcheScoreStrategy> marche;
-    std::unique_ptr<CaserneScoreStrategy> caserne;
-    std::unique_ptr<TempleScoreStrategy> temple;
-    std::unique_ptr<JardinScoreStrategy> jardin;
+    int (*habitation)(int scorePlusGrandQuartier) = nullptr;
+    int (*marche)(const MarcheContext &) = nullptr;
+    int (*caserne)(const CaserneContext &) = nullptr;
+    int (*temple)(const TempleContext &) = nullptr;
+    int (*jardin)(const JardinContext &) = nullptr;
 };
 
+/**
+ * @brief Règle classique : on ne modifie pas le score des quartiers.
+ */
+inline int calculHabitationClassique(int score)
+{
+    return score;
+}
+
+/**
+ * @brief Variante habitation : double le score si le quartier atteint 10 points.
+ */
+inline int calculHabitationVariante(int score)
+{
+    return (score >= 10) ? score * 2 : score;
+}
+
+/**
+ * @brief Marché classique : rapporter la hauteur si aucun marché adjacent.
+ */
+inline int calculMarcheClassique(const MarcheContext &ctx)
+{
+    if (ctx.aVoisinMarche)
+        return 0;
+    return ctx.hauteur;
+}
+
+/**
+ * @brief Variante marché : bonus supplémentaire si une place de marché est adjacente.
+ */
+inline int calculMarcheVariante(const MarcheContext &ctx)
+{
+    if (ctx.aVoisinMarche)
+        return 0;
+    int points = ctx.hauteur;
+    if (ctx.voisinPlaceMarche)
+        points += ctx.hauteur;
+    return points;
+}
+
+/**
+ * @brief Caserne classique : score uniquement si la caserne a au plus 5 voisins.
+ */
+inline int calculCaserneClassique(const CaserneContext &ctx)
+{
+    if (!ctx.placementValide)
+        return 0;
+    return ctx.baseScore;
+}
+
+/**
+ * @brief Variante caserne : double si la caserne est exposée (≤ 3 voisins).
+ */
+inline int calculCaserneVariante(const CaserneContext &ctx)
+{
+    if (!ctx.placementValide)
+        return 0;
+    if (ctx.nbVoisins <= 3)
+        return ctx.baseScore * 2;
+    return ctx.baseScore;
+}
+
+/**
+ * @brief Temple classique : score uniquement si le temple est complètement entouré.
+ */
+inline int calculTempleClassique(const TempleContext &ctx)
+{
+    if (!ctx.estEntoure)
+        return 0;
+    return ctx.baseScore;
+}
+
+/**
+ * @brief Variante temple : double lorsque le temple est en hauteur.
+ */
+inline int calculTempleVariante(const TempleContext &ctx)
+{
+    if (!ctx.estEntoure)
+        return 0;
+    int points = ctx.baseScore;
+    if (ctx.estEnHauteur)
+        points *= 2;
+    return points;
+}
+
+/**
+ * @brief Jardin classique : valeur brute (hauteur).
+ */
+inline int calculJardinClassique(const JardinContext &ctx)
+{
+    return ctx.baseScore;
+}
+
+/**
+ * @brief Variante jardin : bonus lorsque le jardin forme un lac.
+ */
+inline int calculJardinVariante(const JardinContext &ctx)
+{
+    int points = ctx.baseScore;
+    if (ctx.conditionVariante)
+        points += ctx.baseScore;
+    return points;
+}
+
+/**
+ * @brief Crée et configure toutes les stratégies en fonction des variantes actives.
+ */
 inline ScoreStrategies makeScoreStrategies(const bool variantes[5])
 {
     ScoreStrategies strategies;
-    strategies.habitation = variantes[0] ? std::make_unique<HabitationVarianteStrategy>()
-                                         : std::make_unique<HabitationClassiqueStrategy>();
-    strategies.marche = variantes[1] ? std::make_unique<MarcheVarianteStrategy>()
-                                     : std::make_unique<MarcheClassiqueStrategy>();
-    strategies.caserne = variantes[2] ? std::make_unique<CaserneVarianteStrategy>()
-                                      : std::make_unique<CaserneClassiqueStrategy>();
-    strategies.temple = variantes[3] ? std::make_unique<TempleVarianteStrategy>()
-                                     : std::make_unique<TempleClassiqueStrategy>();
-    strategies.jardin = variantes[4] ? std::make_unique<JardinVarianteStrategy>()
-                                     : std::make_unique<JardinClassiqueStrategy>();
+    strategies.habitation = variantes[0] ? &calculHabitationVariante : &calculHabitationClassique;
+    strategies.marche = variantes[1] ? &calculMarcheVariante : &calculMarcheClassique;
+    strategies.caserne = variantes[2] ? &calculCaserneVariante : &calculCaserneClassique;
+    strategies.temple = variantes[3] ? &calculTempleVariante : &calculTempleClassique;
+    strategies.jardin = variantes[4] ? &calculJardinVariante : &calculJardinClassique;
     return strategies;
 }
 

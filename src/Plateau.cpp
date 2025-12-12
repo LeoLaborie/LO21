@@ -454,7 +454,7 @@ int Plateau::calculerPointsCaserne(const Hexagone *h) const
     ctx.nbVoisins = static_cast<int>(h->getVoisins().size());
     ctx.placementValide = ctx.nbVoisins <= 5;
     ctx.baseScore = ctx.placementValide ? (h->getZ() + 1) : 0;
-    return scoreStrategies.caserne->calculer(ctx);
+    return scoreStrategies.caserne(ctx);
 }
 
 int Plateau::calculerPointsTemple(const Hexagone *h) const
@@ -463,7 +463,7 @@ int Plateau::calculerPointsTemple(const Hexagone *h) const
     ctx.estEntoure = h->getVoisins().size() == 6;
     ctx.estEnHauteur = h->getZ() >= 1;
     ctx.baseScore = ctx.estEntoure ? (h->getZ() + 1) : 0;
-    return scoreStrategies.temple->calculer(ctx);
+    return scoreStrategies.temple(ctx);
 }
 
 int Plateau::calculerPointsJardin(const Hexagone *h) const
@@ -471,7 +471,7 @@ int Plateau::calculerPointsJardin(const Hexagone *h) const
     JardinContext ctx;
     ctx.baseScore = h->getZ() + 1;
     ctx.conditionVariante = conditionVarianteJardin(h);
-    return scoreStrategies.jardin->calculer(ctx);
+    return scoreStrategies.jardin(ctx);
 }
 
 int Plateau::calculerPointsMarche(const Hexagone *h) const
@@ -490,7 +490,7 @@ int Plateau::calculerPointsMarche(const Hexagone *h) const
             ctx.voisinPlaceMarche = true;
         }
     }
-    return scoreStrategies.marche->calculer(ctx);
+    return scoreStrategies.marche(ctx);
 }
 
 int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) const
@@ -528,7 +528,7 @@ int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) c
         if (tailleQuartier == plusGrosQuartier && scorePlusgrosQuartier < scoreQuartier)
             scorePlusgrosQuartier = scoreQuartier;
     }
-    return scoreStrategies.habitation->calculer(scorePlusgrosQuartier);
+    return scoreStrategies.habitation(scorePlusgrosQuartier);
 }
 
 bool Plateau::conditionVarianteJardin(const Hexagone *q) const
