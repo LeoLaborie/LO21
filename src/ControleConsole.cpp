@@ -175,6 +175,11 @@ void controleConsole()
 
 void lancerPartie(Partie &partie)
 {
+    for (auto j : partie.getJoueurs()){
+        std::cout << j->getNom();
+    }
+
+
     while (partie.pilesRestantes() || partie.getChantier().getTaille() > 1)
     {
         std::cout << "--- Nouveau tour de jeu : Tour " << partie.getNbrTours() + 1 << " ---\n";
@@ -186,199 +191,22 @@ void lancerPartie(Partie &partie)
             Joueur &joueurCourant = partie.getJoueurMain();
             std::cout << "Au tour de :\n";
 
-            // Affichage du plateau du joueur
-            std::cout << joueurCourant;
-
-            // Affichage du chantier
-            std::cout << partie.getChantier();
-
-            Tuile tuilePiochee;
-            const bool tuileDejaEnMain = joueurCourant.getTuileEnMain().getNbHexa() > 0;
-            if (!tuileDejaEnMain)
-            {
-                // Choix de la tuile à piocher
-                int idTuile = -1;
-                idTuile = joueurCourant.choixTuile(partie.getChantier());
-
-                // Pioche de la tuile
-                bool piocheReussie = false;
-                while (!piocheReussie)
-                {
-                    try
-                    {
-                        tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
-                        std::cout << "\nTuile piochée :\n\n";
-                        std::cout << tuilePiochee;  // operator<< respecte les offsets
-                        piocheReussie = true;
-                    }
-                    catch (const std::exception &e)
-                    {
-                        texte_couleur(ROUGE);
-                        texte_gras_on();
-                        std::cout << e.what() << "\n";
-                        texte_reset();
-                    }
-                }
-            }
-            else
-            {
-                tuilePiochee = joueurCourant.getTuileEnMain();
-                std::cout << "\nTuile déjà en main. Accès direct aux actions de placement.\n";
-            }
-
-            bool phaseRotation = true;
-            while (phaseRotation)
-            {
-                joueurCourant.getPlateau().afficherPositionsLegales(joueurCourant.getTuileEnMain());
-                std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile [a] | sauvegarder [s] | quitter [q]: ";
-                char rep;
-                std::cin >> rep;
-                switch (rep)
-                {
-                    case 'o':
-                    case 'O':
-                    {
-                        tuilePiochee.pivoterTuile();
-                        std::cout << "\nTuile après pivot :\n\n";
-                        std::cout << tuilePiochee;
-                        break;
-                    }
-                    case 'a':
-                    case 'A':
-                    {
-                        std::cout << "\nAperçu tuile :\n\n";
-                        std::cout << tuilePiochee;
-                        break;
-                    }
-                    case 'p':
-                    case 'P':
-                    {
-                        phaseRotation = false;  // on passe à la phase de placement
-                        break;
-                    }
-                    case 's':
-                    case 'S':
-                    {
-                        sauvegarderPartie(partie);
-                        break;
-                    }
-                    case 'q':
-                    case 'Q':
-                    {
-                        char sauvegarderAvantQuitter;
-                        std::cout << "Voulez-vous sauvegarder avant de quitter ? (o/n) : ";
-                        std::cin >> sauvegarderAvantQuitter;
-
-                        if (sauvegarderAvantQuitter == 'o' || sauvegarderAvantQuitter == 'O')
-                        {
-                            try
-                            {
-                                if (sauvegarderPartie(partie))
-                                {
-                                    texte_couleur(JAUNE);
-                                    texte_gras_on();
-                                    std::cout << "\nSauvegarde effectuée avec succès.\n";
-                                    texte_reset();
-                                }
-                                else
-                                {
-                                    texte_couleur(ROUGE);
-                                    texte_gras_on();
-                                    std::cout << "\nErreur : la sauvegarde a échoué.\n";
-                                    texte_reset();
-                                }
-                            }
-                            catch (const std::exception &e)
-                            {
-                                texte_couleur(ROUGE);
-                                texte_gras_on();
-                                std::cout << "\nException lors de la sauvegarde : " << e.what() << "\n";
-                                texte_reset();
-                            }
-
-                            // Après sauvegarde → quitter la partie et revenir au menu
-                            return;
-                        }
-
-                        if (sauvegarderAvantQuitter == 'n' || sauvegarderAvantQuitter == 'N')
-                        {
-                            // Quitter sans sauvegarder
-                            return;
-                        }
-
-                        // Si l’utilisateur a tapé autre chose
-                        texte_couleur(ROUGE);
-                        texte_gras_on();
-                        std::cout << "\nRéponse invalide, retour au jeu.\n";
-                        texte_reset();
-                        break;
-                    }
-                    default:
-                        texte_reset();
-                        std::cout << "\n Choix invalide veuillez réessayer" << std::endl;
-                        break;
-                }
-            }
-
-            // Choix de la position pour placer la tuile
-            int x, y, z;
-            bool placementTuile = false;
-
-            while (!placementTuile)
-            {
-                std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
-                if (!(std::cin >> x >> y >> z))
-                {
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    texte_couleur(ROUGE);
-                    texte_gras_on();
-                    std::cout << "Coordonnées invalides. Veuillez entrer trois entiers.\n";
-                    texte_reset();
-                    continue;
-                }
-
-                Position pos{x, y, z};
-
-                try
-                {
-                    joueurCourant.placerTuile(tuilePiochee, pos);
-                    texte_couleur(JAUNE);
-                    texte_gras_on();
-                    std::cout << "\n Tuile placée avec succès.\n";
-                    texte_reset();
-                    placementTuile = true;
-                }
-
-                catch (const std::invalid_argument &e)
-                {
-                    texte_couleur(ROUGE);
-                    texte_gras_on();
-                    std::cout << e.what() << "\n";
-                    texte_reset();
-                }
-            }
-
-            system("sleep 2");
-
-            if (partie.fauxJoueurPresent())
-            {
-                IllustreArchitecte *ia = partie.getFauxJoueur();
-
-                // Affichage du plateau du joueur
-                std::cout << &ia;
+            if (joueurCourant.isIA()){
+                IllustreArchitecte& ia = dynamic_cast<IllustreArchitecte&>(joueurCourant);
+                 // Affichage du plateau du joueur
+                std::cout << ia;
 
                 // Affichage du chantier
                 std::cout << partie.getChantier();
 
                 // Choix de la tuile à piocher
-                int idTuile = ia->choixTuile(partie.getChantier());
+                int idTuile = ia.choixTuile(partie.getChantier());
 
                 Tuile tuilePiochee;
 
                 try
                 {
-                    tuilePiochee = ia->piocherTuile(idTuile, partie.getChantier());
+                    tuilePiochee = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
                     std::cout << "\nTuile piochée :\n\n";
                     std::cout << tuilePiochee;
                 }
@@ -390,12 +218,189 @@ void lancerPartie(Partie &partie)
                     texte_reset();
                 }
 
-                ia->placerTuile(tuilePiochee);
+                ia.placerTuile(tuilePiochee);
+
+            }else{
+                // Affichage du plateau du joueur
+                std::cout << joueurCourant;
+
+                // Affichage du chantier
+                std::cout << partie.getChantier();
+
+                Tuile tuilePiochee;
+                const bool tuileDejaEnMain = joueurCourant.getTuileEnMain().getNbHexa() > 0;
+                if (!tuileDejaEnMain)
+                {
+                    // Choix de la tuile à piocher
+                    int idTuile = -1;
+                    idTuile = joueurCourant.choixTuile(partie.getChantier());
+
+                    // Pioche de la tuile
+                    bool piocheReussie = false;
+                    while (!piocheReussie)
+                    {
+                        try
+                        {
+                            tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
+                            std::cout << "\nTuile piochée :\n\n";
+                            std::cout << tuilePiochee;  // operator<< respecte les offsets
+                            piocheReussie = true;
+                        }
+                        catch (const std::exception &e)
+                        {
+                            texte_couleur(ROUGE);
+                            texte_gras_on();
+                            std::cout << e.what() << "\n";
+                            texte_reset();
+                        }
+                    }
+                }
+                else
+                {
+                    tuilePiochee = joueurCourant.getTuileEnMain();
+                    std::cout << "\nTuile déjà en main. Accès direct aux actions de placement.\n";
+                }
+
+                bool phaseRotation = true;
+                while (phaseRotation)
+                {
+                    joueurCourant.getPlateau().afficherPositionsLegales(joueurCourant.getTuileEnMain());
+                    std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile [a] | sauvegarder [s] | quitter [q]: ";
+                    char rep;
+                    std::cin >> rep;
+                    switch (rep)
+                    {
+                        case 'o':
+                        case 'O':
+                        {
+                            tuilePiochee.pivoterTuile();
+                            std::cout << "\nTuile après pivot :\n\n";
+                            std::cout << tuilePiochee;
+                            break;
+                        }
+                        case 'a':
+                        case 'A':
+                        {
+                            std::cout << "\nAperçu tuile :\n\n";
+                            std::cout << tuilePiochee;
+                            break;
+                        }
+                        case 'p':
+                        case 'P':
+                        {
+                            phaseRotation = false;  // on passe à la phase de placement
+                            break;
+                        }
+                        case 's':
+                        case 'S':
+                        {
+                            sauvegarderPartie(partie);
+                            break;
+                        }
+                        case 'q':
+                        case 'Q':
+                        {
+                            char sauvegarderAvantQuitter;
+                            std::cout << "Voulez-vous sauvegarder avant de quitter ? (o/n) : ";
+                            std::cin >> sauvegarderAvantQuitter;
+
+                            if (sauvegarderAvantQuitter == 'o' || sauvegarderAvantQuitter == 'O')
+                            {
+                                try
+                                {
+                                    if (sauvegarderPartie(partie))
+                                    {
+                                        texte_couleur(JAUNE);
+                                        texte_gras_on();
+                                        std::cout << "\nSauvegarde effectuée avec succès.\n";
+                                        texte_reset();
+                                    }
+                                    else
+                                    {
+                                        texte_couleur(ROUGE);
+                                        texte_gras_on();
+                                        std::cout << "\nErreur : la sauvegarde a échoué.\n";
+                                        texte_reset();
+                                    }
+                                }
+                                catch (const std::exception &e)
+                                {
+                                    texte_couleur(ROUGE);
+                                    texte_gras_on();
+                                    std::cout << "\nException lors de la sauvegarde : " << e.what() << "\n";
+                                    texte_reset();
+                                }
+
+                                // Après sauvegarde → quitter la partie et revenir au menu
+                                return;
+                            }
+
+                            if (sauvegarderAvantQuitter == 'n' || sauvegarderAvantQuitter == 'N')
+                            {
+                                // Quitter sans sauvegarder
+                                return;
+                            }
+
+                            // Si l’utilisateur a tapé autre chose
+                            texte_couleur(ROUGE);
+                            texte_gras_on();
+                            std::cout << "\nRéponse invalide, retour au jeu.\n";
+                            texte_reset();
+                            break;
+                        }
+                        default:
+                            texte_reset();
+                            std::cout << "\n Choix invalide veuillez réessayer" << std::endl;
+                            break;
+                    }
+                }
+
+                // Choix de la position pour placer la tuile
+                int x, y, z;
+                bool placementTuile = false;
+
+                while (!placementTuile)
+                {
+                    std::cout << "\nEntrez les coordonnées (x y z) pour placer la tuile : ";
+                    if (!(std::cin >> x >> y >> z))
+                    {
+                        std::cin.clear();
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        texte_couleur(ROUGE);
+                        texte_gras_on();
+                        std::cout << "Coordonnées invalides. Veuillez entrer trois entiers.\n";
+                        texte_reset();
+                        continue;
+                    }
+
+                    Position pos{x, y, z};
+
+                    try
+                    {
+                        joueurCourant.placerTuile(tuilePiochee, pos);
+                        texte_couleur(JAUNE);
+                        texte_gras_on();
+                        std::cout << "\n Tuile placée avec succès.\n";
+                        texte_reset();
+                        placementTuile = true;
+                    }
+
+                    catch (const std::invalid_argument &e)
+                    {
+                        texte_couleur(ROUGE);
+                        texte_gras_on();
+                        std::cout << e.what() << "\n";
+                        texte_reset();
+                    }
+                }
             }
+
+            system("sleep 2");
 
             // Passage au joueur suivant
             partie.setProchainJoueur();
-            system("clear");
+            //system("clear");
+            
         }
 
         std::cout << "\n ";

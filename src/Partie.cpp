@@ -9,8 +9,9 @@ Partie::Partie(int nbJoueursInit,
                int mainJoueurInit,
                Chantier chantierInit,
                std::vector<std::vector<Tuile>> pilesInit,
-               std::vector<Joueur> joueursInit)
-    : nbrJoueurs(nbJoueursInit), maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)), mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)), nbrTours(nbToursInit), taillepaquet(nbJoueursInit + 1), fauxJoueur(nullptr), chantier(std::move(chantierInit)), joueurs(std::move(joueursInit)), piles(std::move(pilesInit))
+               std::vector<Joueur*> joueursInit,
+               bool fauxJoueurPInit )
+    : nbrJoueurs(nbJoueursInit), maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)), mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)), nbrTours(nbToursInit), taillepaquet(nbJoueursInit + 1), fauxJoueurP(false), chantier(std::move(chantierInit)), joueurs(std::move(joueursInit)), piles(std::move(pilesInit))
 {
 }
 
@@ -20,17 +21,15 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
         throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
 
     nbrJoueurs = nbJouer;
-    fauxJoueur.reset();
 
-    // creation des joueurs
+    // creation des joueurs (alloués dynamiquement pour éviter dangling pointers)
     joueurs.clear();
-    joueurs.reserve(nbrJoueurs);
 
     for (int i = 0; i < nbrJoueurs; ++i)
     {
         // ajout de chaque joueur dans la liste
-        Joueur j(variantesScore, pseudo[i]);
-        j.setNbrPierres(i + 1);
+        Joueur* j = new Joueur(variantesScore, pseudo[i]);
+        j->setNbrPierres(i + 1);
         joueurs.push_back(j);
     }
 
@@ -62,8 +61,9 @@ void Partie::creerFauxJoueur()
         texte_reset();
         std::cin >> difficulte;
     }
-    fauxJoueur.reset(new IllustreArchitecte(difficulte));
+    IllustreArchitecte* fauxJoueur = new IllustreArchitecte(difficulte);
     fauxJoueur->setNbrPierres(2);
+    joueurs.push_back(fauxJoueur);
 }
 
 Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)

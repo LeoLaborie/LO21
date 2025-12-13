@@ -51,8 +51,7 @@ void IllustreArchitecte::setNbrPoints()
     nbrPoints = getPlateau().calculerPoints();
 }
 
-Tuile &Joueur::piocherTuile(int id, Chantier &chantier,
-                            IllustreArchitecte *fauxJoueur)
+Tuile &Joueur::piocherTuile(int id, Chantier &chantier, Joueur *fauxJoueur)
 {
     if (id < 0 || id >= chantier.getTaille())
         throw std::out_of_range("ID de tuile invalide.");
@@ -68,7 +67,7 @@ Tuile &Joueur::piocherTuile(int id, Chantier &chantier,
     return tuileEnMain;
 }
 
-Tuile &IllustreArchitecte::piocherTuile(int id, Chantier &chantier)
+Tuile &IllustreArchitecte::piocherTuile(int id, Chantier &chantier, Joueur * /*fauxjoueur*/)
 {
     setNbrPierres(getNbrPierres() - id);
     setTuileEnMain(chantier.getTuiles()[id]);
@@ -81,6 +80,7 @@ void Joueur::placerTuile(Tuile &t, Position &p)
     try
     {
         int carrieresCouvertes = plateau.placerTuile(t, p);
+        setTuileEnMain(Tuile());
         if (carrieresCouvertes != -1)
         {
             setNbrPierres(getNbrPierres() + carrieresCouvertes);
@@ -136,11 +136,11 @@ int Joueur::choixTuile(const Chantier &chantier)
 int IllustreArchitecte::choixTuile(const Chantier &chantier)
 {
     int idTuile = -1;
-    const std::vector<Tuile> &tuile = chantier.getTuiles();
+    const std::vector<Tuile> &tuiles = chantier.getTuiles();
     long unsigned int i = 0;
     do
     {
-        for (Tuile::ConstIterator it = tuile[i].getConstIterator(); !it.isDone(); it.next())
+        for (Tuile::ConstIterator it = tuiles[i].getConstIterator(); !it.isDone(); it.next())
         {
             const Hexagone &h = it.currentItem();
             if ((h.getType() == TypeHex::PHabitation ||
@@ -148,13 +148,13 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
                  h.getType() == TypeHex::PTemple ||
                  h.getType() == TypeHex::PMarche ||
                  h.getType() == TypeHex::PJardin) &&
-                (getNbrPierres() < idTuile))
+                (getNbrPierres() >= i))
             {
-                idTuile = i;
+                return i;
             }
         }
         i++;
-    } while (i < tuile.size() && idTuile == -1);
+    } while (i < tuiles.size() && idTuile == -1 && getNbrPierres() >= i);
     if (idTuile == -1)
     {
         idTuile = 0;

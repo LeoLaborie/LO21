@@ -284,7 +284,7 @@ void JeuController::traiterTourIA(Partie &partie)
     Tuile tuilePiochee;
     try
     {
-        tuilePiochee = ia->piocherTuile(idTuile, partie.getChantier());
+        tuilePiochee = ia->piocherTuile(idTuile, partie.getChantier(), nullptr);
         std::cout << "\nTuile piochée par l'IA :\n\n"
                   << tuilePiochee;
     }

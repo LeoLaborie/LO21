@@ -249,45 +249,44 @@ bool sauvegarderPartie(const Partie &p)
         for (const auto &t : piles[i])
             f <<= t;
     }
-    const auto &joueurs = p.getJoueurs();
+    const auto joueurs = p.getJoueurs();
     f << "JOUEURS " << '\n';
 
-    for (const auto &j : joueurs)
+    for (const auto j : joueurs)
     {
-        f << "NOM " << j.getNom() << '\n';
-        f << "PIERRES " << j.getNbrPierres() << '\n';
-        f << "POINTS " << j.getNbrPoints() << '\n';
-        f << "TUILE_MAIN\n";
-        f <<= j.getTuileEnMain();
-        const auto &tuilesPlateau = j.getPlateau().getTuiles();
-        f << "PLATEAU " << tuilesPlateau.size() << '\n';
-        for (const auto &t : tuilesPlateau)
-        {
-            f <<= t;
-        }
-        f << "VARIANTES ";
-        for (unsigned int i = 0; i < 5; ++i)
-        {
-            f << j.getPlateau().getVarianteScores()[i] << ' ';
-        }
-        f << '\n';
-    }
-    f << "FAUX_JOUEUR ";
-    if (p.fauxJoueurPresent())
-    {
-        f << "1"
+        if (j->isIA()){
+            f << "FAUX_JOUEUR ";
+            f << "1"
           << "\n";
-        f << "DIFFICULTE " << p.getFauxJoueur()->getdifficulte() << "\n";
-        f << "PIERRES " << p.getFauxJoueur()->getNbrPierres() << '\n';
-        f << "POINTS " << p.getFauxJoueur()->getNbrPoints() << '\n';
-        f << "PLATEAU " << p.getFauxJoueur()->getPlateau().getTuiles().size()
-          << "\n";
-        for (auto tuile : p.getFauxJoueur()->getPlateau().getTuiles())
-        {
-            f <<= tuile;
+            f << "DIFFICULTE " << p.getFauxJoueur()->getdifficulte() << "\n";
+            f << "PIERRES " << p.getFauxJoueur()->getNbrPierres() << '\n';
+            f << "POINTS " << p.getFauxJoueur()->getNbrPoints() << '\n';
+            f << "PLATEAU " << p.getFauxJoueur()->getPlateau().getTuiles().size()
+            << "\n";
+            for (auto tuile : p.getFauxJoueur()->getPlateau().getTuiles())
+            {
+                f <<= tuile;
+            }
+        }else{
+            f << "NOM " << j->getNom() << '\n';
+            f << "PIERRES " << j->getNbrPierres() << '\n';
+            f << "POINTS " << j->getNbrPoints() << '\n';
+            f << "TUILE_MAIN\n";
+            f <<= j->getTuileEnMain();
+            const auto &tuilesPlateau = j->getPlateau().getTuiles();
+            f << "PLATEAU " << tuilesPlateau.size() << '\n';
+            for (const auto &t : tuilesPlateau)
+            {
+                f <<= t;
+            }
+            f << "VARIANTES ";
+            for (unsigned int i = 0; i < 5; ++i)
+            {
+                f << j->getPlateau().getVarianteScores()[i] << ' ';
+            }
+            f << '\n';
         }
     }
-    else
         f << '0' << '\n';
     return true;
 }
@@ -301,8 +300,10 @@ Partie Partie::FromSave(const std::string &nomFichier)
     auto expectLigne = [&](const std::string &attendu)
     {
         std::string ligne;
-        if (!(f >> ligne) || ligne != attendu)
-            throw std::runtime_error("Format invalide : attendu \"" + attendu + "\"");
+        if (!(f >> ligne))
+            throw std::runtime_error("Format invalide : attendu \"" + attendu + "\" mais EOF atteint");
+        if (ligne != attendu)
+            throw std::runtime_error("Format invalide : attendu \"" + attendu + "\" mais trouvé \"" + ligne + "\"");
     };
 
     bool variantesScore[5] = {};
@@ -388,8 +389,15 @@ Partie Partie::FromSave(const std::string &nomFichier)
         JoueurCharge data;
 
         expectLigne("NOM");
-        if (!(f >> data.nom))
+        // read the remainder of the line to allow player names with spaces
+        std::string nomLine;
+        std::getline(f, nomLine);
+        if (nomLine.empty())
             throw std::runtime_error("Format invalide : nom joueur");
+        // trim leading space
+        if (!nomLine.empty() && nomLine.front() == ' ')
+            nomLine.erase(0, 1);
+        data.nom = std::move(nomLine);
 
         expectLigne("PIERRES");
         if (!(f >> data.pierres))
@@ -464,23 +472,28 @@ Partie Partie::FromSave(const std::string &nomFichier)
     }
 
     // construction des objets
-    std::vector<Joueur> joueursConstruits;
+    std::vector<Joueur*> joueursConstruits;
     joueursConstruits.reserve(joueurs.size());
 
     for (auto &j : joueurs)
     {
-        joueursConstruits.push_back(
-            Joueur::fromSave(variantesScore, std::move(j.nom), j.pierres, j.points, std::move(j.tuileMain), std::move(j.plateau)));
+    Joueur tmp = Joueur::fromSave(variantesScore,
+                                  std::move(j.nom),
+                                  j.pierres,
+                                  j.points,
+                                  std::move(j.tuileMain),
+                                  std::move(j.plateau));
+    joueursConstruits.push_back(new Joueur(std::move(tmp)));
     }
 
     Chantier chantierConstruits = Chantier::fromSave(std::move(tuilesChantier));
 
-    Partie partie(nbJoueurs, nbTours, maitreArchitecte, mainJoueur, std::move(chantierConstruits), std::move(piles), std::move(joueursConstruits));
+    Partie partie(nbJoueurs, nbTours, maitreArchitecte, mainJoueur, std::move(chantierConstruits), std::move(piles), std::move(joueursConstruits), (present == 1));
 
-    if (present == 1)
+    if (partie.fauxJoueurP)
     {
-        partie.fauxJoueur.reset(
-            IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux)));
+        IllustreArchitecte* ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
+        partie.joueurs.push_back(ia);
     }
 
     return partie;

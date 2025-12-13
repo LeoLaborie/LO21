@@ -136,7 +136,7 @@ public:
      * @throws std::out_of_range si l'ID est invalide
      * @throws std::invalid_argument si le nombre de pierres est insuffisant
      */
-    virtual Tuile &piocherTuile(int id, Chantier &chantier, IllustreArchitecte *fauxJoueur);
+    virtual Tuile &piocherTuile(int id, Chantier &chantier, Joueur *fauxJoueur = nullptr);
 
     /**
      * @brief Permet au joueur de placer une tuile sur son plateau
@@ -159,6 +159,12 @@ public:
      * @return id de la Tuile choisie par le joueur
      */
     virtual int choixTuile(const Chantier &chantier);
+
+    /** 
+     * @brief Permet de savoir si je joueur actuel est un IlllustreArchitecte
+     * @return un booléen
+    */
+    virtual bool isIA() const { return false; }
 
     /**
      * @brief Reconstruit un joueur depuis les données de sauvegarde.
@@ -203,7 +209,7 @@ public:
      * @param chantier Chantier de la partie
      * @return Référence vers la tuile piochée
      */
-    Tuile &piocherTuile(int id, Chantier &chantier);
+    Tuile &piocherTuile(int id, Chantier &chantier, Joueur *fauxJoueur) override;
 
     /**
      * @brief Reconstruit un Illustre Architecte depuis une sauvegarde.
@@ -236,6 +242,12 @@ public:
     {
         return difficulte;
     }
+
+    /** 
+     * @brief Permet de savoir si je joueur actuel est un IlllustreArchitecte
+     * @return un booléen
+    */
+    bool isIA() const override { return true; } 
 };
 
 #endif

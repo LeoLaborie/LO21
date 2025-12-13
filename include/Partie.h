@@ -27,10 +27,11 @@ private:
     int nbrTours = 0;
     int taillepaquet = 0;
 
-    std::unique_ptr<IllustreArchitecte> fauxJoueur;
+    // std::unique_ptr<IllustreArchitecte> fauxJoueur;
+    bool fauxJoueurP = false;
 
     Chantier chantier;
-    std::vector<Joueur> joueurs;
+    std::vector<Joueur*> joueurs;
     std::vector<std::vector<Tuile>> piles;
     /**
      * @brief Constructeur privé utilisé uniquement pour reconstruire une partie depuis une sauvegarde.
@@ -41,7 +42,8 @@ private:
            int mainJoueur,
            Chantier chantier,
            std::vector<std::vector<Tuile>> piles,
-           std::vector<Joueur> joueurs);
+           std::vector<Joueur*> joueurs,
+           bool fauxJoueurP);
 
 public:
     Partie(const Partie &) = delete;
@@ -60,11 +62,15 @@ public:
      * @brief constructeur de base de partie utiliser pour créer la partie dans le main
      */
     Partie()
-        : nbrJoueurs(0), maitreArchitecte(0), mainJoueur(0), nbrTours(0), taillepaquet(0), fauxJoueur(nullptr), chantier(), joueurs(), piles() {}
+        : nbrJoueurs(0), maitreArchitecte(0), mainJoueur(0), nbrTours(0), taillepaquet(0), fauxJoueurP(false), chantier(), joueurs(), piles() {}
     /**
      * @brief Destructeur de Partie
      */
-    ~Partie() = default;
+    ~Partie(){
+        for(auto j:joueurs){
+            delete j;
+        }
+    };
 
     // Getters
 
@@ -92,7 +98,7 @@ public:
      */
     Joueur &getJoueurMain()
     {
-        return joueurs.at(mainJoueur);
+        return *joueurs[mainJoueur];
     }
 
     /**
@@ -135,7 +141,7 @@ public:
      * @brief Retourne les joueurs de la partie
      * @return const std::vector<Joueur>& : référence constante vers le vecteur des joueurs
      */
-    const std::vector<Joueur> &getJoueurs() const
+    const std::vector<Joueur*> &getJoueurs() const
     {
         return joueurs;
     }
@@ -226,7 +232,7 @@ public:
      */
     bool fauxJoueurPresent() const
     {
-        return static_cast<bool>(fauxJoueur);
+        return fauxJoueurP;
     }
 
     /**
@@ -238,9 +244,9 @@ public:
      * @brief Retourne le faux joueur (Illustre Architecte)
      * @return IllustreArchitecte* : pointeur vers le faux joueur
      */
-    IllustreArchitecte *getFauxJoueur() const
+    IllustreArchitecte* getFauxJoueur() const
     {
-        return fauxJoueur.get();
+        return dynamic_cast<IllustreArchitecte*>(joueurs[nbrJoueurs-1]);       
     }
 
     /**
