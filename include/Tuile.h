@@ -41,8 +41,8 @@ public:
     {
         std::vector<std::shared_ptr<Hexagone>> &listeHex; // NON const
         Hexagone *hexCourant;              // NON const
-        int nb;
-        int idx = 0;
+        size_t nb;
+        size_t idx = 0;
 
     public:
         /**
@@ -50,7 +50,7 @@ public:
          * @param h Vecteur de pointeurs vers les hexagones
          * @param n Nombre d'hexagones
          */
-        Iterator(std::vector<std::shared_ptr<Hexagone>> &h, int n)
+        Iterator(std::vector<std::shared_ptr<Hexagone>> &h, size_t n)
             : listeHex(h), nb(n)
         {
             if (nb > 0)
@@ -75,9 +75,9 @@ public:
 
         /**
          * @brief Retourne l'indice courant de l'itérateur
-         * @return int : indice courant
+         * @return size_t : indice courant
          */
-        int currentIndex() const
+        size_t currentIndex() const
         {
             return idx;
         }
@@ -100,8 +100,8 @@ public:
     {
         const std::vector<std::shared_ptr<Hexagone>> &listeHex;
         const Hexagone *hexCourant;
-        int nb;
-        int idx = 0;
+        size_t nb;
+        size_t idx = 0;
 
     public:
         /**
@@ -109,7 +109,7 @@ public:
          * @param h Vecteur constant de pointeurs vers les hexagones
          * @param n Nombre d'hexagones
          */
-        ConstIterator(const std::vector<std::shared_ptr<Hexagone>> &h, int n)
+        ConstIterator(const std::vector<std::shared_ptr<Hexagone>> &h, size_t n)
             : listeHex(h), nb(n)
         {
             if (nb > 0)
@@ -134,9 +134,9 @@ public:
 
         /**
          * @brief Retourne l'indice courant de l'itérateur
-         * @return int : indice courant
+         * @return size_t : indice courant
          */
-        int currentIndex() const
+        size_t currentIndex() const
         {
             return idx;
         }

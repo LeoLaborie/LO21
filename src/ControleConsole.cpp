@@ -152,7 +152,7 @@ void controleConsole()
                 }
                 try
                 {
-                    partie = Partie::FromSave("saves/" + sauvegardes[Choixsauvegarde]);
+                    partie = Partie::FromSave("saves/" + sauvegardes[static_cast<size_t>(Choixsauvegarde)]);
                     texte_reset();
                     lancerPartie(partie);
                 }
