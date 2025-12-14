@@ -66,35 +66,12 @@ void Partie::creerFauxJoueur()
     joueurs.push_back(fauxJoueur);
 }
 
-Hexagone *creerHexagoneDepuisType(const std::string &type, Tuile &tuile, bool *marcheDejaPresent)
+Hexagone* creerHexagone(TypeHex type, Tuile& tuile, bool* marcheDejaPresent)
 {
-    if (type == "placeBleue")
-        return new Hexagone(0, 0, 0, TypeHex::PHabitation, &tuile);
-    else if (type == "placeJaune")
-    {
+    if (type == TypeHex::PMarche)
         *marcheDejaPresent = true;
-        return new Hexagone(0, 0, 0, TypeHex::PMarche, &tuile);
-    }
-    else if (type == "placeRouge")
-        return new Hexagone(0, 0, 0, TypeHex::PCaserne, &tuile);
-    else if (type == "placeViolette")
-        return new Hexagone(0, 0, 0, TypeHex::PTemple, &tuile);
-    else if (type == "placeVerte")
-        return new Hexagone(0, 0, 0, TypeHex::PJardin, &tuile);
-    else if (type == "quartierBleu")
-        return new Hexagone(0, 0, 0, TypeHex::Habitation, &tuile);
-    else if (type == "quartierJaune")
-        return new Hexagone(0, 0, 0, TypeHex::Marche, &tuile);
-    else if (type == "quartierRouge")
-        return new Hexagone(0, 0, 0, TypeHex::Caserne, &tuile);
-    else if (type == "quartierViolet")
-        return new Hexagone(0, 0, 0, TypeHex::Temple, &tuile);
-    else if (type == "quartierVert")
-        return new Hexagone(0, 0, 0, TypeHex::Jardin, &tuile);
-    else if (type == "carriere")
-        return new Hexagone(0, 0, 0, TypeHex::Carriere, &tuile);
 
-    throw std::runtime_error("Type inconnu: " + type);
+    return new Hexagone(0, 0, 0, type, &tuile);
 }
 
 void Partie::addTuileInChantierFromPiles()
@@ -108,15 +85,15 @@ void Partie::addTuileInChantierFromPiles()
     }
 }
 
-std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent)
+TypeHex tirerCarte(std::map<TypeHex, int> &stock, bool marcheDejaPresent)
 {
     // Construire un vecteur pondéré selon les quantités restantes
-    std::vector<std::string> pool;
+    std::vector<TypeHex> pool;
     for (auto &[type, quantite] : stock)
     {
         if (quantite > 0)
         {
-            if (type == "HexagoneJaune" && marcheDejaPresent)
+            if (type == TypeHex::PMarche && marcheDejaPresent)
                 continue;  // Interdiction du 2e marché
             for (int i = 0; i < quantite; i++)
             {
@@ -133,19 +110,19 @@ std::string tirerCarte(std::map<std::string, int> &stock, bool marcheDejaPresent
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(0, pool.size() - 1);
 
-    std::string choisi = pool[distrib(gen)];
+    TypeHex choisi = pool[distrib(gen)];
     stock[choisi]--;
     return choisi;
 }
 
 void Partie::genererTuilesParties(bool fullTuiles)
 {
-    std::map<int, std::map<std::string, int>> cartes = {
-        {2, {{"placeBleue", 5}, {"placeJaune", 4}, {"placeRouge", 4}, {"placeViolette", 4}, {"placeVerte", 3}, {"quartierBleu", 18}, {"quartierJaune", 12}, {"quartierRouge", 10}, {"quartierViolet", 8}, {"quartierVert", 6}, {"carriere", 37}}},
-        {3, {{"placeBleue", 6}, {"placeJaune", 5}, {"placeRouge", 5}, {"placeViolette", 5}, {"placeVerte", 4}, {"quartierBleu", 27}, {"quartierJaune", 16}, {"quartierRouge", 13}, {"quartierViolet", 10}, {"quartierVert", 7}, {"carriere", 49}}},
-        {4, {{"placeBleue", 7}, {"placeJaune", 6}, {"placeRouge", 6}, {"placeViolette", 6}, {"placeVerte", 5}, {"quartierBleu", 36}, {"quartierJaune", 20}, {"quartierRouge", 16}, {"quartierViolet", 12}, {"quartierVert", 8}, {"carriere", 61}}}};
+    std::map<int, std::map<TypeHex, int>> cartes = {
+        {2, {{TypeHex::PHabitation, 5}, {TypeHex::PMarche, 4}, {TypeHex::PCaserne, 4}, {TypeHex::PTemple, 4}, {TypeHex::PJardin, 3}, {TypeHex::Habitation, 18}, {TypeHex::Marche, 12}, {TypeHex::Caserne, 10}, {TypeHex::Temple, 8}, {TypeHex::Jardin, 6}, {TypeHex::Carriere, 37}}},
+        {3, {{TypeHex::PHabitation, 6}, {TypeHex::PMarche, 5}, {TypeHex::PCaserne, 5}, {TypeHex::PTemple, 5}, {TypeHex::PJardin, 4}, {TypeHex::Habitation, 27}, {TypeHex::Marche, 16}, {TypeHex::Caserne, 13}, {TypeHex::Temple, 10}, {TypeHex::Jardin, 7}, {TypeHex::Carriere, 49}}},
+        {4, {{TypeHex::PHabitation, 7}, {TypeHex::PMarche, 6}, {TypeHex::PCaserne, 6}, {TypeHex::PTemple, 6}, {TypeHex::PJardin, 5}, {TypeHex::Habitation, 36}, {TypeHex::Marche, 20}, {TypeHex::Caserne, 16}, {TypeHex::Temple, 12}, {TypeHex::Jardin, 8}, {TypeHex::Carriere, 61}}}};
 
-    std::map<std::string, int> *stock = &cartes[getNbrJoueurs()];
+    std::map<TypeHex, int> *stock = &cartes[getNbrJoueurs()];
 
     int tuilesParPile = getNbrJoueurs() + 1;
     int nombreDePiles = 12;
@@ -176,8 +153,8 @@ void Partie::genererTuilesParties(bool fullTuiles)
 
             for (int k = 0; k < 3; k++)
             {
-                std::string type = tirerCarte(*stock, marcheDejaPresent);
-                Hexagone *h = creerHexagoneDepuisType(type, tuile, &marcheDejaPresent);
+                TypeHex type = tirerCarte(*stock, marcheDejaPresent);
+                Hexagone *h = creerHexagone(type, tuile, &marcheDejaPresent);
                 hexas.push_back(h);
             }
             tuile = Tuile(hexas[0], hexas[1], hexas[2]);
@@ -194,8 +171,8 @@ void Partie::genererTuilesParties(bool fullTuiles)
 
     for (int i = 0; i < 3; i++)
     {
-        std::string type = tirerCarte(*stock, marcheDejaPresent);
-        Hexagone *h = creerHexagoneDepuisType(type, tuileBonus, &marcheDejaPresent);
+        TypeHex type = tirerCarte(*stock, marcheDejaPresent);
+        Hexagone *h = creerHexagone(type, tuileBonus, &marcheDejaPresent);
         hexas.push_back(h);
     }
 
@@ -207,7 +184,7 @@ void Partie::genererTuilesParties(bool fullTuiles)
         if (quantite != 0)
         {
             throw std::runtime_error("Erreur: il reste " + std::to_string(quantite) +
-                                     " cartes du type " + type + " non utilisées !");
+                                     " cartes du type " + std::to_string(static_cast<int>(type)) + " non utilisées !");
         }
     }
 
