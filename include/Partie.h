@@ -80,14 +80,16 @@ public:
      * @brief Opérateur d'affectation de déplacement par défaut
      */
     Partie &operator=(Partie &&) noexcept = default;
+
     /**
-     * * @brief Constructeur de Partie
+     * @brief Constructeur de Partie
      * @param nbJouer Nombre de joueurs
      * @param pseudo Vecteur des pseudos des joueurs
      * @param variantesScore Tableau des variantes de score
      * @param varianteFullTuile Indique si la variante Full Tuile est activée
+     * @param difficulte Niveau de difficulté (optionnel, par défaut 0)
      */
-    Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile);
+    Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variantesScore[5], bool varianteFullTuile, int difficulte = 0);
 
     /**
      * @brief constructeur de base de partie utiliser pour créer la partie dans le main
@@ -265,8 +267,9 @@ public:
 
     /**
      * @brief Crée un faux joueur (Illustre Architecte)
+     * @param difficulte Difficulté de l'IA (1 à 3)
      */
-    void creerFauxJoueur();
+    void creerFauxJoueur(int difficulte);
 
     /**
      * @brief Retourne le faux joueur (Illustre Architecte)
