@@ -2,7 +2,8 @@
 
 Partie CreerNouvellePartie()
 {
-    std::cout << "===== DEMARRAGE PARTIE =====\n";
+    system("clear");
+    std::cout << "===== DEMARRAGE PARTIE =====\n\n";
     texte_reset();
 
     int nbrJoueurs;
@@ -52,7 +53,7 @@ Partie CreerNouvellePartie()
         int choixVarianteScore = 0;
         while (choixVarianteScore != 1 && choixVarianteScore != 2)
         {
-            std::cout << "Variante pour les " << nomsVariantes[i] << " :\n";
+            std::cout << "\nVariante pour les " << nomsVariantes[i] << " :\n";
             std::cout << " 1: Jouer avec les règles de score classiques.\n";
             std::cout << " 2: Jouer avec la variante de score.\n";
             std::cout << "Votre choix : ";
@@ -91,22 +92,22 @@ Partie CreerNouvellePartie()
 
 void controleConsole()
 {
-    texte_reset();
-    afficher_curseur();
-    texte_couleur(ROUGE);
-    texte_gras_on();
+    system("clear");
     Partie partie;
     while (true)
     {
         int choix;
         int Choixsauvegarde = -1;
         int indiceSauvegarde = 0;
-        std::cout << " 1: Jouer une nouvelle partie.\n";
-        std::cout << " 2: charger une partie.\n";
-        std::cout << "0: quiter le akropolis.\n";
+
+        std::cout << "=== Menu principal ===\n\n";
+        std::cout << " 1: Jouer une nouvelle partie\n";
+        std::cout << " 2: Charger une sauvegarde\n";
+        std::cout << " 0: Quitter\n\n";
         std::cout << "Votre choix : ";
         std::cin >> choix;
         std::cin.clear();
+
         switch (choix)
         {
             case 1:
@@ -159,6 +160,10 @@ void controleConsole()
             case 0:
                 return;
             default:
+                texte_couleur(ROUGE);
+                texte_gras_on();
+                std::cout << "Choix invalide, veuillez réessayer." << '\n';
+                texte_reset();
                 break;
         }
     }
@@ -390,7 +395,7 @@ void lancerPartie(Partie &partie)
 
             // Passage au joueur suivant
             partie.setProchainJoueur();
-            //system("clear");
+            system("clear");
             
         }
 

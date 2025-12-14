@@ -16,11 +16,6 @@ void JeuController::executerConsole()
     bool quitter = false;
     while (!quitter)
     {
-        texte_reset();
-        afficher_curseur();
-        texte_couleur(ROUGE);
-        texte_gras_on();
-
         std::cout << "=== Menu principal ===\n";
         std::cout << " 1: Jouer une nouvelle partie\n";
         std::cout << " 2: Charger une sauvegarde\n";
