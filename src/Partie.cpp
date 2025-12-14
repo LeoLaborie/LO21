@@ -1,7 +1,5 @@
 #include "Partie.h"
 
-#include "Sauvegarde.h"
-
 // Constructeur privé utilisé par fromSave (factory de chargement)
 Partie::Partie(int nbJoueursInit,
                int nbToursInit,
@@ -85,7 +83,7 @@ void Partie::addTuileInChantierFromPiles()
     }
 }
 
-TypeHex tirerCarte(std::map<TypeHex, int> &stock, bool marcheDejaPresent)
+TypeHex Partie::tirerCarte(std::map<TypeHex, int> &stock, bool marcheDejaPresent)
 {
     // Construire un vecteur pondéré selon les quantités restantes
     std::vector<TypeHex> pool;
