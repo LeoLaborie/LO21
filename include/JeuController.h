@@ -3,7 +3,12 @@
 #include <array>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <limits>
 
+#include "Position.h"
+#include "Sauvegarde.h"
+#include "couleurs_console.h"
 #include "Partie.h"
 
 /**

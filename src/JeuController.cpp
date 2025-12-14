@@ -1,12 +1,5 @@
 #include "JeuController.h"
 
-#include <iostream>
-#include <limits>
-
-#include "Position.h"
-#include "Sauvegarde.h"
-#include "couleurs_console.h"
-
 namespace
 {
     void afficherMessageErreurSaisie(const std::string &message)

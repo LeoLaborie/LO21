@@ -1,14 +1,5 @@
 #include "ControleConsole.h"
 
-#include <iostream>
-#include <limits>
-#include <string>
-#include <vector>
-
-#include "Position.h"
-#include "Sauvegarde.h"
-#include "couleurs_console.h"
-
 Partie CreerNouvellePartie()
 {
     std::cout << "===== DEMARRAGE PARTIE =====\n";
