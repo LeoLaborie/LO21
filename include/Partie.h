@@ -132,7 +132,7 @@ public:
      */
     Joueur &getJoueurMain()
     {
-        return *joueurs[mainJoueur];
+        return *joueurs[static_cast<size_t>(mainJoueur)];
     }
 
     /**
@@ -200,9 +200,9 @@ public:
 
     /**
      * @brief Retourne le nombre de piles restantes dans la partie
-     * @return int : nombre de piles
+     * @return size_t : nombre de piles
      */
-    int getNbrPiles() const
+    size_t getNbrPiles() const
     {
         return piles.size();
     }
@@ -274,7 +274,7 @@ public:
      */
     IllustreArchitecte *getFauxJoueur() const
     {
-        return dynamic_cast<IllustreArchitecte *>(joueurs[nbrJoueurs - 1]);
+        return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
     }
 
     /**

@@ -32,9 +32,9 @@ public:
 
     /**
      * @brief Retourne le nombre de tuiles dans le chantier
-     * @return int : nombre de tuiles dans le chantier
+     * @return size_t : nombre de tuiles dans le chantier
      */
-    int getTaille() const
+    size_t getTaille() const
     {
         return tuilesChantier.size();
     }
