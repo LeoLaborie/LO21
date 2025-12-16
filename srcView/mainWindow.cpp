@@ -11,6 +11,7 @@
 
 #include "PageWidget.h"
 #include "PlateauWidget.h"
+#include "ControllerView.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -85,22 +86,16 @@ MainWindow::MainWindow(QWidget* parent)
     connect(quitter, &QPushButton::clicked, this, &QWidget::close);
     connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
             {
-            // -> Le contrôleur doit lancer ici la création de la Partie (nb, pseudos, variantes)
             creerLePlateau(nb);
-
-
-
-
+            ControllerView::giveInstance(plateauWidget)->creerNouvellePartie(nb, pseudos, variantes);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
+
+
     connect(loadPage, &chargerPartiePage::envoieArgument, this, [this](std::string nomSauvegarde)
             {
-        // -> Le contrôleur doit ici charger la Partie depuis la sauvegarde indiquée
         creerLePlateau(1);
-
-
-
-
+        ControllerView::giveInstance(plateauWidget)->chargerDepuisSauvegarde(nomSauvegarde);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
 
@@ -114,6 +109,8 @@ MainWindow::MainWindow(QWidget* parent)
             {
         if (stackWidget->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes(); });
+
+    connect(plateauWidget, &PlateauWidget::placementTermine, ControllerView::giveInstance(), &ControllerView::Toursuivant);
 }
 
 void MainWindow::creerLePlateau(int nbJoueurs)
