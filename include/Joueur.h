@@ -127,6 +127,8 @@ public:
 
     // Autres méthodes
 
+    bool tuileDejaEnMain(){return getTuileEnMain().getNbHexa() > 0;}
+
     /**
      * @brief Permet au joueur de piocher une tuile dans le chantier
      * @param id Identifiant de la tuile à piocher
