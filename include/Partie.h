@@ -277,7 +277,12 @@ public:
      */
     IllustreArchitecte *getFauxJoueur() const
     {
-        return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
+        if(fauxJoueurP){
+            return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
+        }else{
+            return nullptr;
+        }
+
     }
 
     /**
