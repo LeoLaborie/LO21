@@ -139,13 +139,18 @@ void ControllerView::joueurPiocheTuile(int& idTuile){
 
     Joueur &joueurcourant = partie.getJoueurMain();
     if (idTuile < joueurcourant.getNbrPierres()){
-    Tuile tuilePiochee = joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
+        joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
+        //plateau->updatePierres(joueur);
+        emit valideTuilePiochee(idTuile);
+    }else{
 
     }
-    //plateau->updatePierres(joueur);
-    if (partie.fauxJoueurPresent()){
-        //plateau->updatePierres(partie.getFauxJoueur());
-    }
+
+
+    //pas utile je pense mais je laisse la au cas où
+    // if (partie.fauxJoueurPresent()){
+    //     plateau->updatePierres(partie.getFauxJoueur());
+    // }
 }
 
 void ControllerView::joueurPlaceTuiel(Position& p){

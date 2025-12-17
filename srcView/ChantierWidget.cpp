@@ -73,7 +73,7 @@ void ChantierWidget::piocherTuile(int indice)
 {
 
 
-    // passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu
+    // passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu, à mettre dans
     tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
     emit tuilePiochee(indice);
@@ -102,6 +102,12 @@ void ChantierWidget::remettreTuileDansChantier(int& idTuile)
     listeTuilesChantier.insert(listeTuilesChantier.begin() + insertionIndex, tuile);
     reordonnerTuiles();
     setEnabled(true);
+}
+
+void ChantierWidget::tuilePiocheeValidee(int& idTuile){
+    TuileItem* tuile = retirerTuilleDeChantier(idTuile);
+    if (!tuile)
+        return;
 }
 
 void ChantierWidget::reordonnerTuiles()

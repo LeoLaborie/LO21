@@ -26,11 +26,11 @@ public:
     TuileItem* retirerTuilleDeChantier(int indice);
 
 signals:
-    void tuilePiochee(int& idTuile);//modifier pour qu'on envoie juste la tuile
+    void tuilePiochee(int& idTuile);
 
 public slots:
     void remettreTuileDansChantier(int& idTuile);
-    void tuilePiocheeValidee(int& idTuile);//déplacez le code de tuilePiochee ici
+    void tuilePiocheeValidee(int& idTuile);
 
 private:
     QGraphicsScene* chantierScene = nullptr;
