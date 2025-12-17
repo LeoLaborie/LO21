@@ -15,21 +15,22 @@ class ChantierWidget : public QGraphicsView
 {
     Q_OBJECT
 
-    public:
-        ChantierWidget(int width, int height, QWidget* parent = nullptr);
-        QGraphicsScene* getChantierScene() const
-        {
-            return chantierScene;
-        }
+public:
+    ChantierWidget(int width, int height, QWidget* parent = nullptr);
+    QGraphicsScene* getChantierScene() const
+    {
+        return chantierScene;
+    }
 
-        void ajouterTuilleDansChantier(Tuile * t);
-        TuileItem* retirerTuilleDeChantier(int indice);
+    void ajouterTuilleDansChantier(Tuile * t);
+    TuileItem* retirerTuilleDeChantier(int indice);
 
-    signals:
-    void tuilePiochee(TuileItem* tuile);
+signals:
+    void tuilePiochee(int& idTuile);//modifier pour qu'on envoie juste la tuile
 
 public slots:
-    void remettreTuileDansChantier(TuileItem* tuile);
+    void remettreTuileDansChantier(int& idTuile);
+    void tuilePiocheeValidee(int& idTuile);//déplacez le code de tuilePiochee ici
 
 private:
     QGraphicsScene* chantierScene = nullptr;

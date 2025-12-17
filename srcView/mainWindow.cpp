@@ -12,6 +12,7 @@
 #include "PageWidget.h"
 #include "PlateauWidget.h"
 #include "ControllerView.h"
+#include "ChantierWidget.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -59,6 +60,10 @@ MainWindow::MainWindow(QWidget* parent)
     stackWidget->addWidget(loadPage);
     stackWidget->addWidget(settingsPage);
 
+    //initialisation du controleur
+    ControllerView* controleur = ControllerView::giveInstance();
+
+
     const QString background = QCoreApplication::applicationDirPath() + "/img/akropolis.png";
     const QString stylesheet = QString(R"(
         #MenuPage, #NewGamePage, #LoadPage, #SettingsPage {
@@ -84,18 +89,18 @@ MainWindow::MainWindow(QWidget* parent)
     connect(setting, &QPushButton::clicked, this, [this]
             { stackWidget->setCurrentWidget(settingsPage); });
     connect(quitter, &QPushButton::clicked, this, &QWidget::close);
-    connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
+    connect(newGamePage, &newPartiePage::envoieArgument, this, [this,controleur](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
             {
             creerLePlateau(nb);
-            ControllerView::giveInstance(plateauWidget)->creerNouvellePartie(nb, pseudos, variantes);
+            controleur->creerNouvellePartie(nb, pseudos, variantes);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
 
 
-    connect(loadPage, &chargerPartiePage::envoieArgument, this, [this](std::string nomSauvegarde)
+    connect(loadPage, &chargerPartiePage::envoieArgument, this, [this,controleur](std::string nomSauvegarde)
             {
         creerLePlateau(1);
-        ControllerView::giveInstance(plateauWidget)->chargerDepuisSauvegarde(nomSauvegarde);
+        controleur->chargerDepuisSauvegarde(nomSauvegarde);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
 
@@ -110,7 +115,17 @@ MainWindow::MainWindow(QWidget* parent)
         if (stackWidget->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes(); });
 
+    //fin du tour d'un joueur
     connect(plateauWidget, &PlateauWidget::placementTermine, ControllerView::giveInstance(), &ControllerView::Toursuivant);
+
+    //affichage du plateau du joueur courant
+    connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
+
+    // vérification de la tuile piochée dans le chantier
+    connect(plateauWidget->getChantierWidget(), &ChantierWidget::tuilePiochee, controleur, &ControllerView::joueurPiocheTuile);
+    connect(controleur, &ControllerView::valideTuilePiochee, plateauWidget->getChantierWidget(), &ChantierWidget::tuilePiocheeValidee);
+
+
 }
 
 void MainWindow::creerLePlateau(int nbJoueurs)

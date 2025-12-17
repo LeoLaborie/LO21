@@ -71,20 +71,19 @@ TuileItem* ChantierWidget::retirerTuilleDeChantier(int indice)
 }
 void ChantierWidget::piocherTuile(int indice)
 {
-    TuileItem* tuile = retirerTuilleDeChantier(indice);
-    if (!tuile)
-        return;
+
 
     // passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu
     tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
-    emit tuilePiochee(tuile);
+    emit tuilePiochee(indice);
     // tant que la tuile n'est pas validée/annulée on bloque la pioche
     setEnabled(false);
 }
 
-void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
+void ChantierWidget::remettreTuileDansChantier(int& idTuile)
 {
+    TuileItem* tuile = retirerTuilleDeChantier(idTuile);
     if (!tuile)
         return;
 

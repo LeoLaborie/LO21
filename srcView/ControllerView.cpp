@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QTimer>
 #include <QString>
+#include <QEventLoop>
 #include "../IncludeView/PlateauWidget.h"
 #include "../include/Partie.h"
 #include "../IncludeView/ControllerView.h"
@@ -23,10 +24,10 @@ void pause(int temps) //je n'ai aucune idée de comment va réagir cette fonctio
 }
 
 
-ControllerView* ControllerView::giveInstance(PlateauWidget* plateau){
+ControllerView* ControllerView::giveInstance(){
     if (instance == nullptr){
         Partie partie;
-        instance = new ControllerView(*plateau, partie);
+        instance = new ControllerView(partie);
     }
     return instance;
 }
@@ -87,7 +88,7 @@ void ControllerView::afficherMessageTemporaire(const QString& message)
 
 void ControllerView::initPlateau(){
     Joueur& joueurcourant = partie.getJoueurMain();
-    //plateau->afficher(joueurcourant)
+    emit setMainJoueurPlateau(partie.getMainJoueur());
     //plateau->setMaitreArchitecte(0)
     //plateau->changerPioche(partie.getChantier().getTuiles());
     //Mettre un score de 0 pour tous les joueurs dans le plateau
@@ -102,7 +103,7 @@ void ControllerView::Toursuivant(){
     QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
     afficherMessageTemporaire(message);
 
-    //plateau->afficher(joueur)
+    emit setMainJoueurPlateau(partie.getMainJoueur());
 
     if (partie.pilesRestantes() || partie.getChantier().getTaille() > 1){
 
@@ -113,18 +114,17 @@ void ControllerView::Toursuivant(){
         afficherMessageTemporaire(message);
         if (partie.getChantier().getTaille() < 1){
 
-            message = QString("Fin de tour, il n'y a plus de tuiles dans la pioche, renouvellement de la pioche");
+            message = QString("Il n'y a plus de tuiles dans la pioche, renouvellement de la pioche");
             afficherMessageTemporaire(message);
 
             partie.tourTermine();
             int maitreArchitecte = partie.getMaitreArchitecte();
             //plateau->setMaitreArchitecte(int)
-            if (partie.pilesRestantes())
-                partie.addTuileInChantierFromPiles();
-            //plateau->changerPioche(partie.getChantier().getTuiles());
+            partie.addTuileInChantierFromPiles();
+            emit setChantier(partie.getChantier().getTuiles());
 
         }
-        //partie.setProchainJoueur(); à mettre dans placerTuile
+        partie.setProchainJoueur();
 
 
     }else{
@@ -137,11 +137,11 @@ void ControllerView::Toursuivant(){
 
 void ControllerView::joueurPiocheTuile(int& idTuile){
 
-    Joueur &joueur = partie.getJoueurMain();
-    QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
-    afficherMessageTemporaire(message);
+    Joueur &joueurcourant = partie.getJoueurMain();
+    if (idTuile < joueurcourant.getNbrPierres()){
+    Tuile tuilePiochee = joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
 
-    Tuile tuilePiochee = joueur.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
+    }
     //plateau->updatePierres(joueur);
     if (partie.fauxJoueurPresent()){
         //plateau->updatePierres(partie.getFauxJoueur());

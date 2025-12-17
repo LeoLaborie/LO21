@@ -145,7 +145,7 @@ void PlateauWidget::validerPlacementTuile(TuileItem* t)
     std::cout << t->getNiveauGraphique() << std::endl;
 }
 
-void PlateauWidget::afficherPlateauJoueur(int index)
+void PlateauWidget::afficherPlateauJoueur(const int& index)
 {
     if (!stackPlateaux || zonesParJoueur.empty())
         return;

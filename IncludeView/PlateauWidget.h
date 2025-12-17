@@ -22,16 +22,18 @@ class PlateauWidget : public QWidget
 {
     Q_OBJECT
 
-    public:
-        /**
-         * @brief Construit le widget et installe les vues/scènes du plateau et du chantier.
-         */
-        explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
-        /**
-         * @brief Le contrôleur doit appeler afficherPlateauJoueur(index)
-         * avant d'envoyer une TuileItem dans la zone choisie.
-         */
-    signals:
+public:
+    /**
+     * @brief Construit le widget et installe les vues/scènes du plateau et du chantier.
+     */
+    explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
+    /**
+     * @brief Le contrôleur doit appeler afficherPlateauJoueur(index)
+     * avant d'envoyer une TuileItem dans la zone choisie.
+     */
+
+    ChantierWidget* getChantierWidget(){return chantierWidget;}
+signals:
     void demandeParametres();
     void demandeRetourMenu();
     void demandeQuitter();
@@ -42,7 +44,7 @@ public slots:
      * @brief Affiche la scène correspondant au joueur demandé.
      * @param index Indice du joueur actif (0-based).
      */
-    void afficherPlateauJoueur(int index);
+    void afficherPlateauJoueur(const int& index);
 
 private slots:
     void validerPlacementTuile(TuileItem* t);

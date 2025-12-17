@@ -7,14 +7,14 @@
 #include <QMainWindow>
 #include "Partie.h"
 #include "PlateauWidget.h"
-#include  "Tuile.h"
+#include "Tuile.h"
 #include "Position.h"
 
 
 class ControllerView
 {
 public:
-    static ControllerView* giveInstance(PlateauWidget* plateau=nullptr);
+    static ControllerView* giveInstance();
     static void freeInstance();
     void executerGraphique();
 
@@ -27,7 +27,14 @@ public:
     void initPlateau();
 
 signals:
-    void creerPlateau(int& nbJoueurs);
+    void envoiePourPlateau(int& nbJoueurs,
+                           Chantier& chantier,
+                           std::vector<Joueur *>& joueurs,
+                           bool& fauxJoueurP);
+    void setMainJoueurPlateau(const int& joueur);
+    void setMaitreArchitecte(int& joueur);
+    void setChantier(const std::vector<Tuile>& piles);
+    void valideTuilePiochee(int& idTuile);
 
 public slots:
     //void recupArgument(int nb, const QStringList& pseudos, const QVector<bool>& variantes);//rajouter si on veut utiliser toutes les tuiles
@@ -40,9 +47,8 @@ public slots:
 
 private:
     static ControllerView* instance;
-    PlateauWidget& plateau;
     Partie& partie;
-    explicit ControllerView(PlateauWidget& pl, Partie& pa):plateau(pl),partie(pa){}
+    explicit ControllerView(Partie& pa):partie(pa){}
     ~ControllerView()=default;
 };
 
