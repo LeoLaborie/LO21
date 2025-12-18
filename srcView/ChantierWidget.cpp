@@ -63,6 +63,7 @@ void ChantierWidget::definirChantier(const std::vector<Tuile>& tuiles)
     viderChantier();
     for (const Tuile& tuile : tuiles)
     {
+        std::cout<<tuile;
         const int taille = qMin((width() - 2.0 * 10) / (1.5 + std::sqrt(3.0)), (height() - 2.0 * 20) / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES)) - 10 / NB_MAX_TUILES;
         const int indice = static_cast<int>(listeTuilesChantier.size());
         auto* tuileItem = new TuileItem(tuile, nullptr, TuileItem::Mode::Pioche, taille, indice);

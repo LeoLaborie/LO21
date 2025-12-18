@@ -6,6 +6,10 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4)
     hex2->setParent(this);
     hex3->setParent(this);
     hex4->setParent(this);
+    hex1->setCoord(0, 0, 0);
+    hex2->setCoord(0, -1, 1);
+    hex3->setCoord(-1, 1, 0);
+    hex4->setCoord(1, 0, -1);
     hex1->setVoisins({hex2, hex3, hex4});
     hex2->setVoisins({hex1, hex3, hex4});
     hex3->setVoisins({hex1, hex2, hex4});
@@ -31,6 +35,9 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3)
     hex1->setParent(this);
     hex2->setParent(this);
     hex3->setParent(this);
+    hex1->setCoord(0, 0, 0);
+    hex2->setCoord(1, -1, 0);
+    hex3->setCoord(0, -1, 1);
     hex1->setVoisins({hex2, hex3});
     hex2->setVoisins({hex1, hex3});
     hex3->setVoisins({hex1, hex2});
