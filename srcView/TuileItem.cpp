@@ -1,8 +1,20 @@
 #include "TuileItem.h"
 
 #include <QGraphicsSceneMouseEvent>
+#include <QPen>
+#include <QColor>
 #include <QtMath>
 #include <algorithm>
+
+namespace
+{
+    QColor couleurTuileDepuisId(int id)
+    {
+        // Teintes assez distinctes, mais pas trop saturées pour ne pas masquer les textures.
+        const int hue = (id * 47) % 360;
+        return QColor::fromHsv(hue, 140, 220);
+    }
+}
 
 TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int tailleTuile, int indice)
     : QObject()
@@ -28,6 +40,17 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
     }
     setTransformOriginPoint(boundingRect().center());
     QObject::connect(this, &TuileItem::rightClicked, this, &TuileItem::rotate60, Qt::UniqueConnection);
+
+    // Donne une bordure différente à chaque tuile pour les distinguer visuellement.
+    static int nextVisualId = 0;
+    const int visualId = (indice >= 0) ? indice : nextVisualId++;
+    const bool estTuileDepart = (ref.getNbHexa() == 4);
+    const QPen pen(estTuileDepart ? QColor(Qt::black) : couleurTuileDepuisId(visualId), 3.0);
+    for (QGraphicsItem* item : childItems())
+    {
+        if (auto* hex = dynamic_cast<HexItem*>(item))
+            hex->setPen(pen);
+    }
 }
 
 void TuileItem::rotate60()
