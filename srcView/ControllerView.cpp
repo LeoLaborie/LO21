@@ -184,6 +184,7 @@ void ControllerView::rotationTuileGraphique(int joueur, int pas)
 
 void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees)
 {
+    std::cout<<"ok";
     if (!zone || !tuileGraphique)
         return;
     if (partie.getNbrJoueurs() == 0)
@@ -222,5 +223,5 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
 
     emit setNbPierres(joueurCourant.getNbrPierres());
     mettreAJourScoreCourant();
-    zone->confirmerPlacementValide(tuileGraphique);
+    zone->confirmerPlacementApprouve(tuileGraphique);
 }

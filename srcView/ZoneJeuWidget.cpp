@@ -5,6 +5,7 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
 #include <QPen>
+#include <QPointF>
 #include <QSize>
 #include <algorithm>
 
@@ -32,8 +33,8 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
     validerPlacementProxy = zoneJeuScene->addWidget(validerPlacementWidget);
     validerPlacementProxy->setZValue(1000);
     validerPlacementProxy->setVisible(false);
-    connect(validerPlacementWidget, &ValiderPlacementWidget::confirmationDemandee, this, &ZoneJeuWidget::gererConfirmationPlacement);
-    connect(validerPlacementWidget, &ValiderPlacementWidget::annulationDemandee, this, &ZoneJeuWidget::gererAnnulationPlacement);
+    connect(validerPlacementWidget, &ValiderPlacementWidget::confirmationDemandee, this, &ZoneJeuWidget::surConfirmationDemandee);
+    connect(validerPlacementWidget, &ValiderPlacementWidget::annulationDemandee, this, &ZoneJeuWidget::surAnnulationDemandee);
 }
 
 void ZoneJeuWidget::viderZone()
@@ -74,10 +75,10 @@ void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
     zoneJeuScene->addItem(t);
     t->replacerCorrectement();
     // brancher les signaux utilisés pour afficher ou cacher le widget de validation
-    connect(t, &TuileItem::demandeValidationPlacement, this, &ZoneJeuWidget::afficherWidgetValidation, Qt::UniqueConnection);
-    connect(t, &TuileItem::deplacementDemarre, this, &ZoneJeuWidget::gererDebutDeplacement, Qt::UniqueConnection);
+    connect(t, &TuileItem::demandeValidationPlacement, this, &ZoneJeuWidget::afficherPanneauValidation, Qt::UniqueConnection);
+    connect(t, &TuileItem::deplacementDemarre, this, &ZoneJeuWidget::surDebutDeplacementTuile, Qt::UniqueConnection);
     if (t->modeCourant() == TuileItem::Mode::Placement)
-        afficherWidgetValidation(t);
+        afficherPanneauValidation(t);
 
     // Stocker la tuile dans le tableau
     tuilesZoneJeu.push_back(t);
@@ -108,7 +109,7 @@ void ZoneJeuWidget::setBlocageInteractions(bool bloque)
         masquerWidgetValidation();
 }
 
-void ZoneJeuWidget::afficherWidgetValidation(TuileItem* tuile)
+void ZoneJeuWidget::afficherPanneauValidation(TuileItem* tuile)
 {
     if (!tuile || !validerPlacementProxy || !validerPlacementWidget)
         return;
@@ -133,15 +134,18 @@ void ZoneJeuWidget::masquerWidgetValidation()
     tuileEnValidation = nullptr;
 }
 
-void ZoneJeuWidget::gererConfirmationPlacement()
+void ZoneJeuWidget::surConfirmationDemandee()
 {
     if (!tuileEnValidation)
         return;
-    const QPoint coordonnees = tuileEnValidation->coordonneesAxiales();
-    emit demandeValidationPlacement(tuileEnValidation, coordonnees);
+    QPointF origineScene;
+    if (zoneJeuScene)
+        origineScene = zoneJeuScene->sceneRect().center();
+    const QPoint coordonnees = tuileEnValidation->coordonneesAxiales(origineScene);
+    emit validationPlacementDemandee(tuileEnValidation, coordonnees);
 }
 
-void ZoneJeuWidget::gererAnnulationPlacement()
+void ZoneJeuWidget::surAnnulationDemandee()
 {
     TuileItem* tuile = tuileEnValidation;
     if (!tuile)
@@ -156,10 +160,10 @@ void ZoneJeuWidget::gererAnnulationPlacement()
         tuilesZoneJeu.erase(it);
 
     masquerWidgetValidation();
-    emit validationPlacementAnnulee(tuile);
+    emit placementTuileAnnule(tuile);
 }
 
-void ZoneJeuWidget::gererDebutDeplacement(TuileItem* tuile)
+void ZoneJeuWidget::surDebutDeplacementTuile(TuileItem* tuile)
 {
     if (!tuile)
         return;
@@ -168,12 +172,12 @@ void ZoneJeuWidget::gererDebutDeplacement(TuileItem* tuile)
         masquerWidgetValidation();
 }
 
-void ZoneJeuWidget::confirmerPlacementValide(TuileItem* tuile)
+void ZoneJeuWidget::confirmerPlacementApprouve(TuileItem* tuile)
 {
     if (!tuile)
         return;
     tuile->setMode(TuileItem::Mode::ZoneJeu);
-    emit validationPlacementConfirmee(tuile, tuile->pos());
+    emit placementTuileFinalise(tuile, tuile->pos());
     if (tuile == tuileEnValidation)
         masquerWidgetValidation();
 }

@@ -76,7 +76,7 @@ class TuileItem : public QObject, public QGraphicsItemGroup
         {
             return niveauHauteur;
         }
-        QPoint coordonneesAxiales() const;
+        QPoint coordonneesAxiales(const QPointF& origineScene = QPointF()) const;
 
     signals:
     void rightClicked();

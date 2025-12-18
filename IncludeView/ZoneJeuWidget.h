@@ -39,12 +39,12 @@ class ZoneJeuWidget : public QGraphicsView
 
     public slots:
         void placerTuileDansZoneJeu(TuileItem * tuile);
-        void confirmerPlacementValide(TuileItem* tuile);
+        void confirmerPlacementApprouve(TuileItem* tuile);
 
     signals:
-    void validationPlacementConfirmee(TuileItem* tuile, const QPointF& positionScene);
-    void validationPlacementAnnulee(TuileItem* tuile);
-    void demandeValidationPlacement(TuileItem* tuile, const QPoint& coordonneesTheoriques);
+    void placementTuileFinalise(TuileItem* tuile, const QPointF& positionScene);
+    void placementTuileAnnule(TuileItem* tuile);
+    void validationPlacementDemandee(TuileItem* tuile, const QPoint& coordonneesTheoriques);
 
 private:
     QGraphicsScene* zoneJeuScene = nullptr;
@@ -59,10 +59,10 @@ private:
     void masquerWidgetValidation();
 
 private slots:
-    void afficherWidgetValidation(TuileItem* tuile);
-    void gererConfirmationPlacement();
-    void gererAnnulationPlacement();
-    void gererDebutDeplacement(TuileItem* tuile);
+    void afficherPanneauValidation(TuileItem* tuile);
+    void surConfirmationDemandee();
+    void surAnnulationDemandee();
+    void surDebutDeplacementTuile(TuileItem* tuile);
 };
 
 #endif

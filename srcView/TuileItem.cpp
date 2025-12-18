@@ -132,11 +132,12 @@ void TuileItem::setNiveauGraphique(int niveau)
     replacerCorrectement();
 }
 
-QPoint TuileItem::coordonneesAxiales() const
+QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
 {
     if (!hexRef)
         return QPoint();
     const QPointF centreScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF axialF = pixelVersAxial(centreScene.x(), centreScene.y(), tailleHex);
+    const QPointF relatif = centreScene - origineScene;
+    const QPointF axialF = pixelVersAxial(relatif.x(), relatif.y(), tailleHex);
     return QPoint(qRound(axialF.x()), qRound(axialF.y()));
 }

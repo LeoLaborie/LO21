@@ -3,9 +3,11 @@
 #include <QGraphicsScene>
 #include <QHBoxLayout>
 #include <QKeySequence>
+#include <QLabel>
 #include <QPointF>
 #include <QRect>
 #include <QShortcut>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <algorithm>
 #include <QGuiApplication>
@@ -92,9 +94,9 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
             zoneJeuWidget->placerTuileDansZoneJeu(tuile); });
     for (auto* zone : zonesParJoueur)
     {
-        connect(zone, &ZoneJeuWidget::validationPlacementAnnulee, chantierWidget, &ChantierWidget::remettreTuileDansChantier);
-        connect(zone, &ZoneJeuWidget::validationPlacementConfirmee, this, &PlateauWidget::validerPlacementTuile);
-        connect(zone, &ZoneJeuWidget::demandeValidationPlacement, this, &PlateauWidget::relayerDemandeValidationPlacement);
+        connect(zone, &ZoneJeuWidget::placementTuileAnnule, chantierWidget, &ChantierWidget::remettreTuileDansChantier);
+        connect(zone, &ZoneJeuWidget::placementTuileFinalise, this, &PlateauWidget::finaliserTourApresPlacement);
+        connect(zone, &ZoneJeuWidget::validationPlacementDemandee, this, &PlateauWidget::relayerValidationPlacementDemandee);
     }
 }
 
@@ -128,7 +130,7 @@ void PlateauWidget::gererBlocageInteractions(bool widgetActif)
     if (scorePanel)
         scorePanel->setEnabled(!widgetActif);
 }
-void PlateauWidget::validerPlacementTuile(TuileItem* t, const QPointF& positionScene)
+void PlateauWidget::finaliserTourApresPlacement(TuileItem* t, const QPointF& positionScene)
 {
     if (!t)
         return;
@@ -142,7 +144,7 @@ void PlateauWidget::validerPlacementTuile(TuileItem* t, const QPointF& positionS
         joueurActif = (joueurActif + 1) % static_cast<int>(zonesParJoueur.size());
         afficherPlateauJoueur(joueurActif);
     }
-    emit placementValide();
+    emit tourTermine();
 }
 
 void PlateauWidget::afficherPlateauJoueur(const int& index)
@@ -190,6 +192,25 @@ void PlateauWidget::afficherTuileEnMain(const int& index, const Tuile& tuile)
         chantierWidget->setEnabled(false);
 }
 
+void PlateauWidget::afficherMessage(const QString& message)
+{
+    auto* popup = new QWidget();
+    popup->setWindowTitle(tr("Info"));
+    popup->setAttribute(Qt::WA_DeleteOnClose);
+    popup->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
+
+    auto* layout = new QVBoxLayout(popup);
+    layout->setContentsMargins(12, 10, 12, 12);
+    layout->setSpacing(8);
+
+    auto* label = new QLabel(message, popup);
+    label->setWordWrap(true);
+    layout->addWidget(label);
+
+    popup->show();
+    QTimer::singleShot(3000, popup, &QWidget::close);
+}
+
 TuileItem* PlateauWidget::creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone) const
 {
     const int taille = calculerTailleTuile(zone ? zone : zoneJeuWidget);
@@ -218,10 +239,10 @@ int PlateauWidget::calculerTailleTuile(const ZoneJeuWidget* zone) const
     return std::max(30, static_cast<int>(base / 18.0));
 }
 
-void PlateauWidget::relayerDemandeValidationPlacement(TuileItem* tuile, const QPoint& coordonnees)
+void PlateauWidget::relayerValidationPlacementDemandee(TuileItem* tuile, const QPoint& coordonnees)
 {
     auto* zone = qobject_cast<ZoneJeuWidget*>(sender());
     if (!zone || !tuile)
         return;
-    emit demandeValidationPlacement(zone, joueurActif, tuile, coordonnees);
+    emit validationPlacementDemandee(zone, joueurActif, tuile, coordonnees);
 }

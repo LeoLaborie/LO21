@@ -138,12 +138,13 @@ void MainWindow::creerLePlateau(int nbJoueurs)
 
     if (ControllerView* controleur = ControllerView::giveInstance())
     {
-        connect(plateauWidget, &PlateauWidget::placementValide, controleur, &ControllerView::finDeTour);
+        connect(plateauWidget, &PlateauWidget::tourTermine, controleur, &ControllerView::finDeTour);
         connect(plateauWidget, &PlateauWidget::tuileRotationnee, controleur, &ControllerView::rotationTuileGraphique);
-        connect(plateauWidget, &PlateauWidget::demandeValidationPlacement, controleur, &ControllerView::verifierPlacementGraphique);
+        connect(plateauWidget, &PlateauWidget::validationPlacementDemandee, controleur, &ControllerView::verifierPlacementGraphique);
         connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
         connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
         connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
+        connect(controleur, &ControllerView::afficherMessage, plateauWidget, &PlateauWidget::afficherMessage);
 
         if (auto* chantier = plateauWidget->getChantierWidget())
         {

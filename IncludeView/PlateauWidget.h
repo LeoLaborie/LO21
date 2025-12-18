@@ -5,6 +5,7 @@
 #include <vector>
 #include "TuileItem.h"
 #include "ZoneJeuWidget.h"
+#include <QString>
 
 class ChantierWidget;
 class ScorePanel;
@@ -26,15 +27,16 @@ signals:
     void demandeParametres();
     void demandeRetourMenu();
     void demandeQuitter();
-    void placementValide();
+    void tourTermine();
     void tuileRotationnee(int joueur, int pas);
-    void demandeValidationPlacement(ZoneJeuWidget* zone, int joueur, TuileItem* tuile, const QPoint& coordonneesTheoriques);
+    void validationPlacementDemandee(ZoneJeuWidget* zone, int joueur, TuileItem* tuile, const QPoint& coordonneesTheoriques);
 
 public slots:
     void afficherPlateauJoueur(const int& index);
     void chargerPlateauJoueur(const int& index, const std::vector<Tuile>& tuiles);
     void afficherTuileEnMain(const int& index, const Tuile& tuile);
-    void validerPlacementTuile(TuileItem* tuile, const QPointF& positionScene);
+    void finaliserTourApresPlacement(TuileItem* tuile, const QPointF& positionScene);
+    void afficherMessage(const QString& message);
 
 private:
     QStackedWidget* stackPlateaux = nullptr;
@@ -51,7 +53,7 @@ private:
     TuileItem* creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone = nullptr) const;
     ZoneJeuWidget* recupererZone(const int& index) const;
     int calculerTailleTuile(const ZoneJeuWidget* zone) const;
-    void relayerDemandeValidationPlacement(TuileItem* tuile, const QPoint& coordonnees);
+    void relayerValidationPlacementDemandee(TuileItem* tuile, const QPoint& coordonnees);
 };
 
 #endif
