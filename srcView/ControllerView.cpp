@@ -152,6 +152,7 @@ void ControllerView::joueurPiocheTuile(int idTuile){
 }
 
 void ControllerView::joueurPlaceTuiel(const Position& p){
+    std::cout<<"oui";
     Joueur& joueur = partie.getJoueurMain();
     Tuile tuile = joueur.getTuileEnMain();
     std::cout<<tuile.getHauteur();
@@ -162,4 +163,18 @@ void ControllerView::joueurPlaceTuiel(const Position& p){
         const QString message = QString("Vous ne pouvez pas placer cette tuile ici");
         emit afficherMessage(message);
     }
+}
+
+void ControllerView::rotationTuileGraphique(int joueur, int pas)
+{
+    if (pas == 0)
+        return;
+    if (joueur != partie.getMainJoueur())
+        return;
+    Joueur& joueurCourant = partie.getJoueurMain();
+    Tuile tuile = joueurCourant.getTuileEnMain();
+    if (tuile.getNbHexa() == 0)
+        return;
+    tuile.pivoterTuile(pas);
+    joueurCourant.setTuileEnMain(tuile);
 }

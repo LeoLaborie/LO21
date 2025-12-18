@@ -25,6 +25,7 @@ public slots:
     void finDeTour();
     void joueurPiocheTuile(int idTuile);
     void joueurPlaceTuiel(const Position& p);
+    void rotationTuileGraphique(int joueur, int pas);
 
 signals:
     void setMainJoueurPlateau(int joueur);

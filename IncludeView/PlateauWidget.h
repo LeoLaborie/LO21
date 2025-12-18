@@ -27,6 +27,7 @@ signals:
     void demandeRetourMenu();
     void demandeQuitter();
     void placementValide();
+    void tuileRotationnee(int joueur, int pas);
 
 public slots:
     void afficherPlateauJoueur(const int& index);

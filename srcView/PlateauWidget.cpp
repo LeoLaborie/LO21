@@ -180,6 +180,10 @@ void PlateauWidget::afficherTuileEnMain(const int& index, const Tuile& tuile)
     if (!item)
         return;
     item->setInteractivite(true, true);
+    const int joueur = index;
+    connect(item, &TuileItem::rotationEffectuee, this, [this, joueur](int pas)
+            {
+        emit tuileRotationnee(joueur, pas); });
     zone->placerTuileDansZoneJeu(item);
     if (chantierWidget)
         chantierWidget->setEnabled(false);
