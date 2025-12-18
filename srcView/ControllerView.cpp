@@ -184,7 +184,6 @@ void ControllerView::rotationTuileGraphique(int joueur, int pas)
 
 void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees)
 {
-    std::cout<<"ok";
     if (!zone || !tuileGraphique)
         return;
     if (partie.getNbrJoueurs() == 0)
@@ -199,7 +198,8 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
         emit afficherMessage(QStringLiteral("Placement invalide"));
         return;
     }
-
+    std::cout<<coordonnees.x()<<" "<<coordonnees.y();
+    joueurCourant.getPlateau().afficherPositionsLegales(tuileEnMain);
     const auto positionsLegales = joueurCourant.getPlateau().getPositionsLegales(tuileEnMain);
     const auto it = std::find_if(positionsLegales.begin(), positionsLegales.end(), [&](const Position& p)
                                  {
