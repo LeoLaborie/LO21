@@ -122,7 +122,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 
             // on récupère les tuiles en dessous si on est à un niveau supérieur à 0
             // et on garde que les tuiles différentes
-            if (h.z > 0 && h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && (h.z - hex_plateau->getZ()) == 1)
+            if (!supportTrouve && h.z > 0 && h.x == hex_plateau->getX() && h.y == hex_plateau->getY() && (h.z - hex_plateau->getZ()) == 1)
             {
                 supportTrouve = true;
                 ++supports_par_hex; // on compte le support pour cet hexagone
