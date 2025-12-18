@@ -250,44 +250,40 @@ bool sauvegarderPartie(const Partie &p)
             f <<= t;
     }
     const auto joueurs = p.getJoueurs();
-    f << "JOUEURS " << '\n';
+    f << "JOUEURS " << joueurs.size() << '\n';
 
-    for (const auto j : joueurs)
+    for (const auto* j : joueurs)
     {
-        if (j->isIA()){
-            f << "FAUX_JOUEUR ";
-            f << "1"
-          << "\n";
-            f << "DIFFICULTE " << p.getFauxJoueur()->getdifficulte() << "\n";
-            f << "PIERRES " << p.getFauxJoueur()->getNbrPierres() << '\n';
-            f << "POINTS " << p.getFauxJoueur()->getNbrPoints() << '\n';
-            f << "PLATEAU " << p.getFauxJoueur()->getPlateau().getTuiles().size()
-            << "\n";
-            for (auto tuile : p.getFauxJoueur()->getPlateau().getTuiles())
-            {
-                f <<= tuile;
-            }
-        }else{
-            f << "NOM " << j->getNom() << '\n';
-            f << "PIERRES " << j->getNbrPierres() << '\n';
-            f << "POINTS " << j->getNbrPoints() << '\n';
-            f << "TUILE_MAIN\n";
-            f <<= j->getTuileEnMain();
-            const auto &tuilesPlateau = j->getPlateau().getTuiles();
-            f << "PLATEAU " << tuilesPlateau.size() << '\n';
-            for (const auto &t : tuilesPlateau)
-            {
-                f <<= t;
-            }
-            f << "VARIANTES ";
-            for (unsigned int i = 0; i < 5; ++i)
-            {
-                f << j->getPlateau().getVarianteScores()[i] << ' ';
-            }
-            f << '\n';
+        if (!j)
+            continue;
+
+        if (j->isIA())
+        {
+            f << "JOUEUR_IA\n";
+            const auto* ia = dynamic_cast<const IllustreArchitecte*>(j);
+            f << "DIFFICULTE " << (ia ? ia->getdifficulte() : 1) << '\n';
         }
+        else
+        {
+            f << "JOUEUR\n";
+        }
+
+        f << "NOM " << j->getNom() << '\n';
+        f << "PIERRES " << j->getNbrPierres() << '\n';
+        f << "POINTS " << j->getNbrPoints() << '\n';
+        f << "TUILE_MAIN\n";
+        f <<= j->getTuileEnMain();
+
+        const auto& tuilesPlateau = j->getPlateau().getTuiles();
+        f << "PLATEAU " << tuilesPlateau.size() << '\n';
+        for (const auto& t : tuilesPlateau)
+            f <<= t;
+
+        f << "VARIANTES ";
+        for (unsigned int i = 0; i < 5; ++i)
+            f << j->getPlateau().getVarianteScores()[i] << ' ';
+        f << '\n';
     }
-        f << '0' << '\n';
     return true;
 }
 // meme chose pour le chargement, on traite les erreurs aussi
@@ -372,58 +368,101 @@ Partie Partie::FromSave(const std::string &nomFichier)
     // gestion Joueurs
     expectLigne("JOUEURS");
 
-    struct JoueurCharge
+    size_t nbJoueursDansFichier = static_cast<size_t>(nbJoueurs);
     {
-        std::string nom;
-        int pierres = 0;
-        int points = 0;
-        Tuile tuileMain;
-        std::vector<Tuile> plateau;
-    };
+        std::streampos pos = f.tellg();
+        size_t nbDeclare = 0;
+        if (f >> nbDeclare)
+            nbJoueursDansFichier = nbDeclare;
+        else
+        {
+            f.clear();
+            f.seekg(pos);
+        }
+    }
 
-    std::vector<JoueurCharge> joueurs;
-    joueurs.reserve(nbJoueurs);
-
-    for (size_t idx = 0; idx < static_cast<size_t>(nbJoueurs); ++idx)
+    auto lireNomLigne = [&]()
     {
-        JoueurCharge data;
-
-        expectLigne("NOM");
-        // read the remainder of the line to allow player names with spaces
         std::string nomLine;
         std::getline(f, nomLine);
         if (nomLine.empty())
             throw std::runtime_error("Format invalide : nom joueur");
-        // trim leading space
         if (!nomLine.empty() && nomLine.front() == ' ')
             nomLine.erase(0, 1);
-        data.nom = std::move(nomLine);
+        return nomLine;
+    };
+
+    std::vector<Joueur*> joueursConstruits;
+    joueursConstruits.reserve(nbJoueursDansFichier);
+
+    bool fauxJoueurPresent = false;
+
+    for (size_t idx = 0; idx < nbJoueursDansFichier; ++idx)
+    {
+        std::string typeJoueur;
+        if (!(f >> typeJoueur))
+            throw std::runtime_error("Format invalide : type joueur");
+
+        bool estIA = false;
+        if (typeJoueur == "JOUEUR_IA")
+        {
+            estIA = true;
+            fauxJoueurPresent = true;
+            expectLigne("DIFFICULTE");
+            if (!(f >> difficulteFaux))
+                throw std::runtime_error("Format invalide : difficulté IA");
+        }
+        else if (typeJoueur == "JOUEUR" || typeJoueur == "JOUEUR_HUMAIN")
+        {
+            estIA = false;
+        }
+        else if (typeJoueur == "NOM")
+        {
+            // format ancien : pas de "JOUEUR/JOUEUR_IA", on commence directement par NOM
+            estIA = false;
+        }
+        else
+        {
+            throw std::runtime_error("Format invalide : tag joueur \"" + typeJoueur + "\"");
+        }
+
+        std::string nomJoueur;
+        if (typeJoueur == "NOM")
+            nomJoueur = lireNomLigne();
+        else
+        {
+            expectLigne("NOM");
+            nomJoueur = lireNomLigne();
+        }
+
+        int pierres = 0;
+        int points = 0;
+        Tuile tuileMain;
+        std::vector<Tuile> plateau;
 
         expectLigne("PIERRES");
-        if (!(f >> data.pierres))
+        if (!(f >> pierres))
             throw std::runtime_error("Format invalide : pierres joueur");
 
         expectLigne("POINTS");
-        if (!(f >> data.points))
+        if (!(f >> points))
             throw std::runtime_error("Format invalide : points joueur");
 
         expectLigne("TUILE_MAIN");
-        if (!(f >>= data.tuileMain))
+        if (!(f >>= tuileMain))
             throw std::runtime_error("Format invalide : tuile main joueur");
 
         expectLigne("PLATEAU");
         size_t nbTP = 0;
         if (!(f >> nbTP))
             throw std::runtime_error("Format invalide : nb tuiles plateau joueur");
-
-        data.plateau.reserve(nbTP);
-
+        plateau.reserve(nbTP);
         for (size_t k = 0; k < nbTP; ++k)
         {
             Tuile t;
             if (!(f >>= t))
                 throw std::runtime_error("Format invalide : tuile du plateau joueur");
-            data.plateau.push_back(t);
+            plateau.push_back(t);
         }
 
         expectLigne("VARIANTES");
@@ -433,68 +472,81 @@ Partie Partie::FromSave(const std::string &nomFichier)
                 throw std::runtime_error("Format invalide : variantesScore");
         }
 
-        joueurs.push_back(std::move(data));
-    }
-
-    // gestion Faux Joueur
-    expectLigne("FAUX_JOUEUR");
-    if (!(f >> present))
-        throw std::runtime_error("Format invalide : FAUX_JOUEUR");
-
-    if (present == 1)
-    {
-        expectLigne("DIFFICULTE");
-        if (!(f >> difficulteFaux))
-            throw std::runtime_error("Format invalide : difficulté IA");
-
-        expectLigne("PIERRES");
-        if (!(f >> pierresFaux))
-            throw std::runtime_error("Format invalide : pierres IA");
-
-        expectLigne("POINTS");
-        if (!(f >> pointsFaux))
-            throw std::runtime_error("Format invalide : points IA");
-
-        expectLigne("PLATEAU");
-        size_t nbIA = 0;
-        if (!(f >> nbIA))
-            throw std::runtime_error("Format invalide : taille plateau IA");
-
-        plateauFaux.reserve(nbIA);
-
-        for (size_t k = 0; k < nbIA; ++k)
+        if (!estIA)
         {
-            Tuile t;
-            if (!(f >>= t))
-                throw std::runtime_error("Format invalide : tuile IA");
-            plateauFaux.push_back(t);
+            Joueur tmp = Joueur::fromSave(variantesScore,
+                                          std::move(nomJoueur),
+                                          pierres,
+                                          points,
+                                          std::move(tuileMain),
+                                          std::move(plateau));
+            joueursConstruits.push_back(new Joueur(std::move(tmp)));
+        }
+        else
+        {
+            auto* ia = IllustreArchitecte::fromSave(difficulteFaux, pierres, points, variantesScore, std::move(plateau));
+            ia->setTuileEnMain(tuileMain);
+            joueursConstruits.push_back(ia);
         }
     }
 
-    // construction des objets
-    std::vector<Joueur*> joueursConstruits;
-    joueursConstruits.reserve(joueurs.size());
-
-    for (auto &j : joueurs)
+    // compat format ancien : FAUX_JOUEUR est stocké après la liste des joueurs
     {
-    Joueur tmp = Joueur::fromSave(variantesScore,
-                                  std::move(j.nom),
-                                  j.pierres,
-                                  j.points,
-                                  std::move(j.tuileMain),
-                                  std::move(j.plateau));
-    joueursConstruits.push_back(new Joueur(std::move(tmp)));
+        std::streampos pos = f.tellg();
+        std::string tag;
+        if (f >> tag)
+        {
+            if (tag == "FAUX_JOUEUR")
+            {
+                if (!(f >> present))
+                    throw std::runtime_error("Format invalide : FAUX_JOUEUR");
+                if (present == 1)
+                {
+                    fauxJoueurPresent = true;
+                    expectLigne("DIFFICULTE");
+                    if (!(f >> difficulteFaux))
+                        throw std::runtime_error("Format invalide : difficulté IA");
+
+                    expectLigne("PIERRES");
+                    if (!(f >> pierresFaux))
+                        throw std::runtime_error("Format invalide : pierres IA");
+
+                    expectLigne("POINTS");
+                    if (!(f >> pointsFaux))
+                        throw std::runtime_error("Format invalide : points IA");
+
+                    expectLigne("PLATEAU");
+                    size_t nbIA = 0;
+                    if (!(f >> nbIA))
+                        throw std::runtime_error("Format invalide : taille plateau IA");
+
+                    plateauFaux.reserve(nbIA);
+                    for (size_t k = 0; k < nbIA; ++k)
+                    {
+                        Tuile t;
+                        if (!(f >>= t))
+                            throw std::runtime_error("Format invalide : tuile IA");
+                        plateauFaux.push_back(t);
+                    }
+
+                    auto* ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
+                    joueursConstruits.push_back(ia);
+                }
+            }
+            else
+            {
+                f.seekg(pos);
+            }
+        }
+        else
+        {
+            f.clear();
+        }
     }
 
     Chantier chantierConstruits = Chantier::fromSave(std::move(tuilesChantier));
 
-    Partie partie(nbJoueurs, nbTours, maitreArchitecte, mainJoueur, std::move(chantierConstruits), std::move(piles), std::move(joueursConstruits), (present == 1));
-
-    if (partie.fauxJoueurP)
-    {
-        IllustreArchitecte* ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
-        partie.joueurs.push_back(ia);
-    }
+    Partie partie(nbJoueurs, nbTours, maitreArchitecte, mainJoueur, std::move(chantierConstruits), std::move(piles), std::move(joueursConstruits), fauxJoueurPresent);
 
     return partie;
 }

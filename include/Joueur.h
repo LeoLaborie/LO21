@@ -245,7 +245,7 @@ public:
      * @brief Retourne la difficulté de l'IA
      * @return int : difficulté de l'IA
      */
-    int getdifficulte()
+    int getdifficulte() const
     {
         return difficulte;
     }
