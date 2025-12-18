@@ -13,6 +13,9 @@
 
 class Partie;
 class IllustreArchitecte;
+class FactoryJoueurs;
+class FactoryJoueurHumain;
+class FactoryIllustreArchitecte;
 
 /**
  * @class Joueur
@@ -21,6 +24,9 @@ class IllustreArchitecte;
 class Joueur
 {
     friend class Partie;
+    friend class FactoryJoueurs;
+    friend class FactoryJoueurHumain;
+    friend class FactoryIllustreArchitecte;
 
 protected:
     int nbrPierres{};
@@ -185,6 +191,7 @@ class IllustreArchitecte : public Joueur
 {
     friend class Partie;
     friend struct std::default_delete<IllustreArchitecte>;
+    friend class FactoryIllustreArchitecte;
 
 private:
     int difficulte{};  // Si c'est le faux joueur, c'est etre 1 et 3

@@ -27,8 +27,9 @@ enum class TypeJoueurs {
  * sans modifier l’interface des factories.
  */
 struct JoueurConfig {
-    std::string nom;     
-    int difficulte = 0;  
+    std::string nom;
+    const bool* variantesScore = nullptr;
+    int difficulte = 0;
 };
 
 /**
