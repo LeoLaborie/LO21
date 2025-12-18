@@ -4,6 +4,13 @@
 #include <unordered_map>
 #include <utility>
 
+static void reinitialiserParentsTuiles(std::vector<Tuile>& tuiles)
+{
+    for (Tuile& tuile : tuiles)
+        for (Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
+            it.currentItem().setParent(&tuile);
+}
+
 Plateau::Plateau(const bool vs[5])
 {
     for (int i = 0; i < 5; i++)
@@ -13,6 +20,7 @@ Plateau::Plateau(const bool vs[5])
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
+    reinitialiserParentsTuiles(listeTuiles);
 
     updateVoisins();
 }
@@ -22,12 +30,14 @@ Plateau::Plateau()
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
+    reinitialiserParentsTuiles(listeTuiles);
 }
 
 Plateau Plateau::fromSave(const bool variantes[5], std::vector<Tuile> tuiles)
 {
     Plateau p(variantes);
     p.listeTuiles = std::move(tuiles);
+    reinitialiserParentsTuiles(p.listeTuiles);
     p.updateVoisins();
     return p;
 }
@@ -126,8 +136,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
             {
                 for (int i = 0; i < 6; ++i)
                 {
-                    if (h.x + dx[i] == hex_plateau->getX() &&
-                        h.y + dy[i] == hex_plateau->getY())
+                    if (h.x + dx[i] == hex_plateau->getX() && h.y + dy[i] == hex_plateau->getY())
                     {
                         toucheParBord=true;
                         hexDejaComptePourBord = true;
@@ -242,6 +251,7 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
+    reinitialiserParentsTuiles(listeTuiles);
     updateVoisins();
 
     // Si on est en hauteur (z > 0), on recouvre ce qui est juste en dessous (z-1)
@@ -277,6 +287,7 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 int Plateau::placerTuile(Tuile &t)
 {
     listeTuiles.push_back(t);
+    reinitialiserParentsTuiles(listeTuiles);
     return 1;
 }
 
