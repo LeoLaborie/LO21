@@ -136,6 +136,11 @@ void PlateauWidget::validerPlacementTuile(TuileItem* t)
     t->setInteractivite(false, false);
     if (chantierWidget)
         chantierWidget->setEnabled(true);
+    if (!zonesParJoueur.empty())
+    {
+        joueurActif = (joueurActif + 1) % static_cast<int>(zonesParJoueur.size());
+        afficherPlateauJoueur(joueurActif);
+    }
     emit placementValide();
 }
 
