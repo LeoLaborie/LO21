@@ -18,8 +18,6 @@ void ControllerView::freeInstance(){
     instance = nullptr;
 }
 
-
-
 void ControllerView::creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes)
 {
     bool utiliserToutesLesTuiles = variantes[0];
@@ -67,9 +65,11 @@ void ControllerView::lancerTour(){
     QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
     emit afficherMessage(message);
     //modifier le label dans le panel score
+    emit setNbPierres(joueur.getNbrPierres());
     emit setMainJoueurPlateau(partie.getMainJoueur());
     emit joueurActifChange(QString::fromStdString(joueur.getNom()));
     mettreAJourScoreCourant();
+
 
     if (partie.pilesRestantes() || partie.getChantier().getTaille() > 1){
 
@@ -122,8 +122,9 @@ void ControllerView::mettreAJourScoreCourant()
 
     Joueur& joueur = partie.getJoueurMain();
     joueur.setNbrPoints();
-    const int total = joueur.getNbrPoints();
-    emit setScore(total, 0, 0, 0, 0, 0);
+    const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
+    const int total =joueur.getPlateau().calculerPoints();
+    emit setScore(total, tabscore[0], tabscore[1], tabscore[2], tabscore[3], tabscore[4]);
 }
 
 void ControllerView::joueurPiocheTuile(int idTuile){
@@ -139,7 +140,6 @@ void ControllerView::joueurPiocheTuile(int idTuile){
 
     if (idTuile < joueurcourant.getNbrPierres()){
         joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
-        //plateau->updatePierres(joueur);
         emit valideTuilePiochee(idTuile);
         emit setNbPierres(joueurcourant.getNbrPierres());
     }else{
