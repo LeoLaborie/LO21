@@ -8,9 +8,11 @@
 
 namespace
 {
+    /**
+     * @brief Génère une couleur de contour stable à partir d'un identifiant.
+     */
     QColor couleurTuileDepuisId(int id)
     {
-        // Teintes assez distinctes, mais pas trop saturées pour ne pas masquer les textures.
         const int hue = (id * 47) % 360;
         return QColor::fromHsv(hue, 140, 220);
     }
@@ -123,10 +125,12 @@ void TuileItem::replacerCorrectement()
     if (!hexRef)
         return;
     const QPointF centreScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF axialF = pixelVersAxial(centreScene.x(), centreScene.y(), tailleHex);
+    // Compense le décalage visuel d'étage pour ne pas fausser l'alignement logique sur la grille.
+    const QPointF centreLogique = centreScene - QPointF(0.0, decalageEtageY);
+    const QPointF axialF = pixelVersAxial(centreLogique.x(), centreLogique.y(), tailleHex);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
-    const QPointF cibleScene = axialVersPixel(q, r, tailleHex);
+    const QPointF cibleScene = axialVersPixel(q, r, tailleHex) + QPointF(0.0, decalageEtageY);
     const QPointF deltaScene = cibleScene - centreScene;
     setPos(pos() + deltaScene);
 }
@@ -145,13 +149,22 @@ void TuileItem::setTaille(int nouvelleTaille)
     }
     prepareGeometryChange();
     setTransformOriginPoint(boundingRect().center());
-    replacerCorrectement();
+    // Le décalage d'étage dépend de la taille des hexagones : on le recalcule.
+    setNiveauGraphique(niveauHauteur);
 }
 
 void TuileItem::setNiveauGraphique(int niveau)
 {
     niveauHauteur = std::max(0, niveau);
     setZValue(niveauHauteur * 10);
+
+    // Décalage visuel (vers le haut) pour distinguer les étages.
+    const double nouveauDecalage = -static_cast<double>(niveauHauteur) * (tailleHex * 0.35);
+    const double delta = nouveauDecalage - decalageEtageY;
+    decalageEtageY = nouveauDecalage;
+    if (delta != 0.0)
+        setPos(pos() + QPointF(0.0, delta));
+
     replacerCorrectement();
 }
 
@@ -160,7 +173,9 @@ QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
     if (!hexRef)
         return QPoint();
     const QPointF centreScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF relatif = centreScene - origineScene;
+    // Compense le décalage visuel d'étage pour retourner des coordonnées logiques cohérentes.
+    const QPointF centreLogique = centreScene - QPointF(0.0, decalageEtageY);
+    const QPointF relatif = centreLogique - origineScene;
     const QPointF axialF = pixelVersAxial(relatif.x(), relatif.y(), tailleHex);
     return QPoint(qRound(axialF.x()), qRound(axialF.y()));
 }

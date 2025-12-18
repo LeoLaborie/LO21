@@ -24,9 +24,21 @@ public:
     ScorePanel* getScorePanel() const { return scorePanel; }
 
 signals:
+    /**
+     * @brief Demande l'ouverture de la page de paramètres (menu pause).
+     */
     void demandeParametres();
+    /**
+     * @brief Demande un retour au menu principal (menu pause).
+     */
     void demandeRetourMenu();
+    /**
+     * @brief Demande une sauvegarde de la partie en cours (menu pause).
+     */
     void demandeSauvegarde();
+    /**
+     * @brief Demande de quitter l'application (menu pause).
+     */
     void demandeQuitter();
     void tourTermine();
     void tuileRotationnee(int joueur, int pas);

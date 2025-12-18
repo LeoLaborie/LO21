@@ -70,12 +70,19 @@ class TuileItem : public QObject, public QGraphicsItemGroup
         void setTaille(int nouvelleTaille);
         /**
          * @brief Définit le niveau visuel de la tuile (hauteur affichée).
+         *
+         * En plus du Z-order (`setZValue`), la tuile est légèrement décalée en Y pour rendre
+         * les étages plus lisibles tout en conservant des coordonnées axiales correctes.
          */
         void setNiveauGraphique(int niveau);
         int getNiveauGraphique() const
         {
             return niveauHauteur;
         }
+        /**
+         * @brief Retourne les coordonnées axiales (q,r) de la tuile dans la scène.
+         * @param origineScene Origine utilisée comme repère (ex: centre de la scène).
+         */
         QPoint coordonneesAxiales(const QPointF& origineScene = QPointF()) const;
 
     signals:
@@ -96,6 +103,12 @@ private:
     unsigned int indice;  // utiliser que quand la tuile item est dans la pioche sinon inutile
     Mode mode;
     int niveauHauteur = 0;
+    /**
+     * @brief Décalage visuel vertical appliqué en fonction de la hauteur (en pixels).
+     *
+     * Il est compensé lors des conversions pixel<->axial pour ne pas fausser les coordonnées logiques.
+     */
+    double decalageEtageY = 0.0;
 };
 
 #endif  // TUILEITEM_H

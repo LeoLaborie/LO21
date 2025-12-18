@@ -31,6 +31,9 @@ public slots:
     void joueurPlaceTuiel(const Position& p);
     void rotationTuileGraphique(int joueur, int pas);
     void verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees);
+    /**
+     * @brief Sauvegarde la partie courante depuis l'interface graphique.
+     */
     void sauvegarderPartieGraphique();
 
 signals:
