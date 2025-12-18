@@ -280,8 +280,7 @@ int Plateau::placerTuile(Tuile &t)
     return 1;
 }
 
-int Plateau::calculerPoints() const
-{
+std::vector<int> Plateau::calculerPointsTab() const{
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0,
         nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbHabitation;
     int total = 0;
@@ -360,8 +359,23 @@ int Plateau::calculerPoints() const
         }
     }
     nbHabitation = calculerPointsHabitation(grapheHabitation);
-    total += nbHabitation * PlaceHabitation + nbMarche * PlaceMarche + nbCaserne * PlaceCaserne + nbTemple * PlaceTemple + nbJardin * PlaceJardin;
-    return total;
+    std::vector<int> tabscore;
+    tabscore.push_back(nbHabitation * PlaceHabitation);
+    tabscore.push_back(nbMarche * PlaceMarche);
+    tabscore.push_back(nbCaserne * PlaceCaserne);
+    tabscore.push_back(nbTemple * PlaceTemple);
+    tabscore.push_back(nbJardin * PlaceJardin);
+    return tabscore;
+}
+
+int Plateau::calculerPoints() const
+{
+    std::vector<int>tabscore = calculerPointsTab();
+    int score = 0;
+    for (const auto& s :tabscore){
+        score += s;
+    }
+    return score;
 }
 
 int Plateau::calculerPointsia(int &diff) const

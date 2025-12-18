@@ -97,6 +97,8 @@ public:
      */
     int calculerPoints() const;
 
+    std::vector<int> calculerPointsTab() const;
+
     /**
      * @brief Calcule le nombre de points gagnés par l'IA
      * @param diff
