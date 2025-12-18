@@ -104,6 +104,12 @@ public:
     }
 
     /**
+     * @brief Indique si une tuile est déjà en main.
+     * @return true si la tuile en main n'est pas vide.
+     */
+    bool tuileDejaEnMain() const;
+
+    /**
      * @brief Retourne le nombre de points du joueur
      * @return int : nombre de points du joueur
      */

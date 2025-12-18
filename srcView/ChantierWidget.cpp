@@ -1,5 +1,4 @@
 #include "ChantierWidget.h"
-
 #include <QBrush>
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
@@ -94,7 +93,7 @@ TuileItem* ChantierWidget::retirerTuilleDeChantier(int indice)
 }
 void ChantierWidget::piocherTuile(int indice)
 {
-    TuileItem* tuile = retirerTuilleDeChantier(indice);
+    TuileItem * tuile = retirerTuilleDeChantier(indice);
     if (!tuile)
         return;
     tuileEnTransit = tuile;

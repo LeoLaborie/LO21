@@ -193,3 +193,9 @@ std::ostream &operator<<(std::ostream &os, const Joueur &j)
        << j.plateau << std::endl;
     return os;
 }
+
+bool Joueur::tuileDejaEnMain() const
+{
+    Tuile::ConstIterator it = tuileEnMain.getConstIterator();
+    return !it.isDone();
+}
