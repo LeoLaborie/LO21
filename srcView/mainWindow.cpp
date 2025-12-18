@@ -13,6 +13,7 @@
 #include "PlateauWidget.h"
 #include "ControllerView.h"
 #include "ChantierWidget.h"
+#include "ScorePanel.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -124,7 +125,10 @@ MainWindow::MainWindow(QWidget* parent)
     // vérification de la tuile piochée dans le chantier
     connect(plateauWidget->getChantierWidget(), &ChantierWidget::tuilePiochee, controleur, &ControllerView::joueurPiocheTuile);
     connect(controleur, &ControllerView::valideTuilePiochee, plateauWidget->getChantierWidget(), &ChantierWidget::tuilePiocheeValidee);
+    connect(controleur, &ControllerView::validePasTuilePiochee, plateauWidget->getChantierWidget(), &ChantierWidget::remettreTuileDansChantier);
 
+    // modification du score
+    connect(controleur, &ControllerView::setNbPierres,plateauWidget->getScorePanel(), &ScorePanel::setNbPierres);
 
 }
 

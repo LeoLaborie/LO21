@@ -27,14 +27,31 @@ public:
     void initPlateau();
 
 signals:
-    void envoiePourPlateau(int& nbJoueurs,
+
+
+    //pour la mainwindow ou le plateau (je sais pas trop)
+    void setPlateau(int& nbJoueurs,
                            Chantier& chantier,
                            std::vector<Joueur *>& joueurs,
-                           bool& fauxJoueurP);
-    void setMainJoueurPlateau(const int& joueur);
+                           bool& fauxJoueurP);//attention au comportement du faux joueur pour la pioche et le placement dans le plateau
+                                              // et aussi pour le score
+
+    //je sais pas si c'est vraiment utile
     void setMaitreArchitecte(int& joueur);
+
+    //signals pour le plateau
+    void setMainJoueurPlateau(const int& joueur);
+    void tuilePlacee(const int& hauteur); //dans PlateauWidget.h tu demande un TuileItem dans le slot mais je sais pas comment te l'envoyer
+    void tuilePasPlacee();
+
+    //signals pour le score
+    void setScore(int& scoreH, int& scoreM, int& scoreC, int& scoreT, int& scoreJ);
+    void setNbPierres(const int& nbPierres);
+
+    //signals pour la pioche
     void setChantier(const std::vector<Tuile>& piles);
     void valideTuilePiochee(int& idTuile);
+    void validePasTuilePiochee(int& idTuile);
 
 public slots:
     //void recupArgument(int nb, const QStringList& pseudos, const QVector<bool>& variantes);//rajouter si on veut utiliser toutes les tuiles

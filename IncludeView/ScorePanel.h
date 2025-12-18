@@ -28,6 +28,10 @@ class ScorePanel : public QWidget
             return scoreLabels;
         }
 
+    public slots:
+        void setScore(int& scoreH, int& scoreM, int& scoreC, int& scoreT, int& scoreJ);
+        void setNbPierres(int& nbPierres);
+
     private:
         QVector<QLabel *> scoreLabels;
         QLabel* labelJoueurActif = nullptr;

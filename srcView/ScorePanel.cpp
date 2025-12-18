@@ -119,3 +119,12 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
         scoreLabels.append(valeurLabel);
     }
 }
+
+void ScorePanel::setNbPierres(int& nbPierres){
+    QLabel* pierres = new QLabel(QString::number(nbPierres));
+    labelNombrePierre = pierres;
+}
+
+
+
+

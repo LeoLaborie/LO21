@@ -32,7 +32,9 @@ public:
      * avant d'envoyer une TuileItem dans la zone choisie.
      */
 
-    ChantierWidget* getChantierWidget(){return chantierWidget;}
+    ChantierWidget* getChantierWidget()const {return chantierWidget;}
+    ScorePanel* getScorePanel()const {return scorePanel;}
+
 signals:
     void demandeParametres();
     void demandeRetourMenu();
@@ -46,8 +48,12 @@ public slots:
      */
     void afficherPlateauJoueur(const int& index);
 
-private slots:
     void validerPlacementTuile(TuileItem* t);
+    void replacerTuile();
+
+// private slots:
+//     void validerPlacementTuile(TuileItem* t);
+//     void replacerTuile();
 
 private:
     QStackedWidget* stackPlateaux = nullptr;

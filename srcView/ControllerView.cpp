@@ -87,7 +87,6 @@ void ControllerView::afficherMessageTemporaire(const QString& message)
 }
 
 void ControllerView::initPlateau(){
-    Joueur& joueurcourant = partie.getJoueurMain();
     emit setMainJoueurPlateau(partie.getMainJoueur());
     //plateau->setMaitreArchitecte(0)
     //plateau->changerPioche(partie.getChantier().getTuiles());
@@ -138,12 +137,23 @@ void ControllerView::Toursuivant(){
 void ControllerView::joueurPiocheTuile(int& idTuile){
 
     Joueur &joueurcourant = partie.getJoueurMain();
+
+    //pas à faire ici !!!!!!!!!!!!!!!!!!!
+    if (joueurcourant.isIA()){
+        IllustreArchitecte &ia = dynamic_cast<IllustreArchitecte &>(joueurcourant);
+        Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
+        ia.placerTuile(tuile);
+    }
+
     if (idTuile < joueurcourant.getNbrPierres()){
         joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
         //plateau->updatePierres(joueur);
         emit valideTuilePiochee(idTuile);
+        emit setNbPierres(joueurcourant.getNbrPierres());
     }else{
-
+        QString message = QString("Vous n'avez pas assez de pierres pour piocher cette tuile");
+        afficherMessageTemporaire(message);
+        emit validePasTuilePiochee(idTuile);
     }
 
 
@@ -156,5 +166,13 @@ void ControllerView::joueurPiocheTuile(int& idTuile){
 void ControllerView::joueurPlaceTuiel(Position& p){
     Joueur& joueur = partie.getJoueurMain();
     Tuile tuile = joueur.getTuileEnMain();
-    joueur.placerTuile(tuile, p);
+    if (joueur.getPlateau().verifierPlacementTuile(p,tuile)){
+        joueur.placerTuile(tuile, p);
+        emit setScore(); //relou à faire vu comment le score est codé
+        emit tuilePlacee(tuile.getHauteur());
+    }else{
+        QString message = QString("Vous ne pouvez pas placer cette tuile ici");
+        afficherMessageTemporaire(message);
+        emit tuilePasPlacee();
+    }
 }
