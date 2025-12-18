@@ -43,7 +43,7 @@ void Joueur::setNbrPierres(int nbr)
 
 void Joueur::setNbrPoints()
 {
-    nbrPoints = getPlateau().calculerPoints();
+    nbrPoints = getPlateau().calculerPoints() + getNbrPierres();
 }
 
 void IllustreArchitecte::setNbrPoints()

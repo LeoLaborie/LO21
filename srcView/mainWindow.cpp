@@ -142,6 +142,8 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
         connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
         connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
+        //informe le plateau que c'est l'Illustre Architecte qui joue
+        connect(controleur, &ControllerView::tourfauxjoueur, plateauWidget, &PlateauWidget::tourFauxJoueur);
 
         if (auto* chantier = plateauWidget->getChantierWidget())
         {

@@ -9,6 +9,7 @@
 #include "Partie.h"
 #include "Tuile.h"
 #include "Position.h"
+#include "Joueur.h"
 
 class ControllerView : public QObject
 {
@@ -41,6 +42,10 @@ signals:
     void chargerPlateauGraphique(int joueur, const std::vector<Tuile>& tuiles);
     void afficherTuileMain(int joueur, const Tuile& tuile);
     void afficherMessage(const QString& message);
+    void tourfauxjoueur(int& idTuile);
+    void partieFinie();
+
+
 
 private:
     static ControllerView* instance;
@@ -51,6 +56,7 @@ private:
     void initPlateau();
     void synchroniserPlateauxGraphiques();
     void mettreAJourScoreCourant();
+    void finPartie();
 };
 
 #endif // CONTROLLERVIEW_H

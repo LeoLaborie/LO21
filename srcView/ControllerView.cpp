@@ -1,6 +1,10 @@
 #include <vector>
 #include <QString>
 #include <QStringList>
+#include <QWidget>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QTimer>
 #include "../include/Partie.h"
 #include "../IncludeView/ControllerView.h"
 
@@ -63,7 +67,7 @@ void ControllerView::lancerTour(){
     Joueur &joueur = partie.getJoueurMain();
 
     QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
-    emit afficherMessage(message);
+    afficherMessage(message);
     //modifier le label dans le panel score
     emit setNbPierres(joueur.getNbrPierres());
     emit setMainJoueurPlateau(partie.getMainJoueur());
@@ -74,10 +78,10 @@ void ControllerView::lancerTour(){
     if (partie.pilesRestantes() || partie.getChantier().getTaille() > 1){
 
         message = QString("Nouveau Tour: %1 \n Il reste %2 piles de tuiles").arg(partie.getNbrTours() + 1).arg(partie.getNbrPiles());
-        emit afficherMessage(message);
+        afficherMessage(message);
         if (partie.getChantier().getTaille() < 1){
             message = QString("Il n'y a plus de tuiles dans la pioche, renouvellement de la pioche");
-            emit afficherMessage(message);
+            afficherMessage(message);
 
             partie.tourTermine();
             int maitreArchitecte = partie.getMaitreArchitecte();
@@ -86,12 +90,20 @@ void ControllerView::lancerTour(){
             emit setChantier(partie.getChantier().getTuiles());
 
         }
+
+        if (joueur.isIA()){
+            IllustreArchitecte &ia = dynamic_cast<IllustreArchitecte &>(joueur);
+            int idTuile = ia.choixTuile(partie.getChantier());
+            Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
+            ia.placerTuile(tuile);
+            emit tourfauxjoueur(idTuile);
+        }
         partie.setProchainJoueur();
 
 
     }else{
 
-        //MainWindow::afficher(scores) un truc comme ça
+        finPartie();
     }
 }
 
@@ -123,7 +135,7 @@ void ControllerView::mettreAJourScoreCourant()
     Joueur& joueur = partie.getJoueurMain();
     joueur.setNbrPoints();
     const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
-    const int total =joueur.getPlateau().calculerPoints();
+    const int total =joueur.getNbrPoints();
     emit setScore(total, tabscore[0], tabscore[1], tabscore[2], tabscore[3], tabscore[4]);
 }
 
@@ -131,20 +143,13 @@ void ControllerView::joueurPiocheTuile(int idTuile){
 
     Joueur &joueurcourant = partie.getJoueurMain();
 
-    //pas à faire ici !!!!!!!!!!!!!!!!!!!
-    if (joueurcourant.isIA()){
-        IllustreArchitecte &ia = dynamic_cast<IllustreArchitecte &>(joueurcourant);
-        Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
-        ia.placerTuile(tuile);
-    }
-
     if (idTuile < joueurcourant.getNbrPierres()){
         joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
         emit valideTuilePiochee(idTuile);
         emit setNbPierres(joueurcourant.getNbrPierres());
     }else{
         const QString message = QString("Vous n'avez pas assez de pierres pour piocher cette tuile");
-        emit afficherMessage(message);
+        afficherMessage(message);
         emit validePasTuilePiochee(idTuile);
     }
 
@@ -163,6 +168,28 @@ void ControllerView::joueurPlaceTuiel(const Position& p){
         mettreAJourScoreCourant();
     }else{
         const QString message = QString("Vous ne pouvez pas placer cette tuile ici");
-        emit afficherMessage(message);
+        afficherMessage(message);
     }
+}
+
+void ControllerView::afficherMessage(const QString& message)
+{
+    QWidget *popup = new QWidget();
+    popup->setWindowTitle("Info");
+
+    popup->setAttribute(Qt::WA_DeleteOnClose);
+
+    popup->setWindowFlags(Qt::WindowStaysOnTopHint);
+
+    QVBoxLayout *layout = new QVBoxLayout(popup);
+    QLabel *label = new QLabel(message, popup);
+    layout->addWidget(label);
+
+    popup->show();
+
+    QTimer::singleShot(3000, popup, &QWidget::close);
+}
+
+void ControllerView::finPartie(){
+
 }
