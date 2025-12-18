@@ -54,6 +54,7 @@ private:
     ZoneJeuWidget* recupererZone(const int& index) const;
     int calculerTailleTuile(const ZoneJeuWidget* zone) const;
     void relayerValidationPlacementDemandee(TuileItem* tuile, const QPoint& coordonnees);
+    void surRotationTuileEnMain(int pas);
 };
 
 #endif

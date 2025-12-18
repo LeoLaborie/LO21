@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <exception>
+#include <QDebug>
 #include <vector>
 #include <QString>
 #include <QStringList>
@@ -155,10 +156,8 @@ void ControllerView::joueurPiocheTuile(int idTuile){
 }
 
 void ControllerView::joueurPlaceTuiel(const Position& p){
-    std::cout<<"oui";
     Joueur& joueur = partie.getJoueurMain();
     Tuile tuile = joueur.getTuileEnMain();
-    std::cout<<tuile.getHauteur();
     if (joueur.getPlateau().verifierPlacementTuile(p,tuile)){
         joueur.placerTuile(tuile, const_cast<Position&>(p));
         mettreAJourScoreCourant();
@@ -172,13 +171,15 @@ void ControllerView::rotationTuileGraphique(int joueur, int pas)
 {
     if (pas == 0)
         return;
-    if (joueur != partie.getMainJoueur())
-        return;
+    (void)joueur;
     Joueur& joueurCourant = partie.getJoueurMain();
     Tuile tuile = joueurCourant.getTuileEnMain();
     if (tuile.getNbHexa() == 0)
         return;
     tuile.pivoterTuile(pas);
+    for (auto o : tuile.getOffsets()){
+        std::cout<<o.q<<" "<<o.r<<std::endl;
+    }
     joueurCourant.setTuileEnMain(tuile);
 }
 
@@ -198,7 +199,6 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
         emit afficherMessage(QStringLiteral("Placement invalide"));
         return;
     }
-    std::cout<<coordonnees.x()<<" "<<coordonnees.y();
     joueurCourant.getPlateau().afficherPositionsLegales(tuileEnMain);
     const auto positionsLegales = joueurCourant.getPlateau().getPositionsLegales(tuileEnMain);
     const auto it = std::find_if(positionsLegales.begin(), positionsLegales.end(), [&](const Position& p)

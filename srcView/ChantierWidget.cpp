@@ -110,6 +110,14 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
     if (!tuile)
         return;
 
+    // La tuile peut provenir d'une autre scène (zone de jeu) : on la retire proprement
+    // pour éviter les warnings "scene different"/"already added".
+    if (QGraphicsScene* sceneActuelle = tuile->scene())
+    {
+        if (sceneActuelle != chantierScene)
+            sceneActuelle->removeItem(tuile);
+    }
+
     // on récupere les informations qu'on a besion (comme l'utilisateur ne peux pas ajouter manuelement des tuiles dans le chantier pas besion de vérfier le nb max de Tuile est déjà atteint)
     const int index = tuile->getIndiceDansPioche();
     // on remet le mode de la tuile sur Pioche et désactive tout ce qu'on a pas besion
@@ -118,7 +126,8 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
     tuile->setSelected(false);
 
     // plus qu'a la remettre et rappeler la fonction qui ordonne les TUiles dans le chaniter
-    chantierScene->addItem(tuile);
+    if (tuile->scene() != chantierScene)
+        chantierScene->addItem(tuile);
     listeTuilesChantier.insert(listeTuilesChantier.begin() + index, tuile);
     reordonnerTuiles();
     mettreAJourDisponibilite();

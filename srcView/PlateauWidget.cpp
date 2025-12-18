@@ -91,7 +91,13 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     connect(chantierWidget, &ChantierWidget::tuileGraphiquePiochee, this, [this](TuileItem* tuile)
             {
         if (zoneJeuWidget)
-            zoneJeuWidget->placerTuileDansZoneJeu(tuile); });
+            zoneJeuWidget->placerTuileDansZoneJeu(tuile);
+        if (!tuile)
+            return;
+
+        const int joueur = joueurActif;
+        tuile->setProperty("joueurIndex", joueur);
+        connect(tuile, &TuileItem::rotationEffectuee, this, &PlateauWidget::surRotationTuileEnMain, Qt::UniqueConnection); });
     for (auto* zone : zonesParJoueur)
     {
         connect(zone, &ZoneJeuWidget::placementTuileAnnule, chantierWidget, &ChantierWidget::remettreTuileDansChantier);
@@ -184,12 +190,23 @@ void PlateauWidget::afficherTuileEnMain(const int& index, const Tuile& tuile)
         return;
     item->setInteractivite(true, true);
     const int joueur = index;
-    connect(item, &TuileItem::rotationEffectuee, this, [this, joueur](int pas)
-            {
-        emit tuileRotationnee(joueur, pas); });
+    item->setProperty("joueurIndex", joueur);
+    connect(item, &TuileItem::rotationEffectuee, this, &PlateauWidget::surRotationTuileEnMain, Qt::UniqueConnection);
     zone->placerTuileDansZoneJeu(item);
     if (chantierWidget)
         chantierWidget->setEnabled(false);
+}
+
+void PlateauWidget::surRotationTuileEnMain(int pas)
+{
+    auto* tuile = qobject_cast<TuileItem*>(sender());
+    if (!tuile)
+        return;
+    bool ok = false;
+    const int joueur = tuile->property("joueurIndex").toInt(&ok);
+    if (!ok)
+        return;
+    emit tuileRotationnee(joueur, pas);
 }
 
 void PlateauWidget::afficherMessage(const QString& message)

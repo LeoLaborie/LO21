@@ -44,8 +44,8 @@ void ZoneJeuWidget::viderZone()
     {
         if (!tuile)
             continue;
-        if (zoneJeuScene)
-            zoneJeuScene->removeItem(tuile);
+        if (QGraphicsScene* sceneActuelle = tuile->scene())
+            sceneActuelle->removeItem(tuile);
         delete tuile;
     }
     tuilesZoneJeu.clear();
@@ -67,12 +67,19 @@ void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
 {
     if (!t) return;
 
+    if (QGraphicsScene* sceneActuelle = t->scene())
+    {
+        if (sceneActuelle != zoneJeuScene)
+            sceneActuelle->removeItem(t);
+    }
+
     // positionne la tuile et désactive son interaction en pause
     t->setPos(x, y);
     t->setEnabled(!blocageInteractions);
 
     // ajout dans la scène et alignement automatique sur la grille
-    zoneJeuScene->addItem(t);
+    if (t->scene() != zoneJeuScene)
+        zoneJeuScene->addItem(t);
     t->replacerCorrectement();
     // brancher les signaux utilisés pour afficher ou cacher le widget de validation
     connect(t, &TuileItem::demandeValidationPlacement, this, &ZoneJeuWidget::afficherPanneauValidation, Qt::UniqueConnection);
@@ -154,7 +161,8 @@ void ZoneJeuWidget::surAnnulationDemandee()
         return;
     }
 
-    zoneJeuScene->removeItem(tuile);
+    if (QGraphicsScene* sceneActuelle = tuile->scene())
+        sceneActuelle->removeItem(tuile);
     auto it = std::find(tuilesZoneJeu.begin(), tuilesZoneJeu.end(), tuile);
     if (it != tuilesZoneJeu.end())
         tuilesZoneJeu.erase(it);
