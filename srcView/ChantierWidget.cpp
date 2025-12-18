@@ -1,5 +1,4 @@
 #include "ChantierWidget.h"
-
 #include <QBrush>
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
@@ -71,11 +70,10 @@ TuileItem* ChantierWidget::retirerTuilleDeChantier(int indice)
 }
 void ChantierWidget::piocherTuile(int indice)
 {
-    TuileItem* tuile = retirerTuilleDeChantier(indice);
+    TuileItem * tuile = retirerTuilleDeChantier(indice);
     if (!tuile)
         return;
-
-    // passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu
+    // passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu, à mettre dans
     tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
     emit tuilePiochee(tuile);
@@ -89,10 +87,7 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
         return;
 
     // on récupere les informations qu'on a besion (comme l'utilisateur ne peux pas ajouter manuelement des tuiles dans le chantier pas besion de vérfier le nb max de Tuile est déjà atteint)
-    const int indexPrefere = static_cast<int>(tuile->getIndiceDansPioche());
-    const int maxIndex = static_cast<int>(listeTuilesChantier.size());
-    const int insertionIndex = std::clamp(indexPrefere, 0, maxIndex);
-
+    const int index = tuile->getIndiceDansPioche();
     // on remet le mode de la tuile sur Pioche et désactive tout ce qu'on a pas besion
     tuile->setMode(TuileItem::Mode::Pioche);
     tuile->setInteractivite(false, false);
@@ -100,7 +95,7 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
 
     // plus qu'a la remettre et rappeler la fonction qui ordonne les TUiles dans le chaniter
     chantierScene->addItem(tuile);
-    listeTuilesChantier.insert(listeTuilesChantier.begin() + insertionIndex, tuile);
+    listeTuilesChantier.insert(listeTuilesChantier.begin() + index, tuile);
     reordonnerTuiles();
     setEnabled(true);
 }
