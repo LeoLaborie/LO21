@@ -4,11 +4,15 @@
 #include <vector>
 #include <string>
 #include <QObject>
+#include <QPoint>
 #include <QString>
 #include <QStringList>
 #include "Partie.h"
 #include "Tuile.h"
 #include "Position.h"
+
+class ZoneJeuWidget;
+class TuileItem;
 
 class ControllerView : public QObject
 {
@@ -26,6 +30,7 @@ public slots:
     void joueurPiocheTuile(int idTuile);
     void joueurPlaceTuiel(const Position& p);
     void rotationTuileGraphique(int joueur, int pas);
+    void verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees);
 
 signals:
     void setMainJoueurPlateau(int joueur);

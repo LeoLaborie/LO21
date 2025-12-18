@@ -4,10 +4,10 @@
 #include <QWidget>
 #include <vector>
 #include "TuileItem.h"
+#include "ZoneJeuWidget.h"
 
 class ChantierWidget;
 class ScorePanel;
-class ZoneJeuWidget;
 class EchapWidget;
 class QShortcut;
 class Tuile;
@@ -28,6 +28,7 @@ signals:
     void demandeQuitter();
     void placementValide();
     void tuileRotationnee(int joueur, int pas);
+    void demandeValidationPlacement(ZoneJeuWidget* zone, int joueur, TuileItem* tuile, const QPoint& coordonneesTheoriques);
 
 public slots:
     void afficherPlateauJoueur(const int& index);
@@ -50,6 +51,7 @@ private:
     TuileItem* creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone = nullptr) const;
     ZoneJeuWidget* recupererZone(const int& index) const;
     int calculerTailleTuile(const ZoneJeuWidget* zone) const;
+    void relayerDemandeValidationPlacement(TuileItem* tuile, const QPoint& coordonnees);
 };
 
 #endif

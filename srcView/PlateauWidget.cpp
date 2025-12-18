@@ -94,6 +94,7 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     {
         connect(zone, &ZoneJeuWidget::validationPlacementAnnulee, chantierWidget, &ChantierWidget::remettreTuileDansChantier);
         connect(zone, &ZoneJeuWidget::validationPlacementConfirmee, this, &PlateauWidget::validerPlacementTuile);
+        connect(zone, &ZoneJeuWidget::demandeValidationPlacement, this, &PlateauWidget::relayerDemandeValidationPlacement);
     }
 }
 
@@ -215,4 +216,12 @@ int PlateauWidget::calculerTailleTuile(const ZoneJeuWidget* zone) const
     const QRectF rect = zone->getZoneRect();
     const double base = std::min(rect.width(), rect.height());
     return std::max(30, static_cast<int>(base / 18.0));
+}
+
+void PlateauWidget::relayerDemandeValidationPlacement(TuileItem* tuile, const QPoint& coordonnees)
+{
+    auto* zone = qobject_cast<ZoneJeuWidget*>(sender());
+    if (!zone || !tuile)
+        return;
+    emit demandeValidationPlacement(zone, joueurActif, tuile, coordonnees);
 }

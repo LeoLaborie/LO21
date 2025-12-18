@@ -135,12 +135,10 @@ void ZoneJeuWidget::masquerWidgetValidation()
 
 void ZoneJeuWidget::gererConfirmationPlacement()
 {
-    if (tuileEnValidation)
-    {
-        tuileEnValidation->setMode(TuileItem::Mode::ZoneJeu);
-        emit validationPlacementConfirmee(tuileEnValidation, tuileEnValidation->pos());
-    }
-    masquerWidgetValidation();
+    if (!tuileEnValidation)
+        return;
+    const QPoint coordonnees = tuileEnValidation->coordonneesAxiales();
+    emit demandeValidationPlacement(tuileEnValidation, coordonnees);
 }
 
 void ZoneJeuWidget::gererAnnulationPlacement()
@@ -166,6 +164,16 @@ void ZoneJeuWidget::gererDebutDeplacement(TuileItem* tuile)
     if (!tuile)
         return;
     // si la tuile suivie recommence un déplacement on masque le widget
+    if (tuile == tuileEnValidation)
+        masquerWidgetValidation();
+}
+
+void ZoneJeuWidget::confirmerPlacementValide(TuileItem* tuile)
+{
+    if (!tuile)
+        return;
+    tuile->setMode(TuileItem::Mode::ZoneJeu);
+    emit validationPlacementConfirmee(tuile, tuile->pos());
     if (tuile == tuileEnValidation)
         masquerWidgetValidation();
 }

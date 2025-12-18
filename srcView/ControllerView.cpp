@@ -1,8 +1,11 @@
+#include <algorithm>
+#include <exception>
 #include <vector>
 #include <QString>
 #include <QStringList>
 #include "../include/Partie.h"
 #include "../IncludeView/ControllerView.h"
+#include "../IncludeView/ZoneJeuWidget.h"
 
 ControllerView* ControllerView::instance = nullptr;
 
@@ -177,4 +180,47 @@ void ControllerView::rotationTuileGraphique(int joueur, int pas)
         return;
     tuile.pivoterTuile(pas);
     joueurCourant.setTuileEnMain(tuile);
+}
+
+void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees)
+{
+    if (!zone || !tuileGraphique)
+        return;
+    if (partie.getNbrJoueurs() == 0)
+        return;
+    if (joueur != partie.getMainJoueur())
+        return;
+
+    Joueur& joueurCourant = partie.getJoueurMain();
+    Tuile tuileEnMain = joueurCourant.getTuileEnMain();
+    if (tuileEnMain.getNbHexa() == 0)
+    {
+        emit afficherMessage(QStringLiteral("Placement invalide"));
+        return;
+    }
+
+    const auto positionsLegales = joueurCourant.getPlateau().getPositionsLegales(tuileEnMain);
+    const auto it = std::find_if(positionsLegales.begin(), positionsLegales.end(), [&](const Position& p)
+                                 {
+        return p.x == coordonnees.x() && p.y == coordonnees.y(); });
+    if (it == positionsLegales.end())
+    {
+        emit afficherMessage(QStringLiteral("Placement invalide"));
+        return;
+    }
+
+    Position positionChoisie = *it;
+    try
+    {
+        joueurCourant.placerTuile(tuileEnMain, positionChoisie);
+    }
+    catch (const std::exception&)
+    {
+        emit afficherMessage(QStringLiteral("Placement invalide"));
+        return;
+    }
+
+    emit setNbPierres(joueurCourant.getNbrPierres());
+    mettreAJourScoreCourant();
+    zone->confirmerPlacementValide(tuileGraphique);
 }
