@@ -49,7 +49,12 @@ void ControllerView::creerNouvellePartie(int nb, const QStringList& pseudos, con
 
 
 void ControllerView::chargerDepuisSauvegarde(const std::string& nomSauvegarde){
-    partie = Partie::FromSave("saves/" + nomSauvegarde);
+    std::string nom = nomSauvegarde;
+    constexpr const char* extension = ".ratatata";
+    constexpr size_t extensionLen = 9; // strlen(".ratatata")
+    if (nom.size() < extensionLen || nom.substr(nom.size() - extensionLen) != extension)
+        nom += ".ratatata";
+    partie = Partie::FromSave("saves/" + nom);
     initPlateau();
 }
 
