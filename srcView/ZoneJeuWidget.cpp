@@ -35,6 +35,32 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
     connect(validerPlacementWidget, &ValiderPlacementWidget::confirmationDemandee, this, &ZoneJeuWidget::gererConfirmationPlacement);
     connect(validerPlacementWidget, &ValiderPlacementWidget::annulationDemandee, this, &ZoneJeuWidget::gererAnnulationPlacement);
 }
+
+void ZoneJeuWidget::viderZone()
+{
+    masquerWidgetValidation();
+    for (auto* tuile : tuilesZoneJeu)
+    {
+        if (!tuile)
+            continue;
+        if (zoneJeuScene)
+            zoneJeuScene->removeItem(tuile);
+        delete tuile;
+    }
+    tuilesZoneJeu.clear();
+}
+
+void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem* t)
+{
+    if (!t || !zoneJeuScene)
+        return;
+    t->setMode(TuileItem::Mode::ZoneJeu);
+    t->setInteractivite(false, false);
+    t->setPos(0, 0);
+    zoneJeuScene->addItem(t);
+    t->replacerCorrectement();
+    tuilesZoneJeu.push_back(t);
+}
 void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
 {
     if (!t) return;

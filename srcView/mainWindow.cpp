@@ -116,20 +116,6 @@ MainWindow::MainWindow(QWidget* parent)
         if (stackWidget->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes(); });
 
-    //fin du tour d'un joueur
-    connect(plateauWidget, &PlateauWidget::placementTermine, ControllerView::giveInstance(), &ControllerView::Toursuivant);
-
-    //affichage du plateau du joueur courant
-    connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
-
-    // vérification de la tuile piochée dans le chantier
-    connect(plateauWidget->getChantierWidget(), &ChantierWidget::tuilePiochee, controleur, &ControllerView::joueurPiocheTuile);
-    connect(controleur, &ControllerView::valideTuilePiochee, plateauWidget->getChantierWidget(), &ChantierWidget::tuilePiocheeValidee);
-    connect(controleur, &ControllerView::validePasTuilePiochee, plateauWidget->getChantierWidget(), &ChantierWidget::remettreTuileDansChantier);
-
-    // modification du score
-    connect(controleur, &ControllerView::setNbPierres,plateauWidget->getScorePanel(), &ScorePanel::setNbPierres);
-
 }
 
 void MainWindow::creerLePlateau(int nbJoueurs)
@@ -149,6 +135,28 @@ void MainWindow::creerLePlateau(int nbJoueurs)
     stackWidget->addWidget(plateauWidget);
     stackWidget->setMinimumSize(plateauWidget->size());
     resize(plateauWidget->size());
+
+    if (ControllerView* controleur = ControllerView::giveInstance())
+    {
+        connect(plateauWidget, &PlateauWidget::placementValide, controleur, &ControllerView::lancerTour);
+        connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
+        connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
+        connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
+
+        if (auto* chantier = plateauWidget->getChantierWidget())
+        {
+            connect(chantier, &ChantierWidget::tuileSelectionnee, controleur, &ControllerView::joueurPiocheTuile);
+            connect(controleur, &ControllerView::validePasTuilePiochee, chantier, &ChantierWidget::annulerPiocheEnCours);
+            connect(controleur, &ControllerView::setChantier, chantier, &ChantierWidget::definirChantier);
+            connect(controleur, &ControllerView::setNbPierres, chantier, &ChantierWidget::mettreAJourPierres);
+        }
+
+        if (auto* score = plateauWidget->getScorePanel())
+        {
+            connect(controleur, &ControllerView::setNbPierres, score, &ScorePanel::setNbPierres);
+            connect(controleur, &ControllerView::setScore, score, &ScorePanel::setScore);
+        }
+    }
 
     // -> Connecter ici PlateauWidget aux signaux du contrôleur (pioche, placements, tours, scores).
 

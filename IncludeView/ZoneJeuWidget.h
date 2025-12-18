@@ -28,6 +28,8 @@ class ZoneJeuWidget : public QGraphicsView
         {
             return zoneJeuRect;
         }
+        void viderZone();
+        void ajouterTuileDepuisModele(TuileItem* tuile);
         void setBlocageInteractions(bool bloque);
         bool interactionsBloquees() const
         {

@@ -1,34 +1,15 @@
 #include <vector>
-#include <QVector>
-#include <QWidget>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QTimer>
 #include <QString>
-#include <QEventLoop>
-#include "../IncludeView/PlateauWidget.h"
+#include <QStringList>
 #include "../include/Partie.h"
 #include "../IncludeView/ControllerView.h"
-#include "../IncludeView/mainwindow.h"
-#include "Tuile.h"
 
 ControllerView* ControllerView::instance = nullptr;
 
-void pause(int temps) //je n'ai aucune idée de comment va réagir cette fonction, j'ai demandé à Gemini
+ControllerView* ControllerView::giveInstance()
 {
-    QEventLoop loop;
-    QTimer t;
-    t.connect(&t, &QTimer::timeout, &loop, &QEventLoop::quit);
-    t.start(temps);
-    loop.exec();
-}
-
-
-ControllerView* ControllerView::giveInstance(){
-    if (instance == nullptr){
-        Partie partie;
-        instance = new ControllerView(partie);
-    }
+    if (!instance)
+        instance = new ControllerView();
     return instance;
 }
 
@@ -63,58 +44,38 @@ void ControllerView::creerNouvellePartie(int nb, const QStringList& pseudos, con
 }
 
 
-void ControllerView::chargerDepuisSauvegarde(std::string nomSauvegarde){
+void ControllerView::chargerDepuisSauvegarde(const std::string& nomSauvegarde){
     partie = Partie::FromSave("saves/" + nomSauvegarde);
     initPlateau();
 }
 
-void ControllerView::afficherMessageTemporaire(const QString& message)
-{
-    QWidget *popup = new QWidget();
-    popup->setWindowTitle("Info");
-
-    popup->setAttribute(Qt::WA_DeleteOnClose);
-
-    popup->setWindowFlags(Qt::WindowStaysOnTopHint);
-
-    QVBoxLayout *layout = new QVBoxLayout(popup);
-    QLabel *label = new QLabel(message, popup);
-    layout->addWidget(label);
-
-    popup->show();
-
-    QTimer::singleShot(3000, popup, &QWidget::close);
-}
-
 void ControllerView::initPlateau(){
+    synchroniserPlateauxGraphiques();
+    emit setChantier(partie.getChantier().getTuiles());
+    emit setNbPierres(partie.getJoueurMain().getNbrPierres());
     emit setMainJoueurPlateau(partie.getMainJoueur());
-    //plateau->setMaitreArchitecte(0)
-    //plateau->changerPioche(partie.getChantier().getTuiles());
-    //Mettre un score de 0 pour tous les joueurs dans le plateau
-    Toursuivant();
+    mettreAJourScoreCourant();
+    lancerTour();
 }
 
 
-void ControllerView::Toursuivant(){
+void ControllerView::lancerTour(){
 
     Joueur &joueur = partie.getJoueurMain();
 
-    QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
-    afficherMessageTemporaire(message);
+    const QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
+    emit afficherMessage(message);
 
     emit setMainJoueurPlateau(partie.getMainJoueur());
+    mettreAJourScoreCourant();
 
     if (partie.pilesRestantes() || partie.getChantier().getTaille() > 1){
 
-        message = QString("Nouveau Tour: %1 \n Il reste %2 piles de tuiles").
-                          arg(partie.getNbrTours() + 1).
-                          arg(partie.getNbrPiles());
-
-        afficherMessageTemporaire(message);
+        message = QString("Nouveau Tour: %1 \n Il reste %2 piles de tuiles").arg(partie.getNbrTours() + 1).arg(partie.getNbrPiles());
+        emit afficherMessage(message);
         if (partie.getChantier().getTaille() < 1){
-
             message = QString("Il n'y a plus de tuiles dans la pioche, renouvellement de la pioche");
-            afficherMessageTemporaire(message);
+            emit afficherMessage(message);
 
             partie.tourTermine();
             int maitreArchitecte = partie.getMaitreArchitecte();
@@ -132,9 +93,38 @@ void ControllerView::Toursuivant(){
     }
 }
 
+void ControllerView::synchroniserPlateauxGraphiques()
+{
+    const auto& joueurs = partie.getJoueurs();
+    for (size_t i = 0; i < joueurs.size(); ++i)
+    {
+        Joueur* joueur = joueurs[i];
+        if (!joueur)
+            continue;
+        emit chargerPlateauGraphique(static_cast<int>(i), joueur->getPlateau().getTuiles());
+    }
 
+    const int joueurCourant = partie.getMainJoueur();
+    if (joueurCourant >= 0 && joueurCourant < static_cast<int>(joueurs.size()))
+    {
+        const Joueur* joueur = joueurs[static_cast<size_t>(joueurCourant)];
+        if (joueur && joueur->getTuileEnMain().getNbHexa() > 0)
+            emit afficherTuileMain(joueurCourant, joueur->getTuileEnMain());
+    }
+}
 
-void ControllerView::joueurPiocheTuile(int& idTuile){
+void ControllerView::mettreAJourScoreCourant()
+{
+    if (partie.getNbrJoueurs() == 0)
+        return;
+
+    Joueur& joueur = partie.getJoueurMain();
+    joueur.setNbrPoints();
+    const int total = joueur.getNbrPoints();
+    emit setScore(total, 0, 0, 0, 0, 0);
+}
+
+void ControllerView::joueurPiocheTuile(int idTuile){
 
     Joueur &joueurcourant = partie.getJoueurMain();
 
@@ -151,8 +141,8 @@ void ControllerView::joueurPiocheTuile(int& idTuile){
         emit valideTuilePiochee(idTuile);
         emit setNbPierres(joueurcourant.getNbrPierres());
     }else{
-        QString message = QString("Vous n'avez pas assez de pierres pour piocher cette tuile");
-        afficherMessageTemporaire(message);
+        const QString message = QString("Vous n'avez pas assez de pierres pour piocher cette tuile");
+        emit afficherMessage(message);
         emit validePasTuilePiochee(idTuile);
     }
 
@@ -163,16 +153,14 @@ void ControllerView::joueurPiocheTuile(int& idTuile){
     // }
 }
 
-void ControllerView::joueurPlaceTuiel(Position& p){
+void ControllerView::joueurPlaceTuiel(const Position& p){
     Joueur& joueur = partie.getJoueurMain();
     Tuile tuile = joueur.getTuileEnMain();
     if (joueur.getPlateau().verifierPlacementTuile(p,tuile)){
-        joueur.placerTuile(tuile, p);
-        emit setScore(); //relou à faire vu comment le score est codé
-        emit tuilePlacee(tuile.getHauteur());
+        joueur.placerTuile(tuile, const_cast<Position&>(p));
+        mettreAJourScoreCourant();
     }else{
-        QString message = QString("Vous ne pouvez pas placer cette tuile ici");
-        afficherMessageTemporaire(message);
-        emit tuilePasPlacee();
+        const QString message = QString("Vous ne pouvez pas placer cette tuile ici");
+        emit afficherMessage(message);
     }
 }

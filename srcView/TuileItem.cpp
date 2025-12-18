@@ -4,7 +4,7 @@
 #include <QtMath>
 #include <algorithm>
 
-TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent, Mode m, int tailleTuile, int indice)
+TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int tailleTuile, int indice)
     : QObject()
     , QGraphicsItemGroup(parent)
     , tailleHex(tailleTuile)

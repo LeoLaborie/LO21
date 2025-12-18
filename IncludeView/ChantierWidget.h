@@ -26,17 +26,24 @@ public:
     TuileItem* retirerTuilleDeChantier(int indice);
 
 signals:
-    void tuilePiochee(int& idTuile);
+    void tuileSelectionnee(int indice);
+    void tuileGraphiquePiochee(TuileItem* tuile);
 
 public slots:
-    void remettreTuileDansChantier(int& idTuile);
-    void tuilePiocheeValidee(int& idTuile);
+    void definirChantier(const std::vector<Tuile>& tuiles);
+    void mettreAJourPierres(int nbPierres);
+    void remettreTuileDansChantier(TuileItem* tuile);
+    void annulerPiocheEnCours(int indice);
 
 private:
     QGraphicsScene* chantierScene = nullptr;
     QGraphicsRectItem* chantierZoneRectItem = nullptr;
     std::vector<TuileItem*> listeTuilesChantier;
+    TuileItem* tuileEnTransit = nullptr;
+    int nbPierresDisponibles = 0;
     void reordonnerTuiles();
+    void viderChantier();
+    void mettreAJourDisponibilite();
 
 private slots:
     void piocherTuile(int indice);

@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QWidget>
 #include <QSizePolicy>
+#include <algorithm>
 
 ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     : QWidget(parent)
@@ -120,11 +121,30 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     }
 }
 
-void ScorePanel::setNbPierres(int& nbPierres){
-    QLabel* pierres = new QLabel(QString::number(nbPierres));
-    labelNombrePierre = pierres;
+void ScorePanel::setScore(int scoreTotal,
+                          int scoreHabitation,
+                          int scoreMarche,
+                          int scoreCaserne,
+                          int scoreTemple,
+                          int scoreJardin)
+{
+    constexpr int nbValeurs = 6;
+    const int valeurs[nbValeurs] = {scoreTotal, scoreHabitation, scoreMarche, scoreCaserne, scoreTemple, scoreJardin};
+    const int count = std::min(static_cast<int>(scoreLabels.size()), nbValeurs);
+    for (int i = 0; i < count; ++i)
+    {
+        if (scoreLabels[i])
+            scoreLabels[i]->setText(QString::number(valeurs[i]));
+    }
+    for (int i = count; i < scoreLabels.size(); ++i)
+    {
+        if (scoreLabels[i])
+            scoreLabels[i]->setText("0");
+    }
 }
 
-
-
-
+void ScorePanel::setNbPierres(int nbPierres)
+{
+    if (labelNombrePierre)
+        labelNombrePierre->setText(QString::number(nbPierres));
+}

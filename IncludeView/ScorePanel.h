@@ -29,8 +29,13 @@ class ScorePanel : public QWidget
         }
 
     public slots:
-        void setScore(int& scoreH, int& scoreM, int& scoreC, int& scoreT, int& scoreJ);
-        void setNbPierres(int& nbPierres);
+        void setScore(int scoreTotal,
+                      int scoreHabitation,
+                      int scoreMarche,
+                      int scoreCaserne,
+                      int scoreTemple,
+                      int scoreJardin);
+        void setNbPierres(int nbPierres);
 
     private:
         QVector<QLabel *> scoreLabels;
