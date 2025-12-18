@@ -22,6 +22,7 @@ public slots:
     void creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes);
     void chargerDepuisSauvegarde(const std::string& nomSauvegarde);
     void lancerTour();
+    void finDeTour();
     void joueurPiocheTuile(int idTuile);
     void joueurPlaceTuiel(const Position& p);
 

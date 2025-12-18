@@ -21,6 +21,7 @@ public:
     {
         return chantierScene;
     }
+    int tailleTuileChantier() const;
 
     void ajouterTuilleDansChantier(Tuile * t);
     TuileItem* retirerTuilleDeChantier(int indice);
@@ -44,6 +45,7 @@ private:
     void reordonnerTuiles();
     void viderChantier();
     void mettreAJourDisponibilite();
+    int calculerTailleTuile() const;
 
 private slots:
     void piocherTuile(int indice);

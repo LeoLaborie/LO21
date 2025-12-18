@@ -136,12 +136,7 @@ void PlateauWidget::validerPlacementTuile(TuileItem* t)
     t->setInteractivite(false, false);
     if (chantierWidget)
         chantierWidget->setEnabled(true);
-    emit placementValide((joueurActif + 1) % std::max(1, static_cast<int>(zonesParJoueur.size())));
-    if (!zonesParJoueur.empty())
-    {
-        joueurActif = (joueurActif + 1) % static_cast<int>(zonesParJoueur.size());
-        afficherPlateauJoueur(joueurActif);
-    }
+    emit placementValide();
 }
 
 void PlateauWidget::afficherPlateauJoueur(const int& index)
@@ -204,6 +199,8 @@ ZoneJeuWidget* PlateauWidget::recupererZone(const int& index) const
 
 int PlateauWidget::calculerTailleTuile(const ZoneJeuWidget* zone) const
 {
+    if (chantierWidget)
+        return chantierWidget->tailleTuileChantier();
     if (!zone)
         return 50;
     const QRectF rect = zone->getZoneRect();

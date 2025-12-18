@@ -56,7 +56,8 @@ void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem* t)
         return;
     t->setMode(TuileItem::Mode::ZoneJeu);
     t->setInteractivite(false, false);
-    t->setPos(0, 0);
+    const QPointF centre = zoneJeuScene->sceneRect().center();
+    t->setPos(centre);
     zoneJeuScene->addItem(t);
     t->replacerCorrectement();
     tuilesZoneJeu.push_back(t);

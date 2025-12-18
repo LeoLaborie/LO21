@@ -26,7 +26,7 @@ signals:
     void demandeParametres();
     void demandeRetourMenu();
     void demandeQuitter();
-    void placementValide(int joueurSuivant);
+    void placementValide();
 
 public slots:
     void afficherPlateauJoueur(const int& index);

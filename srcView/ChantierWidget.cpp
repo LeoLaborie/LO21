@@ -48,7 +48,7 @@ void ChantierWidget::ajouterTuilleDansChantier(Tuile* t)
 {
     if (!t)
         return;
-    const int taille = qMin((width() - 2.0 * 10) / (1.5 + std::sqrt(3.0)), (height() - 2.0 * 20) / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES)) - 10 / NB_MAX_TUILES;
+    const int taille = calculerTailleTuile();
     const int indice = static_cast<int>(listeTuilesChantier.size());
     auto* tuile = new TuileItem(*t, nullptr, TuileItem::Mode::Pioche, taille, indice);
     connect(tuile, &TuileItem::estPiocher, this, &ChantierWidget::piocherTuile);
@@ -63,8 +63,7 @@ void ChantierWidget::definirChantier(const std::vector<Tuile>& tuiles)
     viderChantier();
     for (const Tuile& tuile : tuiles)
     {
-        std::cout<<tuile;
-        const int taille = qMin((width() - 2.0 * 10) / (1.5 + std::sqrt(3.0)), (height() - 2.0 * 20) / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES)) - 10 / NB_MAX_TUILES;
+        const int taille = calculerTailleTuile();
         const int indice = static_cast<int>(listeTuilesChantier.size());
         auto* tuileItem = new TuileItem(tuile, nullptr, TuileItem::Mode::Pioche, taille, indice);
         connect(tuileItem, &TuileItem::estPiocher, this, &ChantierWidget::piocherTuile);
@@ -183,4 +182,17 @@ void ChantierWidget::mettreAJourDisponibilite()
         tuile->setEnabled(abordable);
         tuile->setOpacity(abordable ? 1.0 : 0.35);
     }
+}
+
+int ChantierWidget::calculerTailleTuile() const
+{
+    const double largeur = width() - 20.0;
+    const double hauteur = height() - 40.0;
+    const double base = std::min(largeur / (1.5 + std::sqrt(3.0)), hauteur / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES));
+    return std::max(30, static_cast<int>(base));
+}
+
+int ChantierWidget::tailleTuileChantier() const
+{
+    return calculerTailleTuile();
 }

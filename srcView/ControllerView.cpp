@@ -53,9 +53,6 @@ void ControllerView::initPlateau(){
     synchroniserPlateauxGraphiques();
     emit setChantier(partie.getChantier().getTuiles());
     emit setNbPierres(partie.getJoueurMain().getNbrPierres());
-    emit setMainJoueurPlateau(partie.getMainJoueur());
-    emit joueurActifChange(QString::fromStdString(partie.getJoueurMain().getNom()));
-    mettreAJourScoreCourant();
     lancerTour();
 }
 
@@ -63,36 +60,35 @@ void ControllerView::initPlateau(){
 void ControllerView::lancerTour(){
 
     Joueur &joueur = partie.getJoueurMain();
-
-    QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
-    emit afficherMessage(message);
-    //modifier le label dans le panel score
     emit setMainJoueurPlateau(partie.getMainJoueur());
     emit joueurActifChange(QString::fromStdString(joueur.getNom()));
+    const QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
+    emit afficherMessage(message);
+    emit setNbPierres(joueur.getNbrPierres());
     mettreAJourScoreCourant();
+}
 
-    if (partie.pilesRestantes() || partie.getChantier().getTaille() > 1){
-
-        message = QString("Nouveau Tour: %1 \n Il reste %2 piles de tuiles").arg(partie.getNbrTours() + 1).arg(partie.getNbrPiles());
-        emit afficherMessage(message);
-        if (partie.getChantier().getTaille() < 1){
-            message = QString("Il n'y a plus de tuiles dans la pioche, renouvellement de la pioche");
-            emit afficherMessage(message);
-
-            partie.tourTermine();
-            int maitreArchitecte = partie.getMaitreArchitecte();
-            //plateau->setMaitreArchitecte(int)
+void ControllerView::finDeTour()
+{
+    if (partie.getChantier().getTaille() <= 1)
+    {
+        emit afficherMessage(QStringLiteral("Il reste une seule tuile dans le chantier."));
+        partie.tourTermine();
+        if (partie.pilesRestantes())
+        {
             partie.addTuileInChantierFromPiles();
             emit setChantier(partie.getChantier().getTuiles());
-
         }
-        partie.setProchainJoueur();
-
-
-    }else{
-
-        //MainWindow::afficher(scores) un truc comme ça
+        else
+        {
+            emit afficherMessage(QStringLiteral("Plus de piles disponibles : fin de partie."));
+            return;
+        }
     }
+
+    partie.setProchainJoueur();
+    emit setMainJoueurPlateau(partie.getMainJoueur());
+    lancerTour();
 }
 
 void ControllerView::synchroniserPlateauxGraphiques()
