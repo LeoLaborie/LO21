@@ -53,7 +53,7 @@ void IllustreArchitecte::setNbrPoints()
 
 Tuile &Joueur::piocherTuile(int id, Chantier &chantier, Joueur *fauxJoueur)
 {
-    if (id < 0 || id >= chantier.getTaille())
+    if (id < 0 || static_cast<size_t>(id) >= chantier.getTaille())
         throw std::out_of_range("ID de tuile invalide.");
     if (id > getNbrPierres())
         throw std::invalid_argument("Nombre de pierres insuffisant.");
@@ -102,7 +102,7 @@ void IllustreArchitecte::placerTuile(Tuile &t)
 int Joueur::choixTuile(const Chantier &chantier)
 {
     int idTuile = -1;
-    while (chantier.getTaille() <= idTuile || idTuile < 0)
+    while (idTuile < 0 || static_cast<size_t>(idTuile) >= chantier.getTaille())
     {
         std::cout << "Entrez l'ID de la tuile à piocher : ";
 
@@ -112,7 +112,7 @@ int Joueur::choixTuile(const Chantier &chantier)
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             idTuile = -1;
         }
-        else if (idTuile < 0 || idTuile >= chantier.getTaille())
+        else if (idTuile < 0 || static_cast<size_t>(idTuile) >= chantier.getTaille())
         {
             texte_couleur(ROUGE);
             texte_gras_on();
@@ -137,7 +137,7 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
 {
     int idTuile = -1;
     const std::vector<Tuile> &tuiles = chantier.getTuiles();
-    long unsigned int i = 0;
+    size_t i = 0;
     do
     {
         for (Tuile::ConstIterator it = tuiles[i].getConstIterator(); !it.isDone(); it.next())
@@ -148,13 +148,13 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
                  h.getType() == TypeHex::PTemple ||
                  h.getType() == TypeHex::PMarche ||
                  h.getType() == TypeHex::PJardin) &&
-                (getNbrPierres() >= i))
+                (getNbrPierres() >= static_cast<int>(i)))
             {
                 return i;
             }
         }
         i++;
-    } while (i < tuiles.size() && idTuile == -1 && getNbrPierres() >= i);
+    } while (i < tuiles.size() && idTuile == -1 && getNbrPierres() >= static_cast<int>(i));
     if (idTuile == -1)
     {
         idTuile = 0;

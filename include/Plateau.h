@@ -79,7 +79,6 @@ public:
         return listeTuiles;
     };
 
-    // TODO: Méthode jamais utilisée
     /**
      * @brief Retourne les variantes de score du plateau
      * @return const bool* : pointeur constant vers le tableau des variantes de score
