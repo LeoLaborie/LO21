@@ -2,6 +2,7 @@
 #define ZONEJEUWIDGET_H
 
 #include <QGraphicsView>
+#include <QPoint>
 #include <QRectF>
 
 #include "TuileItem.h"
@@ -28,6 +29,8 @@ class ZoneJeuWidget : public QGraphicsView
         {
             return zoneJeuRect;
         }
+        void viderZone();
+        void ajouterTuileDepuisModele(TuileItem* tuile);
         void setBlocageInteractions(bool bloque);
         bool interactionsBloquees() const
         {
@@ -36,10 +39,12 @@ class ZoneJeuWidget : public QGraphicsView
 
     public slots:
         void placerTuileDansZoneJeu(TuileItem * tuile);
+        void confirmerPlacementApprouve(TuileItem* tuile);
 
     signals:
-    void validationPlacementConfirmee(TuileItem* tuile);
-    void validationPlacementAnnulee(TuileItem* tuile);
+    void placementTuileFinalise(TuileItem* tuile, const QPointF& positionScene);
+    void placementTuileAnnule(TuileItem* tuile);
+    void validationPlacementDemandee(TuileItem* tuile, const QPoint& coordonneesTheoriques);
 
 private:
     QGraphicsScene* zoneJeuScene = nullptr;
@@ -54,10 +59,10 @@ private:
     void masquerWidgetValidation();
 
 private slots:
-    void afficherWidgetValidation(TuileItem* tuile);
-    void gererConfirmationPlacement();
-    void gererAnnulationPlacement();
-    void gererDebutDeplacement(TuileItem* tuile);
+    void afficherPanneauValidation(TuileItem* tuile);
+    void surConfirmationDemandee();
+    void surAnnulationDemandee();
+    void surDebutDeplacementTuile(TuileItem* tuile);
 };
 
 #endif

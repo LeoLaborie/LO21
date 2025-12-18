@@ -213,6 +213,8 @@ public:
      */
     size_t getNbHexa() const { return hex.size(); }
 
+    int getHauteur() const {return hex[0]->getZ();}
+
     // Manipulations de la tuile
 
     /**

@@ -3,35 +3,31 @@
 
 #include <QWidget>
 #include <QVector>
+#include <QString>
 
 class QLabel;
 
-/**
- * @brief Widget responsable de l'affichage du bloc de scores.
- */
 class ScorePanel : public QWidget
 {
     Q_OBJECT
 
-    public:
-        ScorePanel(int width, int height, QWidget* parent = nullptr);
-        QLabel* getjoueurActifLabel() const
-        {
-            return labelJoueurActif;
-        }
-        QLabel* getLabelPierre() const
-        {
-            return labelNombrePierre;
-        }
-        const QVector<QLabel *>& getScoreLabels() const
-        {
-            return scoreLabels;
-        }
+public:
+    ScorePanel(int width, int height, QWidget* parent = nullptr);
 
-    private:
-        QVector<QLabel *> scoreLabels;
-        QLabel* labelJoueurActif = nullptr;
-        QLabel* labelNombrePierre = nullptr;
+public slots:
+    void setScore(int scoreTotal,
+                  int scoreHabitation,
+                  int scoreMarche,
+                  int scoreCaserne,
+                  int scoreTemple,
+                  int scoreJardin);
+    void setNbPierres(int nbPierres);
+    void setNomJoueurActif(const QString& nom);
+
+private:
+    QVector<QLabel*> scoreLabels;
+    QLabel* labelJoueurActif = nullptr;
+    QLabel* labelNombrePierre = nullptr;
 };
 
 #endif

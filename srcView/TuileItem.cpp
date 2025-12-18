@@ -4,7 +4,7 @@
 #include <QtMath>
 #include <algorithm>
 
-TuileItem::TuileItem(Tuile& ref, QGraphicsItem* parent, Mode m, int tailleTuile, int indice)
+TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int tailleTuile, int indice)
     : QObject()
     , QGraphicsItemGroup(parent)
     , tailleHex(tailleTuile)
@@ -37,6 +37,7 @@ void TuileItem::rotate60()
     // rotation en pas de 60° puis réalignement sur la grille axiale
     setRotation(rotation() + 60.0);
     replacerCorrectement();
+    emit rotationEffectuee(1);
 }
 
 void TuileItem::setInteractivite(bool autoriserDeplacement, bool autoriserRotation)
@@ -99,14 +100,11 @@ void TuileItem::replacerCorrectement()
     if (!hexRef)
         return;
     const QPointF centreScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    const QPointF offsetScene(0.0, -niveauHauteur * decalageHauteurPixels);
-    const QPointF centreBase = centreScene - offsetScene;
-    const QPointF axialF = pixelVersAxial(centreBase.x(), centreBase.y(), tailleHex);
+    const QPointF axialF = pixelVersAxial(centreScene.x(), centreScene.y(), tailleHex);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
     const QPointF cibleScene = axialVersPixel(q, r, tailleHex);
-    const QPointF cibleAvecOffset = cibleScene + offsetScene;
-    const QPointF deltaScene = cibleAvecOffset - centreScene;
+    const QPointF deltaScene = cibleScene - centreScene;
     setPos(pos() + deltaScene);
 }
 
@@ -132,4 +130,14 @@ void TuileItem::setNiveauGraphique(int niveau)
     niveauHauteur = std::max(0, niveau);
     setZValue(niveauHauteur * 10);
     replacerCorrectement();
+}
+
+QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
+{
+    if (!hexRef)
+        return QPoint();
+    const QPointF centreScene = hexRef->mapToScene(hexRef->boundingRect().center());
+    const QPointF relatif = centreScene - origineScene;
+    const QPointF axialF = pixelVersAxial(relatif.x(), relatif.y(), tailleHex);
+    return QPoint(qRound(axialF.x()), qRound(axialF.y()));
 }

@@ -162,8 +162,12 @@ newPartiePage::newPartiePage(QWidget *parent)
 void chargerPartiePage::chargerLaPartie()
 {
     // passe le nom sélectionné au contrôleur pour charger la sauvegarde
-    emit envoieArgument(this->NomSauvegarde->currentText().toStdString());
-    std::cout << this->NomSauvegarde->currentText().toStdString() << std::endl;
+    // On privilégie le nom complet stocké en data (avec extension), sinon fallback sur le texte affiché.
+    const QString nomComplet = this->NomSauvegarde->currentData().toString();
+    const QString nomAffiche = this->NomSauvegarde->currentText();
+    const QString nomACharger = nomComplet.isEmpty() ? nomAffiche : nomComplet;
+    emit envoieArgument(nomACharger.toStdString());
+    std::cout << nomACharger.toStdString() << std::endl;
 }
 
 chargerPartiePage::chargerPartiePage(QWidget *parent)
@@ -275,5 +279,5 @@ void chargerPartiePage::rafraichirSauvegardes()
     }
     // alimentation de la combo à partir des fichiers présents
     for (auto &sauvegarde : getSauvegardes())
-        NomSauvegarde->addItem(recupererNomSansExtension(sauvegarde));
+        NomSauvegarde->addItem(recupererNomSansExtension(sauvegarde), QString::fromStdString(sauvegarde));
 }

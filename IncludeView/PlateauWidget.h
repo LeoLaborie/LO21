@@ -3,49 +3,40 @@
 #include <QStackedWidget>
 #include <QWidget>
 #include <vector>
+#include "TuileItem.h"
+#include "ZoneJeuWidget.h"
+#include <QString>
 
 class ChantierWidget;
 class ScorePanel;
-class ZoneJeuWidget;
 class EchapWidget;
 class QShortcut;
 class Tuile;
-class Hexagone;
-class TuileItem;
 
-/**
- * @brief Widget principal affichant le plateau de jeu, le chantier et les informations de score.
- * Le contrôleur doit indiquer le nombre de joueurs lors de la création et
- * alimenter le chantier en TuileItem pour chaque tour.
- */
 class PlateauWidget : public QWidget
 {
     Q_OBJECT
 
-    public:
-        /**
-         * @brief Construit le widget et installe les vues/scènes du plateau et du chantier.
-         */
-        explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
-        /**
-         * @brief Le contrôleur doit appeler afficherPlateauJoueur(index)
-         * avant d'envoyer une TuileItem dans la zone choisie.
-         */
-    signals:
+public:
+    explicit PlateauWidget(QWidget* parent = nullptr, int nbJoueurs = 1);
+
+    ChantierWidget* getChantierWidget() const { return chantierWidget; }
+    ScorePanel* getScorePanel() const { return scorePanel; }
+
+signals:
     void demandeParametres();
     void demandeRetourMenu();
     void demandeQuitter();
-    void placementTermine();  // pour que le controleur passe au tour suivant
+    void tourTermine();
+    void tuileRotationnee(int joueur, int pas);
+    void validationPlacementDemandee(ZoneJeuWidget* zone, int joueur, TuileItem* tuile, const QPoint& coordonneesTheoriques);
 
 public slots:
-    /**
-     * @brief Affiche la scène correspondant au joueur demandé.
-     * @param index Indice du joueur actif (0-based).
-     */
-    void afficherPlateauJoueur(int index);
-
-private slots:
-    void validerPlacementTuile(TuileItem* t);
+    void afficherPlateauJoueur(const int& index);
+    void chargerPlateauJoueur(const int& index, const std::vector<Tuile>& tuiles);
+    void afficherTuileEnMain(const int& index, const Tuile& tuile);
+    void finaliserTourApresPlacement(TuileItem* tuile, const QPointF& positionScene);
+    void afficherMessage(const QString& message);
 
 private:
     QStackedWidget* stackPlateaux = nullptr;
@@ -56,10 +47,14 @@ private:
     ScorePanel* scorePanel = nullptr;
     EchapWidget* echapWidget = nullptr;
     QShortcut* raccourciEchap = nullptr;
-    // Le contrôleur doit alimenter le chantier et gérer la pile métier,
-    // le widget ne crée plus de tuiles de test.
+
     void basculerMenuEchap();
     void gererBlocageInteractions(bool widgetActif);
+    TuileItem* creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone = nullptr) const;
+    ZoneJeuWidget* recupererZone(const int& index) const;
+    int calculerTailleTuile(const ZoneJeuWidget* zone) const;
+    void relayerValidationPlacementDemandee(TuileItem* tuile, const QPoint& coordonnees);
+    void surRotationTuileEnMain(int pas);
 };
 
 #endif

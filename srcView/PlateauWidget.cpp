@@ -3,9 +3,11 @@
 #include <QGraphicsScene>
 #include <QHBoxLayout>
 #include <QKeySequence>
+#include <QLabel>
 #include <QPointF>
 #include <QRect>
 #include <QShortcut>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <algorithm>
 #include <QGuiApplication>
@@ -86,14 +88,21 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     // gestion des flux entre le chantier et la zone de jeu (pioche / validation / annulation)
     //  Le contrôleur doit alimenter le chantier via ajouterTuilleDansChantier()
     //  et appeler afficherPlateauJoueur(index) lorsqu'il change de joueur actif.
-    connect(chantierWidget, &ChantierWidget::tuilePiochee, this, [this](TuileItem* tuile)
+    connect(chantierWidget, &ChantierWidget::tuileGraphiquePiochee, this, [this](TuileItem* tuile)
             {
         if (zoneJeuWidget)
-            zoneJeuWidget->placerTuileDansZoneJeu(tuile); });
+            zoneJeuWidget->placerTuileDansZoneJeu(tuile);
+        if (!tuile)
+            return;
+
+        const int joueur = joueurActif;
+        tuile->setProperty("joueurIndex", joueur);
+        connect(tuile, &TuileItem::rotationEffectuee, this, &PlateauWidget::surRotationTuileEnMain, Qt::UniqueConnection); });
     for (auto* zone : zonesParJoueur)
     {
-        connect(zone, &ZoneJeuWidget::validationPlacementAnnulee, chantierWidget, &ChantierWidget::remettreTuileDansChantier);
-        connect(zone, &ZoneJeuWidget::validationPlacementConfirmee, this, &PlateauWidget::validerPlacementTuile);
+        connect(zone, &ZoneJeuWidget::placementTuileAnnule, chantierWidget, &ChantierWidget::remettreTuileDansChantier);
+        connect(zone, &ZoneJeuWidget::placementTuileFinalise, this, &PlateauWidget::finaliserTourApresPlacement);
+        connect(zone, &ZoneJeuWidget::validationPlacementDemandee, this, &PlateauWidget::relayerValidationPlacementDemandee);
     }
 }
 
@@ -127,7 +136,7 @@ void PlateauWidget::gererBlocageInteractions(bool widgetActif)
     if (scorePanel)
         scorePanel->setEnabled(!widgetActif);
 }
-void PlateauWidget::validerPlacementTuile(TuileItem* t)
+void PlateauWidget::finaliserTourApresPlacement(TuileItem* t, const QPointF& positionScene)
 {
     if (!t)
         return;
@@ -136,24 +145,121 @@ void PlateauWidget::validerPlacementTuile(TuileItem* t)
     t->setInteractivite(false, false);
     if (chantierWidget)
         chantierWidget->setEnabled(true);
-    emit placementTermine();
     if (!zonesParJoueur.empty())
     {
         joueurActif = (joueurActif + 1) % static_cast<int>(zonesParJoueur.size());
         afficherPlateauJoueur(joueurActif);
     }
-    std::cout << t->getNiveauGraphique() << std::endl;
+    emit tourTermine();
 }
 
-void PlateauWidget::afficherPlateauJoueur(int index)
+void PlateauWidget::afficherPlateauJoueur(const int& index)
 {
-    if (!stackPlateaux || zonesParJoueur.empty())
-        return;
-    if (index < 0 || index >= static_cast<int>(zonesParJoueur.size()))
+    ZoneJeuWidget* zone = recupererZone(index);
+    if (!zone || !stackPlateaux)
         return;
     joueurActif = index;
-    zoneJeuWidget = zonesParJoueur[index];
+    zoneJeuWidget = zone;
     stackPlateaux->setCurrentIndex(index);
-    if (echapWidget && zoneJeuWidget)
+    if (echapWidget)
         echapWidget->attacherAScene(zoneJeuWidget->scene());
+}
+
+void PlateauWidget::chargerPlateauJoueur(const int& index, const std::vector<Tuile>& tuiles)
+{
+    ZoneJeuWidget* zone = recupererZone(index);
+    if (!zone)
+        return;
+    zone->viderZone();
+    for (const Tuile& tuile : tuiles)
+    {
+        auto* item = creerTuileGraphique(tuile, TuileItem::Mode::ZoneJeu, zone);
+        if (!item)
+            continue;
+        zone->ajouterTuileDepuisModele(item);
+    }
+}
+
+void PlateauWidget::afficherTuileEnMain(const int& index, const Tuile& tuile)
+{
+    ZoneJeuWidget* zone = recupererZone(index);
+    if (!zone)
+        return;
+    auto* item = creerTuileGraphique(tuile, TuileItem::Mode::Placement, zone);
+    if (!item)
+        return;
+    item->setInteractivite(true, true);
+    const int joueur = index;
+    item->setProperty("joueurIndex", joueur);
+    connect(item, &TuileItem::rotationEffectuee, this, &PlateauWidget::surRotationTuileEnMain, Qt::UniqueConnection);
+    zone->placerTuileDansZoneJeu(item);
+    if (chantierWidget)
+        chantierWidget->setEnabled(false);
+}
+
+void PlateauWidget::surRotationTuileEnMain(int pas)
+{
+    auto* tuile = qobject_cast<TuileItem*>(sender());
+    if (!tuile)
+        return;
+    bool ok = false;
+    const int joueur = tuile->property("joueurIndex").toInt(&ok);
+    if (!ok)
+        return;
+    emit tuileRotationnee(joueur, pas);
+}
+
+void PlateauWidget::afficherMessage(const QString& message)
+{
+    auto* popup = new QWidget();
+    popup->setWindowTitle(tr("Info"));
+    popup->setAttribute(Qt::WA_DeleteOnClose);
+    popup->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
+
+    auto* layout = new QVBoxLayout(popup);
+    layout->setContentsMargins(12, 10, 12, 12);
+    layout->setSpacing(8);
+
+    auto* label = new QLabel(message, popup);
+    label->setWordWrap(true);
+    layout->addWidget(label);
+
+    popup->show();
+    QTimer::singleShot(3000, popup, &QWidget::close);
+}
+
+TuileItem* PlateauWidget::creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone) const
+{
+    const int taille = calculerTailleTuile(zone ? zone : zoneJeuWidget);
+    auto* item = new TuileItem(modele, nullptr, mode, taille);
+    item->setNiveauGraphique(modele.getHauteur());
+    return item;
+}
+
+ZoneJeuWidget* PlateauWidget::recupererZone(const int& index) const
+{
+    if (zonesParJoueur.empty())
+        return nullptr;
+    if (index < 0 || index >= static_cast<int>(zonesParJoueur.size()))
+        return nullptr;
+    return zonesParJoueur[static_cast<size_t>(index)];
+}
+
+int PlateauWidget::calculerTailleTuile(const ZoneJeuWidget* zone) const
+{
+    if (chantierWidget)
+        return chantierWidget->tailleTuileChantier();
+    if (!zone)
+        return 50;
+    const QRectF rect = zone->getZoneRect();
+    const double base = std::min(rect.width(), rect.height());
+    return std::max(30, static_cast<int>(base / 18.0));
+}
+
+void PlateauWidget::relayerValidationPlacementDemandee(TuileItem* tuile, const QPoint& coordonnees)
+{
+    auto* zone = qobject_cast<ZoneJeuWidget*>(sender());
+    if (!zone || !tuile)
+        return;
+    emit validationPlacementDemandee(zone, joueurActif, tuile, coordonnees);
 }

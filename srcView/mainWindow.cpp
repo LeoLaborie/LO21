@@ -11,6 +11,9 @@
 
 #include "PageWidget.h"
 #include "PlateauWidget.h"
+#include "ControllerView.h"
+#include "ChantierWidget.h"
+#include "ScorePanel.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -58,6 +61,10 @@ MainWindow::MainWindow(QWidget* parent)
     stackWidget->addWidget(loadPage);
     stackWidget->addWidget(settingsPage);
 
+    //initialisation du controleur
+    ControllerView* controleur = ControllerView::giveInstance();
+
+
     const QString background = QCoreApplication::applicationDirPath() + "/img/akropolis.png";
     const QString stylesheet = QString(R"(
         #MenuPage, #NewGamePage, #LoadPage, #SettingsPage {
@@ -83,24 +90,18 @@ MainWindow::MainWindow(QWidget* parent)
     connect(setting, &QPushButton::clicked, this, [this]
             { stackWidget->setCurrentWidget(settingsPage); });
     connect(quitter, &QPushButton::clicked, this, &QWidget::close);
-    connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
+    connect(newGamePage, &newPartiePage::envoieArgument, this, [this,controleur](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
             {
-            // -> Le contrôleur doit lancer ici la création de la Partie (nb, pseudos, variantes)
             creerLePlateau(nb);
-
-
-
-
+            controleur->creerNouvellePartie(nb, pseudos, variantes);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
-    connect(loadPage, &chargerPartiePage::envoieArgument, this, [this](std::string nomSauvegarde)
+
+
+    connect(loadPage, &chargerPartiePage::envoieArgument, this, [this,controleur](std::string nomSauvegarde)
             {
-        // -> Le contrôleur doit ici charger la Partie depuis la sauvegarde indiquée
         creerLePlateau(1);
-
-
-
-
+        controleur->chargerDepuisSauvegarde(nomSauvegarde);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
 
@@ -114,6 +115,7 @@ MainWindow::MainWindow(QWidget* parent)
             {
         if (stackWidget->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes(); });
+
 }
 
 void MainWindow::creerLePlateau(int nbJoueurs)
@@ -133,6 +135,32 @@ void MainWindow::creerLePlateau(int nbJoueurs)
     stackWidget->addWidget(plateauWidget);
     stackWidget->setMinimumSize(plateauWidget->size());
     resize(plateauWidget->size());
+
+    if (ControllerView* controleur = ControllerView::giveInstance())
+    {
+        connect(plateauWidget, &PlateauWidget::tourTermine, controleur, &ControllerView::finDeTour);
+        connect(plateauWidget, &PlateauWidget::tuileRotationnee, controleur, &ControllerView::rotationTuileGraphique);
+        connect(plateauWidget, &PlateauWidget::validationPlacementDemandee, controleur, &ControllerView::verifierPlacementGraphique);
+        connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
+        connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
+        connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
+        connect(controleur, &ControllerView::afficherMessage, plateauWidget, &PlateauWidget::afficherMessage);
+
+        if (auto* chantier = plateauWidget->getChantierWidget())
+        {
+            connect(chantier, &ChantierWidget::tuileSelectionnee, controleur, &ControllerView::joueurPiocheTuile);
+            connect(controleur, &ControllerView::validePasTuilePiochee, chantier, &ChantierWidget::annulerPiocheEnCours);
+            connect(controleur, &ControllerView::setChantier, chantier, &ChantierWidget::definirChantier);
+            connect(controleur, &ControllerView::setNbPierres, chantier, &ChantierWidget::mettreAJourPierres);
+        }
+
+        if (auto* score = plateauWidget->getScorePanel())
+        {
+            connect(controleur, &ControllerView::setNbPierres, score, &ScorePanel::setNbPierres);
+            connect(controleur, &ControllerView::setScore, score, &ScorePanel::setScore);
+            connect(controleur, &ControllerView::joueurActifChange, score, &ScorePanel::setNomJoueurActif);
+        }
+    }
 
     // -> Connecter ici PlateauWidget aux signaux du contrôleur (pioche, placements, tours, scores).
 

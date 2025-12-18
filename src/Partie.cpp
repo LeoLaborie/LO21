@@ -9,7 +9,15 @@ Partie::Partie(int nbJoueursInit,
                std::vector<std::vector<Tuile>> pilesInit,
                std::vector<Joueur*> joueursInit,
                bool fauxJoueurPInit )
-    : nbrJoueurs(nbJoueursInit), maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)), mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)), nbrTours(nbToursInit), taillepaquet(nbJoueursInit + 1), fauxJoueurP(false), chantier(std::move(chantierInit)), joueurs(std::move(joueursInit)), piles(std::move(pilesInit))
+    : nbrJoueurs(nbJoueursInit),
+      maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)),
+      mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)),
+      nbrTours(nbToursInit),
+      taillepaquet(nbJoueursInit + 1),
+      fauxJoueurP(fauxJoueurPInit),
+      chantier(std::move(chantierInit)),
+      joueurs(std::move(joueursInit)),
+      piles(std::move(pilesInit))
 {
 }
 

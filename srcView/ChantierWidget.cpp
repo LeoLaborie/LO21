@@ -45,15 +45,38 @@ ChantierWidget::ChantierWidget(int width, int height, QWidget* parent)
 
 void ChantierWidget::ajouterTuilleDansChantier(Tuile* t)
 {
-    // calcule dynamiquement la taille des tuiles pour qu'elles tiennent dans le chantier
-    const int taille = qMin((width() - 2.0 * 10) / (1.5 + std::sqrt(3.0)), (height() - 2.0 * 20) / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES)) - 10 / NB_MAX_TUILES;
+    if (!t)
+        return;
+    const int taille = calculerTailleTuile();
     const int indice = static_cast<int>(listeTuilesChantier.size());
     auto* tuile = new TuileItem(*t, nullptr, TuileItem::Mode::Pioche, taille, indice);
     connect(tuile, &TuileItem::estPiocher, this, &ChantierWidget::piocherTuile);
-    // ajout physique dans la scène puis ré-ordonnancement vertical
     chantierScene->addItem(tuile);
     listeTuilesChantier.push_back(tuile);
-    reordonnerTuiles();  // va tout placer correctement
+    reordonnerTuiles();
+    mettreAJourDisponibilite();
+}
+
+void ChantierWidget::definirChantier(const std::vector<Tuile>& tuiles)
+{
+    viderChantier();
+    for (const Tuile& tuile : tuiles)
+    {
+        const int taille = calculerTailleTuile();
+        const int indice = static_cast<int>(listeTuilesChantier.size());
+        auto* tuileItem = new TuileItem(tuile, nullptr, TuileItem::Mode::Pioche, taille, indice);
+        connect(tuileItem, &TuileItem::estPiocher, this, &ChantierWidget::piocherTuile);
+        chantierScene->addItem(tuileItem);
+        listeTuilesChantier.push_back(tuileItem);
+    }
+    reordonnerTuiles();
+    mettreAJourDisponibilite();
+}
+
+void ChantierWidget::mettreAJourPierres(int nbPierres)
+{
+    nbPierresDisponibles = nbPierres;
+    mettreAJourDisponibilite();
 }
 
 TuileItem* ChantierWidget::retirerTuilleDeChantier(int indice)
@@ -76,8 +99,8 @@ void ChantierWidget::piocherTuile(int indice)
     // passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu, à mettre dans
     tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
-    emit tuilePiochee(tuile);
-    // tant que la tuile n'est pas validée/annulée on bloque la pioche
+    emit tuileGraphiquePiochee(tuile);
+    emit tuileSelectionnee(indice);
     setEnabled(false);
 }
 
@@ -97,7 +120,18 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
     chantierScene->addItem(tuile);
     listeTuilesChantier.insert(listeTuilesChantier.begin() + index, tuile);
     reordonnerTuiles();
+    mettreAJourDisponibilite();
     setEnabled(true);
+    if (tuile == tuileEnTransit)
+        tuileEnTransit = nullptr;
+}
+
+void ChantierWidget::annulerPiocheEnCours(int /*indice*/)
+{
+    if (!tuileEnTransit)
+        return;
+    remettreTuileDansChantier(tuileEnTransit);
+    tuileEnTransit = nullptr;
 }
 
 void ChantierWidget::reordonnerTuiles()
@@ -121,4 +155,43 @@ void ChantierWidget::reordonnerTuiles()
 
         placerTuileCentre(tuile, QPointF(xCentre, yCentre));
     }
+}
+
+void ChantierWidget::viderChantier()
+{
+    for (auto* tuile : listeTuilesChantier)
+    {
+        if (!tuile)
+            continue;
+        chantierScene->removeItem(tuile);
+        delete tuile;
+    }
+    listeTuilesChantier.clear();
+    tuileEnTransit = nullptr;
+}
+
+void ChantierWidget::mettreAJourDisponibilite()
+{
+    for (size_t i = 0; i < listeTuilesChantier.size(); ++i)
+    {
+        TuileItem* tuile = listeTuilesChantier[i];
+        if (!tuile)
+            continue;
+        const bool abordable = static_cast<int>(i) <= nbPierresDisponibles;
+        tuile->setEnabled(abordable);
+        tuile->setOpacity(abordable ? 1.0 : 0.35);
+    }
+}
+
+int ChantierWidget::calculerTailleTuile() const
+{
+    const double largeur = width() - 20.0;
+    const double hauteur = height() - 40.0;
+    const double base = std::min(largeur / (1.5 + std::sqrt(3.0)), hauteur / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES));
+    return std::max(30, static_cast<int>(base));
+}
+
+int ChantierWidget::tailleTuileChantier() const
+{
+    return calculerTailleTuile();
 }

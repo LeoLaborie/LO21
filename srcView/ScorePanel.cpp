@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QWidget>
 #include <QSizePolicy>
+#include <algorithm>
 
 ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     : QWidget(parent)
@@ -46,9 +47,10 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     auto* joueurLayout = new QHBoxLayout();
     joueurLayout->setSpacing(4);
     auto* joueurLabel = new QLabel(tr("Joueur courant :"), this);
+    
     joueurLabel->setStyleSheet("font-weight: 600; color: #111; text-decoration: underline;");
     joueurLayout->addWidget(joueurLabel);
-    labelJoueurActif = new QLabel("joueur 1      &", this);
+    labelJoueurActif = new QLabel(tr("Joueur 1"), this);
     joueurLayout->addWidget(labelJoueurActif, 1);
     scoreLayout->addLayout(joueurLayout);
 
@@ -119,3 +121,38 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
         scoreLabels.append(valeurLabel);
     }
 }
+
+void ScorePanel::setScore(int scoreTotal,
+                          int scoreHabitation,
+                          int scoreMarche,
+                          int scoreCaserne,
+                          int scoreTemple,
+                          int scoreJardin)
+{
+    constexpr int nbValeurs = 6;
+    const int valeurs[nbValeurs] = {scoreTotal, scoreHabitation, scoreMarche, scoreCaserne, scoreTemple, scoreJardin};
+    const int count = std::min(static_cast<int>(scoreLabels.size()), nbValeurs);
+    for (int i = 0; i < count; ++i)
+    {
+        if (scoreLabels[i])
+            scoreLabels[i]->setText(QString::number(valeurs[i]));
+    }
+    for (int i = count; i < scoreLabels.size(); ++i)
+    {
+        if (scoreLabels[i])
+            scoreLabels[i]->setText("0");
+    }
+}
+
+void ScorePanel::setNbPierres(int nbPierres)
+{
+    if (labelNombrePierre)
+        labelNombrePierre->setText(QString::number(nbPierres));
+}
+
+void ScorePanel::setNomJoueurActif(const QString& nom)
+{
+    if (labelJoueurActif)
+        labelJoueurActif->setText(nom);
+}
+

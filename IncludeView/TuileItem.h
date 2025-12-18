@@ -3,6 +3,7 @@
 
 #include <QGraphicsItemGroup>
 #include <QObject>
+#include <QPoint>
 #include <QPointF>
 
 #include "HexItem.h"
@@ -28,7 +29,7 @@ class TuileItem : public QObject, public QGraphicsItemGroup
         /**
          * @brief Construit une tuile graphique à partir d'une tuile métier et crée les HexItem associés.
          */
-        TuileItem(Tuile & modele, QGraphicsItem* parent = nullptr, Mode m = Mode::Pioche, int tailleTuile = 50, int indice = -1);
+        TuileItem(const Tuile & modele, QGraphicsItem* parent = nullptr, Mode m = Mode::Pioche, int tailleTuile = 50, int indice = -1);
         /**
          * @brief Pivote la tuile de 60° autour de son centre si l'interaction est autorisée.
          */
@@ -75,12 +76,14 @@ class TuileItem : public QObject, public QGraphicsItemGroup
         {
             return niveauHauteur;
         }
+        QPoint coordonneesAxiales(const QPointF& origineScene = QPointF()) const;
 
     signals:
     void rightClicked();
     void estPiocher(int indice);
     void demandeValidationPlacement(TuileItem* tuile);
     void deplacementDemarre(TuileItem* tuile);
+    void rotationEffectuee(int pas);
 
 protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
@@ -93,7 +96,6 @@ private:
     unsigned int indice;  // utiliser que quand la tuile item est dans la pioche sinon inutile
     Mode mode;
     int niveauHauteur = 0;
-    static constexpr double decalageHauteurPixels = 12.0;
 };
 
 #endif  // TUILEITEM_H

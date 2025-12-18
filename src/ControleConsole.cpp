@@ -282,7 +282,7 @@ void lancerPartie(Partie &partie)
                 bool phaseRotation = true;
                 while (phaseRotation)
                 {
-                    joueurCourant.getPlateau().afficherPositionsLegales(joueurCourant.getTuileEnMain());
+                    joueurCourant.getPlateau().afficherPositionsLegales(tuilePiochee);
                     std::cout << "\nActions : [o] pivoter +60°  |  [p] placer  |  [a] afficher tuile [a] | sauvegarder [s] | quitter [q]: ";
                     char rep;
                     std::cin >> rep;
@@ -292,6 +292,7 @@ void lancerPartie(Partie &partie)
                     case 'O':
                     {
                         tuilePiochee.pivoterTuile();
+                        joueurCourant.setTuileEnMain(tuilePiochee);
                         std::cout << "\nTuile après pivot :\n\n";
                         std::cout << tuilePiochee;
                         break;
