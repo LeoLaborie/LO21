@@ -47,9 +47,10 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     auto* joueurLayout = new QHBoxLayout();
     joueurLayout->setSpacing(4);
     auto* joueurLabel = new QLabel(tr("Joueur courant :"), this);
+    
     joueurLabel->setStyleSheet("font-weight: 600; color: #111; text-decoration: underline;");
     joueurLayout->addWidget(joueurLabel);
-    labelJoueurActif = new QLabel("joueur 1      &", this);
+    labelJoueurActif = new QLabel(tr("Joueur 1"), this);
     joueurLayout->addWidget(labelJoueurActif, 1);
     scoreLayout->addLayout(joueurLayout);
 
@@ -148,3 +149,10 @@ void ScorePanel::setNbPierres(int nbPierres)
     if (labelNombrePierre)
         labelNombrePierre->setText(QString::number(nbPierres));
 }
+
+void ScorePanel::setNomJoueurActif(const QString& nom)
+{
+    if (labelJoueurActif)
+        labelJoueurActif->setText(nom);
+}
+

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <QObject>
+#include <QString>
 #include <QStringList>
 #include "Partie.h"
 #include "Tuile.h"
@@ -34,6 +35,7 @@ signals:
                   int scoreCaserne,
                   int scoreTemple,
                   int scoreJardin);
+    void joueurActifChange(const QString& nom);
     void valideTuilePiochee(int idTuile);
     void validePasTuilePiochee(int idTuile);
     void chargerPlateauGraphique(int joueur, const std::vector<Tuile>& tuiles);

@@ -54,6 +54,7 @@ void ControllerView::initPlateau(){
     emit setChantier(partie.getChantier().getTuiles());
     emit setNbPierres(partie.getJoueurMain().getNbrPierres());
     emit setMainJoueurPlateau(partie.getMainJoueur());
+    emit joueurActifChange(QString::fromStdString(partie.getJoueurMain().getNom()));
     mettreAJourScoreCourant();
     lancerTour();
 }
@@ -63,10 +64,11 @@ void ControllerView::lancerTour(){
 
     Joueur &joueur = partie.getJoueurMain();
 
-    const QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
+    QString message = QString("C'est au tour de %1").arg(QString::fromStdString(joueur.getNom()));
     emit afficherMessage(message);
-
+    //modifier le label dans le panel score
     emit setMainJoueurPlateau(partie.getMainJoueur());
+    emit joueurActifChange(QString::fromStdString(joueur.getNom()));
     mettreAJourScoreCourant();
 
     if (partie.pilesRestantes() || partie.getChantier().getTaille() > 1){

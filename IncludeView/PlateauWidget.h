@@ -29,9 +29,9 @@ signals:
     void placementValide(int joueurSuivant);
 
 public slots:
-    void afficherPlateauJoueur(int index);
-    void chargerPlateauJoueur(int index, const std::vector<Tuile>& tuiles);
-    void afficherTuileEnMain(int index, const Tuile& tuile);
+    void afficherPlateauJoueur(const int& index);
+    void chargerPlateauJoueur(const int& index, const std::vector<Tuile>& tuiles);
+    void afficherTuileEnMain(const int& index, const Tuile& tuile);
     void validerPlacementTuile(TuileItem* tuile);
 
 private:
@@ -47,7 +47,7 @@ private:
     void basculerMenuEchap();
     void gererBlocageInteractions(bool widgetActif);
     TuileItem* creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone = nullptr) const;
-    ZoneJeuWidget* recupererZone(int index) const;
+    ZoneJeuWidget* recupererZone(const int& index) const;
     int calculerTailleTuile(const ZoneJeuWidget* zone) const;
 };
 
