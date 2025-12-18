@@ -40,7 +40,7 @@ class ZoneJeuWidget : public QGraphicsView
         void placerTuileDansZoneJeu(TuileItem * tuile);
 
     signals:
-    void validationPlacementConfirmee(TuileItem* tuile);
+    void validationPlacementConfirmee(TuileItem* tuile, const QPointF& positionScene);
     void validationPlacementAnnulee(TuileItem* tuile);
 
 private:

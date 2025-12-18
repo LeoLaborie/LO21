@@ -127,7 +127,7 @@ void PlateauWidget::gererBlocageInteractions(bool widgetActif)
     if (scorePanel)
         scorePanel->setEnabled(!widgetActif);
 }
-void PlateauWidget::validerPlacementTuile(TuileItem* t)
+void PlateauWidget::validerPlacementTuile(TuileItem* t, const QPointF& positionScene)
 {
     if (!t)
         return;

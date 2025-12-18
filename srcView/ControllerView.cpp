@@ -154,6 +154,7 @@ void ControllerView::joueurPiocheTuile(int idTuile){
 void ControllerView::joueurPlaceTuiel(const Position& p){
     Joueur& joueur = partie.getJoueurMain();
     Tuile tuile = joueur.getTuileEnMain();
+    std::cout<<tuile.getHauteur();
     if (joueur.getPlateau().verifierPlacementTuile(p,tuile)){
         joueur.placerTuile(tuile, const_cast<Position&>(p));
         mettreAJourScoreCourant();

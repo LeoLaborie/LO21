@@ -138,7 +138,7 @@ void ZoneJeuWidget::gererConfirmationPlacement()
     if (tuileEnValidation)
     {
         tuileEnValidation->setMode(TuileItem::Mode::ZoneJeu);
-        emit validationPlacementConfirmee(tuileEnValidation);
+        emit validationPlacementConfirmee(tuileEnValidation, tuileEnValidation->pos());
     }
     masquerWidgetValidation();
 }
