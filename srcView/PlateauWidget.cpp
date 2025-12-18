@@ -62,6 +62,10 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
             {
         echapWidget->fermerWidget();
         emit demandeRetourMenu(); });
+    connect(echapWidget, &EchapWidget::demandeSauvegarde, this, [this]
+            {
+        echapWidget->fermerWidget();
+        emit demandeSauvegarde(); });
     connect(echapWidget, &EchapWidget::demandeQuitter, this, [this]
             {
         echapWidget->fermerWidget();
@@ -138,6 +142,7 @@ void PlateauWidget::gererBlocageInteractions(bool widgetActif)
 }
 void PlateauWidget::finaliserTourApresPlacement(TuileItem* t, const QPointF& positionScene)
 {
+    (void)positionScene;
     if (!t)
         return;
     // vérification du placement pour le controleur à faire et définir un niveau ensuite

@@ -5,6 +5,7 @@
 #include <QString>
 #include <QStringList>
 #include "../include/Partie.h"
+#include "../include/Sauvegarde.h"
 #include "../IncludeView/ControllerView.h"
 #include "../IncludeView/ZoneJeuWidget.h"
 
@@ -56,6 +57,12 @@ void ControllerView::chargerDepuisSauvegarde(const std::string& nomSauvegarde){
         nom += ".ratatata";
     partie = Partie::FromSave("saves/" + nom);
     initPlateau();
+}
+
+void ControllerView::sauvegarderPartieGraphique()
+{
+    const bool ok = sauvegarderPartie(partie);
+    emit afficherMessage(ok ? QStringLiteral("Sauvegarde effectuée") : QStringLiteral("Erreur : sauvegarde échouée"));
 }
 
 void ControllerView::initPlateau(){
@@ -204,7 +211,6 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
         emit afficherMessage(QStringLiteral("Placement invalide"));
         return;
     }
-    joueurCourant.getPlateau().afficherPositionsLegales(tuileEnMain);
     const auto positionsLegales = joueurCourant.getPlateau().getPositionsLegales(tuileEnMain);
     const auto it = std::find_if(positionsLegales.begin(), positionsLegales.end(), [&](const Position& p)
                                  {

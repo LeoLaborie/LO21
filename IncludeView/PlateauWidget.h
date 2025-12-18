@@ -26,6 +26,7 @@ public:
 signals:
     void demandeParametres();
     void demandeRetourMenu();
+    void demandeSauvegarde();
     void demandeQuitter();
     void tourTermine();
     void tuileRotationnee(int joueur, int pas);

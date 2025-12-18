@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <QCoreApplication>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QGuiApplication>
@@ -88,7 +89,14 @@ MainWindow::MainWindow(QWidget* parent)
     connect(loadGame, &QPushButton::clicked, this, [this, loadPage]
             { stackWidget->setCurrentWidget(loadPage); });
     connect(setting, &QPushButton::clicked, this, [this]
-            { stackWidget->setCurrentWidget(settingsPage); });
+            {
+        // TODO: Page paramètres à implémenter plus tard.
+        // if (stackWidget && settingsPage)
+        //     stackWidget->setCurrentWidget(settingsPage);
+        QMessageBox::information(this,
+                                 QStringLiteral("Info"),
+                                 QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant."));
+            });
     connect(quitter, &QPushButton::clicked, this, &QWidget::close);
     connect(newGamePage, &newPartiePage::envoieArgument, this, [this,controleur](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
             {
@@ -141,6 +149,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         connect(plateauWidget, &PlateauWidget::tourTermine, controleur, &ControllerView::finDeTour);
         connect(plateauWidget, &PlateauWidget::tuileRotationnee, controleur, &ControllerView::rotationTuileGraphique);
         connect(plateauWidget, &PlateauWidget::validationPlacementDemandee, controleur, &ControllerView::verifierPlacementGraphique);
+        connect(plateauWidget, &PlateauWidget::demandeSauvegarde, controleur, &ControllerView::sauvegarderPartieGraphique);
         connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
         connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
         connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
@@ -166,8 +175,12 @@ void MainWindow::creerLePlateau(int nbJoueurs)
 
     connect(plateauWidget, &PlateauWidget::demandeParametres, this, [this]
             {
-        if (stackWidget && settingsPage)
-            stackWidget->setCurrentWidget(settingsPage); });
+        // TODO: Page paramètres à implémenter plus tard.
+        // if (stackWidget && settingsPage)
+        //     stackWidget->setCurrentWidget(settingsPage);
+        if (plateauWidget)
+            plateauWidget->afficherMessage(QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant."));
+            });
     connect(plateauWidget, &PlateauWidget::demandeRetourMenu, this, [this]
             {
         if (stackWidget && menuPage)
