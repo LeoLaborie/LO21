@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
+#include "JoueurFactory.h"
 #include "Chantier.h"
 #include "Joueur.h"
 #include "Tuile.h"
@@ -264,25 +264,13 @@ public:
     {
         return fauxJoueurP;
     }
-
-    /**
-     * @brief Crée un faux joueur (Illustre Architecte)
-     * @param difficulte Difficulté de l'IA (1 à 3)
-     */
-    void creerFauxJoueur(int difficulte);
-
     /**
      * @brief Retourne le faux joueur (Illustre Architecte)
      * @return IllustreArchitecte* : pointeur vers le faux joueur
      */
     IllustreArchitecte *getFauxJoueur() const
     {
-        if(fauxJoueurP){
-            return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
-        }else{
-            return nullptr;
-        }
-
+        return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
     }
 
     /**
@@ -292,6 +280,8 @@ public:
      * @throws std::runtime_error si le fichier est introuvable ou invalide.
      */
     static Partie FromSave(const std::string &nomFichier);
+    static FactoryJoueurs *getFactoryJoueur(TypeJoueurs type);
+    
 };
 
 #endif

@@ -13,6 +13,9 @@
 
 class Partie;
 class IllustreArchitecte;
+class FactoryJoueurs;
+class FactoryJoueurHumain;
+class FactoryIllustreArchitecte;
 
 /**
  * @class Joueur
@@ -21,6 +24,9 @@ class IllustreArchitecte;
 class Joueur
 {
     friend class Partie;
+    friend class FactoryJoueurs;
+    friend class FactoryJoueurHumain;
+    friend class FactoryIllustreArchitecte;
 
 protected:
     int nbrPierres{};
@@ -98,6 +104,12 @@ public:
     }
 
     /**
+     * @brief Indique si une tuile est déjà en main.
+     * @return true si la tuile en main n'est pas vide.
+     */
+    bool tuileDejaEnMain() const;
+
+    /**
      * @brief Retourne le nombre de points du joueur
      * @return int : nombre de points du joueur
      */
@@ -126,8 +138,6 @@ public:
     }
 
     // Autres méthodes
-
-    bool tuileDejaEnMain(){return getTuileEnMain().getNbHexa() > 0;}
 
     /**
      * @brief Permet au joueur de piocher une tuile dans le chantier
@@ -187,6 +197,7 @@ class IllustreArchitecte : public Joueur
 {
     friend class Partie;
     friend struct std::default_delete<IllustreArchitecte>;
+    friend class FactoryIllustreArchitecte;
 
 private:
     int difficulte{};  // Si c'est le faux joueur, c'est etre 1 et 3

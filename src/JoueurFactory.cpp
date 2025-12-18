@@ -5,9 +5,10 @@
 
 std::unique_ptr<Joueur> FactoryJoueurHumain::creer(const JoueurConfig& cfg) const
 {
-    if (cfg.nom.empty())
-        throw std::invalid_argument("Le nom du joueur humain ne peut pas être vide.");
-    return std::unique_ptr<Joueur>(new Joueur(cfg.nom));
+    const std::string nomFinal = cfg.nom.empty() ? "joueur" : cfg.nom;
+    static const bool variantesDefaut[5] = {false, false, false, false, false};
+    const bool* variantes = cfg.variantesScore ? cfg.variantesScore : variantesDefaut;
+    return std::unique_ptr<Joueur>(new Joueur(variantes, nomFinal));
 }
 
 

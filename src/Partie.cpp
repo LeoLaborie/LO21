@@ -25,15 +25,26 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
 
     for (int i = 0; i < nbrJoueurs; ++i)
     {
-        // ajout de chaque joueur dans la liste
-        Joueur* j = new Joueur(variantesScore, pseudo[i]);
-        j->setNbrPierres(i + 1);
-        joueurs.push_back(j);
+        JoueurConfig cfg;
+        cfg.nom = pseudo.at(static_cast<size_t>(i));
+        cfg.variantesScore = variantesScore;
+        std::unique_ptr<Joueur> joueur = getFactoryJoueur(TypeJoueurs::JoueurHumain)->creer(cfg);
+        joueur->setNbrPierres(i + 1);
+        joueurs.push_back(joueur.release());
     }
 
-    if (nbrJoueurs == 1 && difficulte >= 1 && difficulte <= 3)
+    if (nbrJoueurs == 1)
     {
-        creerFauxJoueur(difficulte);
+        if (difficulte>3) difficulte=3;
+        if (difficulte<1) difficulte=1;
+        nbrJoueurs++;
+        JoueurConfig cfg;
+        cfg.nom = "Illustre Architecte";
+        cfg.difficulte = difficulte;
+        std::unique_ptr<Joueur> fauxJoueur = getFactoryJoueur(TypeJoueurs::IllustreArchitecte)->creer(cfg);
+        fauxJoueur->setNbrPierres(2);
+        joueurs.push_back(fauxJoueur.release());
+        fauxJoueurP = true;
     }
 
     // initialisation des paramètres
@@ -45,13 +56,6 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
     genererTuilesParties(varianteFullTuile);
 }
 
-void Partie::creerFauxJoueur(int difficulte)
-{
-    nbrJoueurs++;
-    IllustreArchitecte* fauxJoueur = new IllustreArchitecte(difficulte);
-    fauxJoueur->setNbrPierres(2);
-    joueurs.push_back(fauxJoueur);
-}
 
 Hexagone* creerHexagone(TypeHex type, Tuile& tuile, bool* marcheDejaPresent)
 {
@@ -196,4 +200,19 @@ std::vector<Tuile> Partie::retirerPaquet()
     piles.pop_back();
 
     return paquet;
+}
+
+FactoryJoueurs *Partie::getFactoryJoueur(TypeJoueurs type)
+{
+    static FactoryJoueurHumain factoryHumain;
+    static FactoryIllustreArchitecte factoryIA;
+    switch (type)
+    {
+    case TypeJoueurs::JoueurHumain:
+        return &factoryHumain;
+    case TypeJoueurs::IllustreArchitecte:
+        return &factoryIA;
+    default:
+        throw std::invalid_argument("Type de joueur inconnu");
+    }
 }
