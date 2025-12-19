@@ -316,6 +316,8 @@ std::vector<int> Plateau::calculerPointsTab() const
     std::unordered_map<const Hexagone *, int> indexHabitation;
     pourChaqueHexagone([&](const Hexagone *h)
                        {
+                           if (h->getEstRecouvert())
+                               return;
                            switch (h->getType())
                            {
                            case TypeHex::Habitation:
@@ -329,22 +331,22 @@ std::vector<int> Plateau::calculerPointsTab() const
                            }
                            case TypeHex::Marche:
                            {
-                               nbMarche = calculerPointsMarche(h);
+                               nbMarche += calculerPointsMarche(h);
                                break;
                            }
                            case TypeHex::Temple:
                            {
-                               nbTemple = calculerPointsTemple(h);
+                               nbTemple += calculerPointsTemple(h);
                                break;
                            }
                            case TypeHex::Caserne:
                            {
-                               nbCaserne = calculerPointsCaserne(h);
+                               nbCaserne += calculerPointsCaserne(h);
                                break;
                            }
                            case TypeHex::Jardin:
                            {
-                               nbJardin = calculerPointsJardin(h);
+                               nbJardin += calculerPointsJardin(h);
                                break;
                            }
                            case TypeHex::PHabitation:
@@ -414,6 +416,8 @@ int Plateau::calculerPointsia(int &diff) const
 
     pourChaqueHexagone([&](const Hexagone *h)
                        {
+                           if (h->getEstRecouvert())
+                               return;
                            switch (h->getType())
                            {
                            case TypeHex::Habitation:
@@ -470,6 +474,8 @@ int Plateau::calculerPointsia(int &diff) const
 
 int Plateau::calculerPointsCaserne(const Hexagone *h) const
 {
+    if (h->getEstRecouvert())
+        return 0;
     int multi = 1;
     if (variantesScores[2] && h->getVoisins().size() <= 3)
         multi = 2;
@@ -478,6 +484,8 @@ int Plateau::calculerPointsCaserne(const Hexagone *h) const
 
 int Plateau::calculerPointsTemple(const Hexagone *h) const
 {
+    if (h->getEstRecouvert())
+        return 0;
     int mult = 1;
     if (variantesScores[3] && h->getZ() >= 1)
         mult = 2;
@@ -486,11 +494,15 @@ int Plateau::calculerPointsTemple(const Hexagone *h) const
 
 int Plateau::calculerPointsJardin(const Hexagone *h) const
 {
+    if (h->getEstRecouvert())
+        return 0;
     return (h->getZ() + 1) + conditionVarianteJardin(h) * variantesScores[4] * (h->getZ() + 1);
 }
 
 int Plateau::calculerPointsMarche(const Hexagone *h) const
 {
+    if (h->getEstRecouvert())
+        return 0;
     int nbpoint = 0;
     bool voisinMarche = false;
     for (const auto &voisin : h->getVoisins())

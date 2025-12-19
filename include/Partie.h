@@ -12,6 +12,7 @@
 #include "Chantier.h"
 #include "Joueur.h"
 #include "Tuile.h"
+#include "TuileGeneratorFactory.h"
 #include "Hexagone.h"
 #include "Sauvegarde.h"
 
@@ -52,13 +53,12 @@ private:
      * @param marcheDejaPresent Indique si un marché est déjà présent
      * @return TypeHex : type de la carte tirée
      */
-    TypeHex tirerCarte(std::map<TypeHex, int> &stock, bool marcheDejaPresent);
-
     /**
      * @brief Génère les tuiles pour la partie
      * @param fullTuiles Indique si la variante Full Tuile est activée, par défaut false
+     * @param factory Factory permettant d’injecter un générateur personnalisé (facultatif).
      */
-    void genererTuilesParties(bool fullTuiles = false);
+    void genererTuilesParties(bool fullTuiles = false, const TuileGeneratorFactory *factory = nullptr);
 
 public:
     /**
