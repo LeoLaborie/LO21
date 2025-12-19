@@ -170,12 +170,23 @@ void ControllerView::joueurPiocheTuile(int idTuile){
 void ControllerView::joueurPlaceTuiel(const Position& p){
     Joueur& joueur = partie.getJoueurMain();
     Tuile tuile = joueur.getTuileEnMain();
-    if (joueur.getPlateau().verifierPlacementTuile(p,tuile)){
+    std::string raison;
+    if (!joueur.getPlateau().verifierPlacementTuile(p, tuile, &raison))
+    {
+        if (raison.empty())
+            raison = "Vous ne pouvez pas placer cette tuile ici";
+        emit afficherMessage(QString::fromStdString(raison));
+        return;
+    }
+
+    try
+    {
         joueur.placerTuile(tuile, const_cast<Position&>(p));
         mettreAJourScoreCourant();
-    }else{
-        const QString message = QString("Vous ne pouvez pas placer cette tuile ici");
-        emit afficherMessage(message);
+    }
+    catch (const std::exception& e)
+    {
+        emit afficherMessage(QString::fromStdString(e.what()));
     }
 }
 
@@ -208,7 +219,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     Tuile tuileEnMain = joueurCourant.getTuileEnMain();
     if (tuileEnMain.getNbHexa() == 0)
     {
-        emit afficherMessage(QStringLiteral("Placement invalide"));
+        emit afficherMessage(QStringLiteral("Placement invalide : aucune tuile en main"));
         return;
     }
     const auto positionsLegales = joueurCourant.getPlateau().getPositionsLegales(tuileEnMain);
@@ -217,7 +228,19 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
         return p.x == coordonnees.x() && p.y == coordonnees.y(); });
     if (it == positionsLegales.end())
     {
-        emit afficherMessage(QStringLiteral("Placement invalide"));
+        // Fournit une raison explicite : on teste le niveau "naturel" (au-dessus du plus haut hex présent à (x,y)).
+        int zMax = -1;
+        joueurCourant.getPlateau().pourChaqueHexagone([&](const Hexagone* h)
+                                                     {
+            if (h && h->getX() == coordonnees.x() && h->getY() == coordonnees.y())
+                zMax = std::max(zMax, h->getZ());
+        });
+        const int zCandidat = std::max(0, zMax + 1);
+        std::string raison;
+        joueurCourant.getPlateau().verifierPlacementTuile(Position{coordonnees.x(), coordonnees.y(), zCandidat}, tuileEnMain, &raison);
+        if (raison.empty())
+            raison = "Placement invalide";
+        emit afficherMessage(QString::fromStdString(raison));
         return;
     }
 
@@ -226,13 +249,14 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     {
         joueurCourant.placerTuile(tuileEnMain, positionChoisie);
     }
-    catch (const std::exception&)
+    catch (const std::exception& e)
     {
-        emit afficherMessage(QStringLiteral("Placement invalide"));
+        emit afficherMessage(QString::fromStdString(e.what()));
         return;
     }
 
     emit setNbPierres(joueurCourant.getNbrPierres());
+    std::cout<<joueurCourant.getNbrPierres()<<std::endl;
     mettreAJourScoreCourant();
     zone->confirmerPlacementApprouve(tuileGraphique);
 }

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "Hexagone.h"
@@ -160,6 +161,15 @@ public:
      * @return true si le placement est valide, false sinon
      */
     bool verifierPlacementTuile(const Position &p, const Tuile &t) const;
+
+    /**
+     * @brief Vérifie si le placement d'une tuile à une position donnée est valide et retourne la raison en cas d'échec.
+     * @param p Position de placement
+     * @param t Tuile à placer
+     * @param raisonEchec Chaîne remplie avec la raison du refus (si non-null).
+     * @return true si le placement est valide, false sinon
+     */
+    bool verifierPlacementTuile(const Position& p, const Tuile& t, std::string* raisonEchec) const;
 
     /**
      * @brief Place une tuile à une position donnée sur le plateau

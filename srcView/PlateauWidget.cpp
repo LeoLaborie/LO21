@@ -150,11 +150,8 @@ void PlateauWidget::finaliserTourApresPlacement(TuileItem* t, const QPointF& pos
     t->setInteractivite(false, false);
     if (chantierWidget)
         chantierWidget->setEnabled(true);
-    if (!zonesParJoueur.empty())
-    {
-        joueurActif = (joueurActif + 1) % static_cast<int>(zonesParJoueur.size());
-        afficherPlateauJoueur(joueurActif);
-    }
+    // Le contrôleur gère le changement de joueur (main/plateau affiché, nb de pierres, etc.)
+    // via ses signaux (`setMainJoueurPlateau`, `setNbPierres`, ...). On ne change pas de joueur ici.
     emit tourTermine();
 }
 

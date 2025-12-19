@@ -76,8 +76,20 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
+bool Plateau::verifierPlacementTuile(const Position& p, const Tuile& t) const
 {
+    return verifierPlacementTuile(p, t, nullptr);
+}
+
+bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t, std::string* raisonEchec) const
+{
+    auto refuser = [&](std::string message)
+    {
+        if (raisonEchec)
+            *raisonEchec = std::move(message);
+        return false;
+    };
+
     std::vector<const Tuile *> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
@@ -146,24 +158,24 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
             } });
 
         if (superposition)
-            return false;
+            return refuser("Superposition : la case (" + std::to_string(h.x) + "," + std::to_string(h.y) + "," + std::to_string(h.z) + ") est déjà occupée.");
 
         if (h.z > 0 && !supportTrouve)
-            return false;  // chaque hex doit avoir son support direct
+            return refuser("Placement en hauteur impossible : pas de support sous (" + std::to_string(h.x) + "," + std::to_string(h.y) + "," + std::to_string(h.z) + ").");
     }
 
     if (surElever)
     {
         // on pose bien sur 3 hexagones (un support par hex) ET sur au moins 2 tuiles différentes
         if (supports_par_hex != (int)coords.size())
-            return false;
+            return refuser("Placement en hauteur impossible : la tuile ne repose pas sur 3 hexagones.");
         if (tuiles_en_dessous.size() < 2)
-            return false;
+            return refuser("Placement en hauteur impossible : la tuile doit chevaucher au moins 2 tuiles différentes.");
     }
     else
     {
         if (!toucheParBord)
-            return false;
+            return refuser("Placement au sol invalide : la tuile doit être adjacente par un bord à une tuile déjà posée au niveau 0.");
     }
 
     return true;
@@ -238,8 +250,13 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 {
     int res = 0;
 
-    if (!verifierPlacementTuile(p, t))
-        throw std::invalid_argument("Placement de tuile invalide.");
+    std::string raison;
+    if (!verifierPlacementTuile(p, t, &raison))
+    {
+        if (raison.empty())
+            raison = "Placement de tuile invalide.";
+        throw std::invalid_argument(raison);
+    }
 
     // positionner la tuile (3 hexagones)
     for (Tuile::Iterator it = t.getIterator(); !it.isDone(); it.next())

@@ -153,6 +153,8 @@ void ScorePanel::setNbPierres(int nbPierres)
 void ScorePanel::setNomJoueurActif(const QString& nom)
 {
     if (labelJoueurActif)
-        labelJoueurActif->setText(nom);
+    {
+        labelJoueurActif->setText(nom.toUpper());
+        labelJoueurActif->setStyleSheet("font-weight: 800;");
+    }
 }
-
