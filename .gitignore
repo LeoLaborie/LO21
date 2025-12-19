@@ -40,20 +40,29 @@
 *.out
 *.app
 main
-
 # debug information files
 *.dwo
-
 # IDEs and editors
 .vscode
-
+.idea/
+.vs/
+*.user
+*.user.*
+*.pro.user*
+CMakeLists.txt.user*
+# Qt generated helpers
+*.qmlc
+*.jsc
+*.moc
+*.qrc.dep
+*.qmlproject.user*
 # Sauvegarde
 *.ratatata
 /build/
-
+# CMake build trees
+cmake-build-*/
 # Documentation
 docs/
-
 # Generated files
 CMakeFiles/
 CMakeCache.txt
@@ -64,3 +73,6 @@ bin/
 .qt/
 *autogen/
 compile_commands.json
+# OS cruft
+.DS_Store
+Thumbs.db
