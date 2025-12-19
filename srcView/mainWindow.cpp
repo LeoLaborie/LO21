@@ -21,8 +21,8 @@ namespace
 {
     int lireNbJoueursSauvegarde(std::string nomSauvegarde)
     {
-        constexpr const char* extension = ".ratatata";
-        constexpr size_t extensionLen = 9; // strlen(".ratatata")
+        const char *extension = ".ratatata";
+        size_t extensionLen = 9; // strlen(".ratatata")
         if (nomSauvegarde.size() < extensionLen || nomSauvegarde.substr(nomSauvegarde.size() - extensionLen) != extension)
             nomSauvegarde += extension;
 
@@ -38,34 +38,34 @@ namespace
     }
 }
 
-MainWindow::MainWindow(QWidget* parent)
+MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     // panneau central contenant toutes les pages (menu, plateau…)
     stackWidget = new QStackedWidget(this);
-    resize(QGuiApplication::primaryScreen()->availableGeometry().size()); 
+    resize(QGuiApplication::primaryScreen()->availableGeometry().size());
     setCentralWidget(stackWidget);
 
     menuPage = new QWidget(stackWidget);
     menuPage->setObjectName("MenuPage");
     stackWidget->addWidget(menuPage);
 
-    auto* root = new QVBoxLayout(menuPage);
+    auto *root = new QVBoxLayout(menuPage);
     root->setContentsMargins(24, 140, 24, 24);
-    auto* menu = new QWidget(menuPage);
+    auto *menu = new QWidget(menuPage);
     menu->setObjectName("MenuPanel");
     menu->setFixedSize(420, 390);
     root->addWidget(menu, 0, Qt::AlignCenter);
 
-    auto* col = new QVBoxLayout(menu);
+    auto *col = new QVBoxLayout(menu);
     col->setContentsMargins(24, 24, 24, 24);
     col->setSpacing(25);
 
-    auto* newGame = new QPushButton("Nouvelle partie", menu);
-    auto* loadGame = new QPushButton("Charger une partie", menu);
-    auto* setting = new QPushButton("Paramètres", menu);
-    auto* quitter = new QPushButton("Quitter le jeu", menu);
-    for (auto* b : {newGame, loadGame, setting, quitter})
+    auto *newGame = new QPushButton("Nouvelle partie", menu);
+    auto *loadGame = new QPushButton("Charger une partie", menu);
+    auto *setting = new QPushButton("Paramètres", menu);
+    auto *quitter = new QPushButton("Quitter le jeu", menu);
+    for (auto *b : {newGame, loadGame, setting, quitter})
     {
         b->setMinimumSize(260, 44);
         b->setCursor(Qt::PointingHandCursor);
@@ -74,16 +74,15 @@ MainWindow::MainWindow(QWidget* parent)
     col->addStretch();
 
     // les différentes pages sont instanciées une seule fois et stockées dans le stack
-    auto* newGamePage = new newPartiePage(stackWidget);
+    auto *newGamePage = new newPartiePage(stackWidget);
     newGamePage->setObjectName("NewGamePage");
-    auto* loadPage = new chargerPartiePage(stackWidget);
+    auto *loadPage = new chargerPartiePage(stackWidget);
     loadPage->setObjectName("LoadPage");
     settingsPage = new QWidget(stackWidget);
     settingsPage->setObjectName("SettingsPage");
     stackWidget->addWidget(newGamePage);
     stackWidget->addWidget(loadPage);
     stackWidget->addWidget(settingsPage);
-
 
     const QString background = QCoreApplication::applicationDirPath() + "/img/akropolis.png";
     const QString stylesheet = QString(R"(
@@ -114,17 +113,15 @@ MainWindow::MainWindow(QWidget* parent)
         //     stackWidget->setCurrentWidget(settingsPage);
         QMessageBox::information(this,
                                  QStringLiteral("Info"),
-                                 QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant."));
-            });
+                                 QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant.")); });
     connect(quitter, &QPushButton::clicked, this, &QWidget::close);
-    connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
+    connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList &pseudos, const QVector<bool> &variantes)
             {
             creerLePlateau(nb);
             if (ControllerView* controleur = ControllerView::giveInstance())
                 controleur->creerNouvellePartie(nb, pseudos, variantes);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
-
 
     connect(loadPage, &chargerPartiePage::envoieArgument, this, [this](std::string nomSauvegarde)
             {
@@ -153,7 +150,6 @@ MainWindow::MainWindow(QWidget* parent)
             {
         if (stackWidget->widget(index) == loadPage)
             loadPage->rafraichirSauvegardes(); });
-
 }
 
 void MainWindow::creerLePlateau(int nbJoueurs)
@@ -174,7 +170,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
     stackWidget->setMinimumSize(plateauWidget->size());
     resize(plateauWidget->size());
 
-    if (ControllerView* controleur = ControllerView::giveInstance())
+    if (ControllerView *controleur = ControllerView::giveInstance())
     {
         connect(plateauWidget, &PlateauWidget::tourTermine, controleur, &ControllerView::finDeTour);
         connect(plateauWidget, &PlateauWidget::tuileRotationnee, controleur, &ControllerView::rotationTuileGraphique);
@@ -187,7 +183,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         connect(controleur, &ControllerView::afficherMessage, plateauWidget, &PlateauWidget::afficherMessage);
         connect(controleur, &ControllerView::afficherErreur, plateauWidget, &PlateauWidget::afficherErreur);
         connect(controleur, &ControllerView::etageDetermine, plateauWidget, &PlateauWidget::ModifierCouleurEtage);
-        if (auto* chantier = plateauWidget->getChantierWidget())
+        if (auto *chantier = plateauWidget->getChantierWidget())
         {
             connect(chantier, &ChantierWidget::tuileSelectionnee, controleur, &ControllerView::joueurPiocheTuile);
             connect(controleur, &ControllerView::validePasTuilePiochee, chantier, &ChantierWidget::annulerPiocheEnCours);
@@ -196,12 +192,12 @@ void MainWindow::creerLePlateau(int nbJoueurs)
             connect(controleur, &ControllerView::setNbPierres, chantier, &ChantierWidget::mettreAJourPierres);
         }
 
-        if (auto* score = plateauWidget->getScorePanel())
+        if (auto *score = plateauWidget->getScorePanel())
         {
             connect(controleur, &ControllerView::setNbPierres, score, &ScorePanel::setNbPierres);
             connect(controleur, &ControllerView::setScore, score, &ScorePanel::setScore);
-        connect(controleur, &ControllerView::joueurActifChange, score, &ScorePanel::setNomJoueurActif);
-    }
+            connect(controleur, &ControllerView::joueurActifChange, score, &ScorePanel::setNomJoueurActif);
+        }
 
         connect(controleur, &ControllerView::partieFinie, this, &MainWindow::retourMenu);
     }
@@ -214,11 +210,9 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         // if (stackWidget && settingsPage)
         //     stackWidget->setCurrentWidget(settingsPage);
         if (plateauWidget)
-            plateauWidget->afficherMessage(QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant."));
-            });
+            plateauWidget->afficherMessage(QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant.")); });
     connect(plateauWidget, &PlateauWidget::demandeRetourMenu, this, [this]
-            {
-        retourMenu(); });
+            { retourMenu(); });
     connect(plateauWidget, &PlateauWidget::demandeQuitter, this, [this]
             { close(); });
 }

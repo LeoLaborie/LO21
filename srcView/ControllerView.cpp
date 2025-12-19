@@ -15,66 +15,68 @@
 #include "../IncludeView/ControllerView.h"
 #include "../IncludeView/ZoneJeuWidget.h"
 
-ControllerView* ControllerView::instance = nullptr;
+ControllerView *ControllerView::instance = nullptr;
 
-ControllerView* ControllerView::giveInstance()
+ControllerView *ControllerView::giveInstance()
 {
     if (!instance)
         instance = new ControllerView();
     return instance;
 }
 
-void ControllerView::freeInstance(){
+void ControllerView::freeInstance()
+{
     delete instance;
     instance = nullptr;
 }
 
-
-
-void ControllerView::creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes)
+void ControllerView::creerNouvellePartie(int nb, const QStringList &pseudos, const QVector<bool> &variantes)
 {
     try
     {
-    bool utiliserToutesLesTuiles = variantes[0];
+        bool utiliserToutesLesTuiles = variantes[0];
 
-    bool variantesPoints[5] = {false};
+        bool variantesPoints[5] = {false};
 
-    for (int i = 1; i < 5; ++i) {
-        if (i + 1 < variantes.size()) {
-            variantesPoints[i] = variantes[i + 1];
+        for (int i = 1; i < 5; ++i)
+        {
+            if (i + 1 < variantes.size())
+            {
+                variantesPoints[i] = variantes[i + 1];
+            }
         }
-    }
 
-    std::vector<std::string> p;
-    p.reserve(pseudos.size());
+        std::vector<std::string> p;
+        p.reserve(pseudos.size());
 
-    for (const QString& pseudo : pseudos) {
-        p.push_back(pseudo.toStdString());
-    }
+        for (const QString &pseudo : pseudos)
+        {
+            p.push_back(pseudo.toStdString());
+        }
 
-    partie = Partie(nb, p, variantesPoints, utiliserToutesLesTuiles);
-    initPlateau();
+        partie = Partie(nb, p, variantesPoints, utiliserToutesLesTuiles);
+        initPlateau();
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         emit afficherErreur(QString::fromStdString(e.what()));
     }
 }
 
-
-bool ControllerView::chargerDepuisSauvegarde(const std::string& nomSauvegarde){
+bool ControllerView::chargerDepuisSauvegarde(const std::string &nomSauvegarde)
+{
     try
     {
         std::string nom = nomSauvegarde;
-        constexpr const char* extension = ".ratatata";
-        constexpr size_t extensionLen = 9; // strlen(".ratatata")
+        const char *extension = ".ratatata";
+        size_t extensionLen = 9; // strlen(".ratatata")
         if (nom.size() < extensionLen || nom.substr(nom.size() - extensionLen) != extension)
             nom += ".ratatata";
         partie = Partie::FromSave("saves/" + nom);
         initPlateau();
         return true;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         emit afficherErreur(QString::fromStdString(e.what()));
         return false;
@@ -85,12 +87,13 @@ void ControllerView::sauvegarderPartieGraphique()
 {
     const bool ok = sauvegarderPartie(partie);
     if (ok)
-        emit (QStringLiteral("Sauvegarde effectuée"));
+        emit(QStringLiteral("Sauvegarde effectuée"));
     else
         emit afficherErreur(QStringLiteral("Erreur : sauvegarde échouée"));
 }
 
-void ControllerView::initPlateau(){
+void ControllerView::initPlateau()
+{
     // Synchronise toute l'UI avec l'état courant du modèle (plateaux, chantier, pierres), puis démarre le tour.
     synchroniserPlateauxGraphiques();
     emit setChantier(partie.getChantier().getTuiles());
@@ -98,8 +101,8 @@ void ControllerView::initPlateau(){
     lancerTour();
 }
 
-
-void ControllerView::lancerTour(){
+void ControllerView::lancerTour()
+{
 
     Joueur &joueur = partie.getJoueurMain();
     // Nouveau tour : on "oublie" toute pioche en cours (on ne doit plus pouvoir annuler une ancienne sélection).
@@ -120,47 +123,47 @@ void ControllerView::lancerTour(){
     if (joueur.isIA())
     {
         const int joueurIndex = partie.getMainJoueur();
-            if (partieTerminee)
-                return;
-            if (partie.getMainJoueur() != joueurIndex)
-                return;
-            Joueur& joueurCourant = partie.getJoueurMain();
-            if (!joueurCourant.isIA())
-                return;
+        if (partieTerminee)
+            return;
+        if (partie.getMainJoueur() != joueurIndex)
+            return;
+        Joueur &joueurCourant = partie.getJoueurMain();
+        if (!joueurCourant.isIA())
+            return;
 
-            IllustreArchitecte& ia = dynamic_cast<IllustreArchitecte&>(joueurCourant);
-            const int indiceChoisi = ia.choixTuile(partie.getChantier());
-            const TuileId idTuile = partie.getChantier().getTuiles()[indiceChoisi].getId();
+        IllustreArchitecte &ia = dynamic_cast<IllustreArchitecte &>(joueurCourant);
+        const int indiceChoisi = ia.choixTuile(partie.getChantier());
+        const TuileId idTuile = partie.getChantier().getTuiles()[indiceChoisi].getId();
 
-            // Joueur* receveurPierres = nullptr;
-            // if (partie.fauxJoueurPresent())
-            // {
-            //     // Dans le mode "1 joueur + Illustre Architecte", quand l'IA pioche, les pierres vont au joueur humain.
-            //     const auto& joueurs = partie.getJoueurs();
-            //     const int dernierIndex = partie.getNbrJoueurs() - 1;
-            //     if (joueurIndex == dernierIndex && !joueurs.empty())
-            //         receveurPierres = joueurs.front();
-            //     else
-            //         receveurPierres = partie.getFauxJoueur();
-            // }
+        // Joueur* receveurPierres = nullptr;
+        // if (partie.fauxJoueurPresent())
+        // {
+        //     // Dans le mode "1 joueur + Illustre Architecte", quand l'IA pioche, les pierres vont au joueur humain.
+        //     const auto& joueurs = partie.getJoueurs();
+        //     const int dernierIndex = partie.getNbrJoueurs() - 1;
+        //     if (joueurIndex == dernierIndex && !joueurs.empty())
+        //         receveurPierres = joueurs.front();
+        //     else
+        //         receveurPierres = partie.getFauxJoueur();
+        // }
 
-            try
-            {
-                Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
-                ia.placerTuile(tuile);
-            }
-            catch (const std::exception& e)
-            {
-                emit afficherErreur(QString::fromStdString(e.what()));
-                return;
-            }
+        try
+        {
+            Tuile &tuile = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
+            ia.placerTuile(tuile);
+        }
+        catch (const std::exception &e)
+        {
+            emit afficherErreur(QString::fromStdString(e.what()));
+            return;
+        }
 
-            emit fauxJoueurPiocheTuile(idTuile);
-            emit setNbPierres(joueurCourant.getNbrPierres());
-            emit chargerPlateauGraphique(joueurIndex, joueurCourant.getPlateau().getTuiles());
-            mettreAJourScoreCourant();
+        emit fauxJoueurPiocheTuile(idTuile);
+        emit setNbPierres(joueurCourant.getNbrPierres());
+        emit chargerPlateauGraphique(joueurIndex, joueurCourant.getPlateau().getTuiles());
+        mettreAJourScoreCourant();
 
-            afficherInfoIA(indiceChoisi);
+        afficherInfoIA(indiceChoisi);
     }
 }
 
@@ -197,17 +200,17 @@ void ControllerView::afficherFinPartie()
     partieTerminee = true;
 
     QList<QPair<int, QString>> scores;
-    const auto& joueurs = partie.getJoueurs();
+    const auto &joueurs = partie.getJoueurs();
     for (int i = 0; i < partie.getNbrJoueurs(); ++i)
     {
-        Joueur* j = joueurs[static_cast<size_t>(i)];
+        Joueur *j = joueurs[static_cast<size_t>(i)];
         if (!j)
             continue;
         j->setNbrPoints();
         scores.append(qMakePair(j->getNbrPoints(), QString::fromStdString(j->getNom())));
     }
 
-    std::sort(scores.begin(), scores.end(), [](const QPair<int, QString>& a, const QPair<int, QString>& b)
+    std::sort(scores.begin(), scores.end(), [](const QPair<int, QString> &a, const QPair<int, QString> &b)
               { return a.first > b.first; });
 
     QDialog dialog;
@@ -215,19 +218,19 @@ void ControllerView::afficherFinPartie()
     dialog.setModal(true);
     dialog.resize(420, 520);
 
-    auto* layout = new QVBoxLayout(&dialog);
+    auto *layout = new QVBoxLayout(&dialog);
     layout->setContentsMargins(18, 18, 18, 18);
     layout->setSpacing(10);
 
-    auto* title = new QLabel(QStringLiteral("Résultats"), &dialog);
+    auto *title = new QLabel(QStringLiteral("Résultats"), &dialog);
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet("font-size: 24px; font-weight: 700;");
     layout->addWidget(title);
 
     for (int i = 0; i < scores.size(); ++i)
     {
-        const auto& pair = scores[i];
-        auto* lbl = new QLabel(QString("%1 : %2 pts").arg(pair.second).arg(pair.first), &dialog);
+        const auto &pair = scores[i];
+        auto *lbl = new QLabel(QString("%1 : %2 pts").arg(pair.second).arg(pair.first), &dialog);
         lbl->setAlignment(Qt::AlignCenter);
         if (i == 0)
             lbl->setStyleSheet("font-size: 20px; font-weight: 700;");
@@ -236,7 +239,7 @@ void ControllerView::afficherFinPartie()
 
     layout->addStretch(1);
 
-    auto* btnMenu = new QPushButton(QStringLiteral("Retour au menu"), &dialog);
+    auto *btnMenu = new QPushButton(QStringLiteral("Retour au menu"), &dialog);
     btnMenu->setFixedHeight(44);
     layout->addWidget(btnMenu);
 
@@ -251,10 +254,10 @@ void ControllerView::afficherFinPartie()
 void ControllerView::synchroniserPlateauxGraphiques()
 {
     // Recharge tous les plateaux depuis le modèle (utile après chargement ou actions IA).
-    const auto& joueurs = partie.getJoueurs();
+    const auto &joueurs = partie.getJoueurs();
     for (size_t i = 0; i < joueurs.size(); ++i)
     {
-        Joueur* joueur = joueurs[i];
+        Joueur *joueur = joueurs[i];
         if (!joueur)
             continue;
         emit chargerPlateauGraphique(static_cast<int>(i), joueur->getPlateau().getTuiles());
@@ -263,7 +266,7 @@ void ControllerView::synchroniserPlateauxGraphiques()
     const int joueurCourant = partie.getMainJoueur();
     if (joueurCourant >= 0 && joueurCourant < static_cast<int>(joueurs.size()))
     {
-        const Joueur* joueur = joueurs[static_cast<size_t>(joueurCourant)];
+        const Joueur *joueur = joueurs[static_cast<size_t>(joueurCourant)];
         if (joueur && joueur->getTuileEnMain().getNbHexa() > 0)
             emit afficherTuileMain(joueurCourant, joueur->getTuileEnMain());
     }
@@ -275,9 +278,10 @@ void ControllerView::mettreAJourScoreCourant()
     if (partie.getNbrJoueurs() == 0)
         return;
 
-    Joueur& joueur = partie.getJoueurMain();
-    if (joueur.isIA()){
-        IllustreArchitecte& ia = dynamic_cast<IllustreArchitecte&>(joueur);
+    Joueur &joueur = partie.getJoueurMain();
+    if (joueur.isIA())
+    {
+        IllustreArchitecte &ia = dynamic_cast<IllustreArchitecte &>(joueur);
         ia.setNbrPoints();
         const std::vector<int> tabscore = joueur.getPlateau().calculerPointsiaTab(ia.getdifficulte());
         const int total = joueur.getNbrPoints();
@@ -285,7 +289,9 @@ void ControllerView::mettreAJourScoreCourant()
             emit setScore(total, tabscore[0], tabscore[1], tabscore[2], tabscore[3], tabscore[4]);
         else
             emit setScore(total, 0, 0, 0, 0, 0);
-    }else{
+    }
+    else
+    {
         joueur.setNbrPoints();
         const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
         const int total = joueur.getNbrPoints();
@@ -294,7 +300,6 @@ void ControllerView::mettreAJourScoreCourant()
         else
             emit setScore(total, 0, 0, 0, 0, 0);
     }
-
 }
 
 void ControllerView::joueurPiocheTuile(TuileId idTuile)
@@ -321,7 +326,7 @@ void ControllerView::joueurPiocheTuile(TuileId idTuile)
     {
         joueurcourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         emit afficherErreur(QString::fromStdString(e.what()));
         emit validePasTuilePiochee(idTuile);
@@ -334,7 +339,6 @@ void ControllerView::joueurPiocheTuile(TuileId idTuile)
     tuilePiocheeInitiale = joueurcourant.getTuileEnMain();
     emit valideTuilePiochee(idTuile);
     emit setNbPierres(joueurcourant.getNbrPierres());
-
 }
 
 void ControllerView::annulerPiocheTuile(TuileId idTuile)
@@ -343,7 +347,7 @@ void ControllerView::annulerPiocheTuile(TuileId idTuile)
     if (!piocheEnCours)
         return;
 
-    Joueur& joueurCourant = partie.getJoueurMain();
+    Joueur &joueurCourant = partie.getJoueurMain();
     if (joueurCourant.getTuileEnMain().getNbHexa() == 0)
         return;
 
@@ -356,7 +360,7 @@ void ControllerView::annulerPiocheTuile(TuileId idTuile)
     partie.getChantier().insererTuile(indice, tuilePiocheeInitiale);
     joueurCourant.setTuileEnMain(Tuile());
     joueurCourant.setNbrPierres(joueurCourant.getNbrPierres() + indice);
-    if (Joueur* faux = partie.getFauxJoueur())
+    if (Joueur *faux = partie.getFauxJoueur())
         faux->setNbrPierres(faux->getNbrPierres() - indice);
 
     piocheEnCours = false;
@@ -368,8 +372,9 @@ void ControllerView::annulerPiocheTuile(TuileId idTuile)
     emit setNbPierres(joueurCourant.getNbrPierres());
 }
 
-void ControllerView::joueurPlaceTuiel(const Position& p){
-    Joueur& joueur = partie.getJoueurMain();
+void ControllerView::joueurPlaceTuiel(const Position &p)
+{
+    Joueur &joueur = partie.getJoueurMain();
     Tuile tuile = joueur.getTuileEnMain();
     std::string raison;
     if (!joueur.getPlateau().verifierPlacementTuile(p, tuile, &raison))
@@ -382,10 +387,10 @@ void ControllerView::joueurPlaceTuiel(const Position& p){
 
     try
     {
-        joueur.placerTuile(tuile, const_cast<Position&>(p));
+        joueur.placerTuile(tuile, const_cast<Position &>(p));
         mettreAJourScoreCourant();
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         emit afficherErreur(QString::fromStdString(e.what()));
     }
@@ -395,7 +400,7 @@ void ControllerView::rotationTuileGraphique(int, int pas)
 {
     if (pas == 0)
         return;
-    Joueur& joueurCourant = partie.getJoueurMain();
+    Joueur &joueurCourant = partie.getJoueurMain();
     Tuile tuile = joueurCourant.getTuileEnMain();
     if (tuile.getNbHexa() == 0)
         return;
@@ -403,14 +408,14 @@ void ControllerView::rotationTuileGraphique(int, int pas)
     joueurCourant.setTuileEnMain(tuile);
 }
 
-void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees)
+void ControllerView::verifierPlacementGraphique(ZoneJeuWidget *zone, int joueur, TuileItem *tuileGraphique, const QPoint &coordonnees)
 {
     // Vérifie côté modèle si le placement demandé par l'UI est autorisé, puis valide (ou affiche une erreur).
     if (!zone || !tuileGraphique || partie.getNbrJoueurs() == 0 || joueur != partie.getMainJoueur())
         return;
 
-    Joueur& joueurCourant = partie.getJoueurMain();
-    Plateau& plateau = joueurCourant.getPlateau();
+    Joueur &joueurCourant = partie.getJoueurMain();
+    Plateau &plateau = joueurCourant.getPlateau();
     const int x = coordonnees.x();
     const int y = coordonnees.y();
     Tuile tuileEnMain = joueurCourant.getTuileEnMain();
@@ -423,7 +428,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     const auto positionsLegales = plateau.getPositionsLegales(tuileEnMain);
     bool trouve = false;
     Position positionChoisie{};
-    for (const Position& p : positionsLegales)
+    for (const Position &p : positionsLegales)
     {
         if (p.x != x || p.y != y)
             continue;
@@ -437,11 +442,10 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     {
         // Si (x,y) n'est pas légal, on redemande au à plateau une raison explicite avec un z candidat
         int zMax = -1;
-        plateau.pourChaqueHexagone([&](const Hexagone* h)
+        plateau.pourChaqueHexagone([&](const Hexagone *h)
                                    {
             if (h && h->getX() == x && h->getY() == y)
-                zMax = std::max(zMax, h->getZ());
-        });
+                zMax = std::max(zMax, h->getZ()); });
         const int zPossible = std::max(0, zMax + 1);
         std::string raison;
         plateau.verifierPlacementTuile(Position{x, y, zPossible}, tuileEnMain, &raison);
@@ -452,7 +456,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     {
         joueurCourant.placerTuile(tuileEnMain, positionChoisie);
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         emit afficherErreur(QString::fromStdString(e.what()));
         return;
@@ -468,7 +472,8 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     zone->confirmerPlacementApprouve(tuileGraphique);
 }
 
-void ControllerView::afficherInfoIA(const int& idTuile){
+void ControllerView::afficherInfoIA(const int &idTuile)
+{
     QDialog dialog;
     dialog.setWindowTitle("Tour Illustre Architecte");
     dialog.resize(400, 500);
@@ -481,8 +486,7 @@ void ControllerView::afficherInfoIA(const int& idTuile){
         "    background-color: #e67e22; color: white; "
         "    padding: 12px; border-radius: 6px; font-weight: bold; font-size: 16px;"
         "}"
-        "QPushButton:hover { background-color: #d35400; }"
-        );
+        "QPushButton:hover { background-color: #d35400; }");
 
     QVBoxLayout *layout = new QVBoxLayout(&dialog);
 
@@ -515,9 +519,8 @@ void ControllerView::afficherInfoIA(const int& idTuile){
     connect(btnMenu, &QPushButton::clicked, &dialog, &QDialog::reject);
     int result = dialog.exec();
 
-    if (result == QDialog::Rejected) {
+    if (result == QDialog::Rejected)
+    {
         finDeTour();
     }
-
 }
-

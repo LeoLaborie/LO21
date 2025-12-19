@@ -13,7 +13,7 @@
 
 #include "WidgetUtilitaire.h"
 
-ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
+ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget *parent)
     : QGraphicsView(parent)
 {
     // création de la scène
@@ -31,7 +31,7 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
     setFixedSize(width, height);
 
     // Scène "très grande" pour éviter toute dépendance aux scrollbars.
-    constexpr qreal sceneSize = 20000.0;
+    qreal sceneSize = 20000.0;
     zoneJeuScene->setSceneRect(-sceneSize / 2.0, -sceneSize / 2.0, sceneSize, sceneSize);
     zoneJeuRectItem = zoneJeuScene->addRect(zoneJeuScene->sceneRect(), QPen(Qt::NoPen), QBrush(Qt::blue));
     zoneJeuRect = zoneJeuScene->sceneRect();
@@ -46,7 +46,7 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
     connect(validerPlacementWidget, &ValiderPlacementWidget::annulationDemandee, this, &ZoneJeuWidget::surAnnulationDemandee);
 }
 
-void ZoneJeuWidget::mousePressEvent(QMouseEvent* event)
+void ZoneJeuWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event && event->button() == Qt::MiddleButton)
     {
@@ -64,7 +64,7 @@ void ZoneJeuWidget::mousePressEvent(QMouseEvent* event)
     QGraphicsView::mousePressEvent(event);
 }
 
-void ZoneJeuWidget::mouseMoveEvent(QMouseEvent* event)
+void ZoneJeuWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (panActif && event)
     {
@@ -81,7 +81,7 @@ void ZoneJeuWidget::mouseMoveEvent(QMouseEvent* event)
     QGraphicsView::mouseMoveEvent(event);
 }
 
-void ZoneJeuWidget::mouseReleaseEvent(QMouseEvent* event)
+void ZoneJeuWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     if (panActif && event && event->button() == panBouton)
     {
@@ -98,11 +98,11 @@ void ZoneJeuWidget::mouseReleaseEvent(QMouseEvent* event)
     QGraphicsView::mouseReleaseEvent(event);
 }
 
-void ZoneJeuWidget::wheelEvent(QWheelEvent* event)
+void ZoneJeuWidget::wheelEvent(QWheelEvent *event)
 {
     if (!event)
         return;
-    // Molette = zoom 
+    // Molette = zoom
     constexpr qreal zoomStep = 1.15;
     constexpr qreal zoomMin = 0.25;
     constexpr qreal zoomMax = 3.5;
@@ -131,23 +131,23 @@ QPointF ZoneJeuWidget::getOrigineGrille() const
 void ZoneJeuWidget::viderZone()
 {
     masquerWidgetValidation();
-    for (auto* tuile : tuilesZoneJeu)
+    for (auto *tuile : tuilesZoneJeu)
     {
         if (!tuile)
             continue;
-        if (QGraphicsScene* sceneActuelle = tuile->scene())
+        if (QGraphicsScene *sceneActuelle = tuile->scene())
             sceneActuelle->removeItem(tuile);
         delete tuile;
     }
     tuilesZoneJeu.clear();
 }
 
-void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem* t)
+void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem *t)
 {
     ajouterTuileDepuisModele(t, getOrigineGrille());
 }
 
-void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem* t, const QPointF& positionScene)
+void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem *t, const QPointF &positionScene)
 {
     if (!t || !zoneJeuScene)
         return;
@@ -160,11 +160,12 @@ void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem* t, const QPointF& positi
     t->replacerCorrectement();
     tuilesZoneJeu.push_back(t);
 }
-void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
+void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem *t, int x, int y)
 {
-    if (!t) return;
+    if (!t)
+        return;
 
-    if (QGraphicsScene* sceneActuelle = t->scene())
+    if (QGraphicsScene *sceneActuelle = t->scene())
     {
         if (sceneActuelle != zoneJeuScene)
             sceneActuelle->removeItem(t);
@@ -189,7 +190,7 @@ void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
     tuilesZoneJeu.push_back(t);
 }
 
-void ZoneJeuWidget::placerTuileDansZoneJeu(TuileItem* tuile)
+void ZoneJeuWidget::placerTuileDansZoneJeu(TuileItem *tuile)
 {
     if (!tuile)
         return;
@@ -205,7 +206,7 @@ void ZoneJeuWidget::setBlocageInteractions(bool bloque)
         return;
     // on bloque les interaction avec les tuiles et débloque quand on veut afficher le menu de pause
     blocageInteractions = bloque;
-    for (auto* tuile : tuilesZoneJeu)
+    for (auto *tuile : tuilesZoneJeu)
     {
         if (tuile)
             tuile->setEnabled(!blocageInteractions);
@@ -214,7 +215,7 @@ void ZoneJeuWidget::setBlocageInteractions(bool bloque)
         masquerWidgetValidation();
 }
 
-void ZoneJeuWidget::afficherPanneauValidation(TuileItem* tuile)
+void ZoneJeuWidget::afficherPanneauValidation(TuileItem *tuile)
 {
     if (!tuile || !validerPlacementProxy || !validerPlacementWidget)
         return;
@@ -225,7 +226,8 @@ void ZoneJeuWidget::afficherPanneauValidation(TuileItem* tuile)
     const QSize widgetSize = validerPlacementWidget->size();
     const QRectF sceneRect = tuile->sceneBoundingRect();
     QPointF pos(sceneRect.center().x() - widgetSize.width() / 2.0, sceneRect.top() - widgetSize.height() - 8.0);
-    if (pos.y() < zoneJeuScene->sceneRect().top()) pos.setY(sceneRect.bottom() + 8.0);
+    if (pos.y() < zoneJeuScene->sceneRect().top())
+        pos.setY(sceneRect.bottom() + 8.0);
     validerPlacementProxy->setPos(pos);
     validerPlacementProxy->setVisible(true);
 }
@@ -250,14 +252,14 @@ void ZoneJeuWidget::surConfirmationDemandee()
 
 void ZoneJeuWidget::surAnnulationDemandee()
 {
-    TuileItem* tuile = tuileEnValidation;
+    TuileItem *tuile = tuileEnValidation;
     if (!tuile)
     {
         masquerWidgetValidation();
         return;
     }
 
-    if (QGraphicsScene* sceneActuelle = tuile->scene())
+    if (QGraphicsScene *sceneActuelle = tuile->scene())
         sceneActuelle->removeItem(tuile);
     auto it = std::find(tuilesZoneJeu.begin(), tuilesZoneJeu.end(), tuile);
     if (it != tuilesZoneJeu.end())
@@ -267,7 +269,7 @@ void ZoneJeuWidget::surAnnulationDemandee()
     emit placementTuileAnnule(tuile);
 }
 
-void ZoneJeuWidget::surDebutDeplacementTuile(TuileItem* tuile)
+void ZoneJeuWidget::surDebutDeplacementTuile(TuileItem *tuile)
 {
     if (!tuile)
         return;
@@ -276,7 +278,7 @@ void ZoneJeuWidget::surDebutDeplacementTuile(TuileItem* tuile)
         masquerWidgetValidation();
 }
 
-void ZoneJeuWidget::confirmerPlacementApprouve(TuileItem* tuile)
+void ZoneJeuWidget::confirmerPlacementApprouve(TuileItem *tuile)
 {
     if (!tuile)
         return;
