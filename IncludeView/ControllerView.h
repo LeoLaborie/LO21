@@ -50,11 +50,13 @@ signals:
     void joueurActifChange(const QString& nom);
     void valideTuilePiochee(int idTuile);
     void validePasTuilePiochee(int idTuile);
+    void fauxJoueurPiocheTuile(int idTuile);
     void chargerPlateauGraphique(int joueur, const std::vector<Tuile>& tuiles);
     void afficherTuileMain(int joueur, const Tuile& tuile);
     void afficherMessage(const QString& message);
     void afficherErreur(const QString& message);
     void etageDetermine(TuileItem* tuile, int z);
+    void partieFinie();
 
 private:
     static ControllerView* instance;
@@ -65,10 +67,12 @@ private:
     void initPlateau();
     void synchroniserPlateauxGraphiques();
     void mettreAJourScoreCourant();
+    void afficherFinPartie();
 
     bool piocheEnCours = false;
     int indicePiocheEnCours = -1;
     Tuile tuilePiocheeInitiale;
+    bool partieTerminee = false;
 };
 
 #endif // CONTROLLERVIEW_H

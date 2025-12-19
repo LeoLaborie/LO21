@@ -191,6 +191,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         {
             connect(chantier, &ChantierWidget::tuileSelectionnee, controleur, &ControllerView::joueurPiocheTuile);
             connect(controleur, &ControllerView::validePasTuilePiochee, chantier, &ChantierWidget::annulerPiocheEnCours);
+            connect(controleur, &ControllerView::fauxJoueurPiocheTuile, chantier, &ChantierWidget::fauxJoueurRetireTuile);
             connect(controleur, &ControllerView::setChantier, chantier, &ChantierWidget::definirChantier);
             connect(controleur, &ControllerView::setNbPierres, chantier, &ChantierWidget::mettreAJourPierres);
         }
@@ -199,8 +200,10 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         {
             connect(controleur, &ControllerView::setNbPierres, score, &ScorePanel::setNbPierres);
             connect(controleur, &ControllerView::setScore, score, &ScorePanel::setScore);
-            connect(controleur, &ControllerView::joueurActifChange, score, &ScorePanel::setNomJoueurActif);
-        }
+        connect(controleur, &ControllerView::joueurActifChange, score, &ScorePanel::setNomJoueurActif);
+    }
+
+        connect(controleur, &ControllerView::partieFinie, this, &MainWindow::retourMenu);
     }
 
     // -> Connecter ici PlateauWidget aux signaux du contrôleur (pioche, placements, tours, scores).
@@ -215,8 +218,21 @@ void MainWindow::creerLePlateau(int nbJoueurs)
             });
     connect(plateauWidget, &PlateauWidget::demandeRetourMenu, this, [this]
             {
-        if (stackWidget && menuPage)
-            stackWidget->setCurrentWidget(menuPage); });
+        retourMenu(); });
     connect(plateauWidget, &PlateauWidget::demandeQuitter, this, [this]
             { close(); });
+}
+
+void MainWindow::retourMenu()
+{
+    if (!stackWidget || !menuPage)
+        return;
+    stackWidget->setCurrentWidget(menuPage);
+    if (plateauWidget)
+    {
+        stackWidget->removeWidget(plateauWidget);
+        plateauWidget->deleteLater();
+        plateauWidget = nullptr;
+    }
+    ControllerView::freeInstance();
 }

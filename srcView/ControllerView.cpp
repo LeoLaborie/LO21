@@ -1,6 +1,12 @@
 #include <algorithm>
 #include <exception>
 #include <QDebug>
+#include <QDialog>
+#include <QLabel>
+#include <QPushButton>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QApplication>
 #include <vector>
 #include <QString>
 #include <QStringList>
@@ -106,10 +112,63 @@ void ControllerView::lancerTour(){
     emit afficherMessage(message);
     emit setNbPierres(joueur.getNbrPierres());
     mettreAJourScoreCourant();
+
+    if (partieTerminee)
+        return;
+
+    if (joueur.isIA())
+    {
+        const int joueurIndex = partie.getMainJoueur();
+        QTimer::singleShot(0, this, [this, joueurIndex]()
+                           {
+            if (partieTerminee)
+                return;
+            if (partie.getMainJoueur() != joueurIndex)
+                return;
+            Joueur& joueurCourant = partie.getJoueurMain();
+            if (!joueurCourant.isIA())
+                return;
+
+            IllustreArchitecte& ia = dynamic_cast<IllustreArchitecte&>(joueurCourant);
+            const int idTuile = ia.choixTuile(partie.getChantier());
+
+            Joueur* receveurPierres = nullptr;
+            if (partie.fauxJoueurPresent())
+            {
+                // Dans le mode "1 joueur + Illustre Architecte", quand l'IA pioche, les pierres vont au joueur humain.
+                const auto& joueurs = partie.getJoueurs();
+                const int dernierIndex = partie.getNbrJoueurs() - 1;
+                if (joueurIndex == dernierIndex && !joueurs.empty())
+                    receveurPierres = joueurs.front();
+                else
+                    receveurPierres = partie.getFauxJoueur();
+            }
+
+            try
+            {
+                Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), receveurPierres);
+                ia.placerTuile(tuile);
+            }
+            catch (const std::exception& e)
+            {
+                emit afficherErreur(QString::fromStdString(e.what()));
+                return;
+            }
+
+            emit fauxJoueurPiocheTuile(idTuile);
+            emit setNbPierres(joueurCourant.getNbrPierres());
+            emit chargerPlateauGraphique(joueurIndex, joueurCourant.getPlateau().getTuiles());
+            mettreAJourScoreCourant();
+
+            emit afficherMessage(QStringLiteral("Illustre Architecte a joué automatiquement."));
+            QTimer::singleShot(0, this, &ControllerView::finDeTour); });
+    }
 }
 
 void ControllerView::finDeTour()
 {
+    if (partieTerminee)
+        return;
     // Fin de tour : si le chantier est presque vide, on le ré-alimente avec une pile (ou fin de partie).
     if (partie.getChantier().getTaille() <= 1)
     {
@@ -122,7 +181,7 @@ void ControllerView::finDeTour()
         }
         else
         {
-            emit afficherMessage(QStringLiteral("Plus de piles disponibles : fin de partie."));
+            afficherFinPartie();
             return;
         }
     }
@@ -130,6 +189,64 @@ void ControllerView::finDeTour()
     partie.setProchainJoueur();
     emit setMainJoueurPlateau(partie.getMainJoueur());
     lancerTour();
+}
+
+void ControllerView::afficherFinPartie()
+{
+    if (partieTerminee)
+        return;
+    partieTerminee = true;
+
+    QList<QPair<int, QString>> scores;
+    const auto& joueurs = partie.getJoueurs();
+    for (int i = 0; i < partie.getNbrJoueurs(); ++i)
+    {
+        Joueur* j = joueurs[static_cast<size_t>(i)];
+        if (!j)
+            continue;
+        j->setNbrPoints();
+        scores.append(qMakePair(j->getNbrPoints(), QString::fromStdString(j->getNom())));
+    }
+
+    std::sort(scores.begin(), scores.end(), [](const QPair<int, QString>& a, const QPair<int, QString>& b)
+              { return a.first > b.first; });
+
+    QDialog dialog;
+    dialog.setWindowTitle(QStringLiteral("Fin de partie"));
+    dialog.setModal(true);
+    dialog.resize(420, 520);
+
+    auto* layout = new QVBoxLayout(&dialog);
+    layout->setContentsMargins(18, 18, 18, 18);
+    layout->setSpacing(10);
+
+    auto* title = new QLabel(QStringLiteral("Résultats"), &dialog);
+    title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet("font-size: 24px; font-weight: 700;");
+    layout->addWidget(title);
+
+    for (int i = 0; i < scores.size(); ++i)
+    {
+        const auto& pair = scores[i];
+        auto* lbl = new QLabel(QString("%1 : %2 pts").arg(pair.second).arg(pair.first), &dialog);
+        lbl->setAlignment(Qt::AlignCenter);
+        if (i == 0)
+            lbl->setStyleSheet("font-size: 20px; font-weight: 700;");
+        layout->addWidget(lbl);
+    }
+
+    layout->addStretch(1);
+
+    auto* btnMenu = new QPushButton(QStringLiteral("Retour au menu"), &dialog);
+    btnMenu->setFixedHeight(44);
+    layout->addWidget(btnMenu);
+
+    QObject::connect(btnMenu, &QPushButton::clicked, &dialog, &QDialog::accept);
+    const int result = dialog.exec();
+    if (result == QDialog::Accepted)
+        emit partieFinie();
+    else
+        QApplication::quit();
 }
 
 void ControllerView::synchroniserPlateauxGraphiques()
@@ -161,24 +278,24 @@ void ControllerView::mettreAJourScoreCourant()
 
     Joueur& joueur = partie.getJoueurMain();
     joueur.setNbrPoints();
-    const int total = joueur.getNbrPoints();
-    emit setScore(total, 0, 0, 0, 0, 0);
+    const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
+    const int total = joueur.getPlateau().calculerPoints();
+    if (tabscore.size() >= 5)
+        emit setScore(total, tabscore[0], tabscore[1], tabscore[2], tabscore[3], tabscore[4]);
+    else
+        emit setScore(total, 0, 0, 0, 0, 0);
 }
 
 void ControllerView::joueurPiocheTuile(int idTuile){
 
     Joueur &joueurcourant = partie.getJoueurMain();
 
-    //pas à faire ici !!!!!!!!!!!!!!!!!!!
-    if (joueurcourant.isIA()){
-        IllustreArchitecte &ia = dynamic_cast<IllustreArchitecte &>(joueurcourant);
-        Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
-        ia.placerTuile(tuile);
-        // L'IA a joué directement : on resynchronise toute la vue.
-        synchroniserPlateauxGraphiques();
-        emit setChantier(partie.getChantier().getTuiles());
-        emit setNbPierres(joueurcourant.getNbrPierres());
-        mettreAJourScoreCourant();
+    // Pendant le tour de l'IA, l'utilisateur ne doit pas pouvoir piocher.
+    // Le chantier ayant déjà retiré visuellement la tuile au clic, on demande une annulation pour la remettre.
+    if (joueurcourant.isIA())
+    {
+        emit afficherMessage(QStringLiteral("C'est le tour de l'Illustre Architecte."));
+        emit validePasTuilePiochee(idTuile);
         return;
     }
 

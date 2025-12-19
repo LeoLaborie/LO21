@@ -67,7 +67,7 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
 
 Hexagone* creerHexagone(TypeHex type, Tuile& tuile, bool* marcheDejaPresent)
 {
-    if (type == TypeHex::PMarche)
+    if (type == TypeHex::Marche)
         *marcheDejaPresent = true;
 
     return new Hexagone(0, 0, 0, type, &tuile);
@@ -90,9 +90,9 @@ TypeHex Partie::tirerCarte(std::map<TypeHex, int> &stock, bool marcheDejaPresent
     std::vector<TypeHex> pool;
     for (auto &[type, quantite] : stock)
     {
-        if (quantite > 0)
-        {
-            if (type == TypeHex::PMarche && marcheDejaPresent)
+            if (quantite > 0)
+            {
+            if (type == TypeHex::Marche && marcheDejaPresent)
                 continue;  // Interdiction du 2e marché
             for (int i = 0; i < quantite; i++)
             {

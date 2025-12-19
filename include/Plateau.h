@@ -98,6 +98,12 @@ public:
     int calculerPoints() const;
 
     /**
+     * @brief Calcule les points par catégorie (habitation, marché, caserne, temple, jardin).
+     * @return Vecteur de 5 entiers (dans cet ordre).
+     */
+    std::vector<int> calculerPointsTab() const;
+
+    /**
      * @brief Calcule le nombre de points gagnés par l'IA
      * @param diff
      * @return Nombre de points gagnés

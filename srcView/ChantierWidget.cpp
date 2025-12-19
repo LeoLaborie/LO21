@@ -138,6 +138,18 @@ void ChantierWidget::annulerPiocheEnCours(int /*indice*/)
     tuileEnTransit = nullptr;
 }
 
+void ChantierWidget::fauxJoueurRetireTuile(int indice)
+{
+    // Le faux joueur joue sans interaction : on retire juste visuellement la tuile choisie.
+    // On ignore toute tuile en transit (elle ne devrait pas exister pendant le tour IA).
+    TuileItem* tuile = retirerTuilleDeChantier(indice);
+    if (!tuile)
+        return;
+    delete tuile;
+    setEnabled(true);
+    mettreAJourDisponibilite();
+}
+
 void ChantierWidget::reordonnerTuiles()
 {
     // réaligne verticalement toutes les tuiles en conservant leur indice

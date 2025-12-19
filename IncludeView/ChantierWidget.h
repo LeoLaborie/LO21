@@ -35,6 +35,7 @@ public slots:
     void mettreAJourPierres(int nbPierres);
     void remettreTuileDansChantier(TuileItem* tuile);
     void annulerPiocheEnCours(int indice);
+    void fauxJoueurRetireTuile(int indice);
 
 private:
     QGraphicsScene* chantierScene = nullptr;
