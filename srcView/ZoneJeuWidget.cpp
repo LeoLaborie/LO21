@@ -8,6 +8,7 @@
 #include <QPointF>
 #include <QSize>
 #include <QWheelEvent>
+#include <QApplication>
 #include <algorithm>
 
 #include "WidgetUtilitaire.h"
@@ -50,8 +51,13 @@ void ZoneJeuWidget::mousePressEvent(QMouseEvent* event)
     if (event && event->button() == Qt::MiddleButton)
     {
         panActif = true;
+        panBouton = Qt::MiddleButton;
         panDernierePos = event->pos();
-        setCursor(Qt::ClosedHandCursor);
+        if (!curseurPanActif)
+        {
+            QApplication::setOverrideCursor(Qt::ClosedHandCursor);
+            curseurPanActif = true;
+        }
         event->accept();
         return;
     }
@@ -77,10 +83,15 @@ void ZoneJeuWidget::mouseMoveEvent(QMouseEvent* event)
 
 void ZoneJeuWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (panActif && event && event->button() == Qt::MiddleButton)
+    if (panActif && event && event->button() == panBouton)
     {
         panActif = false;
-        unsetCursor();
+        panBouton = Qt::NoButton;
+        if (curseurPanActif)
+        {
+            QApplication::restoreOverrideCursor();
+            curseurPanActif = false;
+        }
         event->accept();
         return;
     }

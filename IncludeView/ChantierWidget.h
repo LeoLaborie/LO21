@@ -16,7 +16,7 @@ class ChantierWidget : public QGraphicsView
     Q_OBJECT
 
 public:
-    ChantierWidget(int width, int height, QWidget* parent = nullptr);
+    ChantierWidget(int width, int height, int nbJoueurs, QWidget* parent = nullptr);
     QGraphicsScene* getChantierScene() const
     {
         return chantierScene;
@@ -43,6 +43,7 @@ private:
     std::vector<TuileItem*> listeTuilesChantier;
     TuileItem* tuileEnTransit = nullptr;
     int nbPierresDisponibles = 0;
+    int nbMaxTuilesAffichees = 4;
     void reordonnerTuiles();
     void viderChantier();
     void mettreAJourDisponibilite();

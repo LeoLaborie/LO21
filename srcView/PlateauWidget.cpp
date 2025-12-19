@@ -89,7 +89,9 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     colonneDroite->addWidget(scorePanel, 0, Qt::AlignTop);
 
     // création de la scène chantier
-    chantierWidget = new ChantierWidget(colonneDroiteLargeur, chantierHeight, panneauDroit);
+    // En mode 1 joueur, le modèle ajoute un faux joueur (Illustre Architecte) qui pioche aussi.
+    const int nbJoueursChantier = (nbJoueurs == 1) ? 2 : nbJoueurs;
+    chantierWidget = new ChantierWidget(colonneDroiteLargeur, chantierHeight, nbJoueursChantier, panneauDroit);
     colonneDroite->addWidget(chantierWidget, 1);
     connect(chantierWidget, &ChantierWidget::tuileGraphiquePiochee, this, [this](TuileItem* tuile)
             {
@@ -152,9 +154,8 @@ void PlateauWidget::gererBlocageInteractions(bool widgetActif)
     if (scorePanel)
         scorePanel->setEnabled(!widgetActif);
 }
-void PlateauWidget::finaliserTourApresPlacement(TuileItem* t, const QPointF& positionScene)
+void PlateauWidget::finaliserTourApresPlacement(TuileItem* t, const QPointF&)
 {
-    (void)positionScene;
     if (!t)
         return;
     // vérification du placement pour le controleur à faire et définir un niveau ensuite

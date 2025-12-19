@@ -30,7 +30,6 @@ public:
     void setTaille(double nouvelleTaille);
 
 private:
-    const Hexagone* modele = nullptr;
     QString imgPath;
     QGraphicsPixmapItem* icon = nullptr;
 };

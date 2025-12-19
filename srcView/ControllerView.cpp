@@ -374,11 +374,10 @@ void ControllerView::joueurPlaceTuiel(const Position& p){
     }
 }
 
-void ControllerView::rotationTuileGraphique(int joueur, int pas)
+void ControllerView::rotationTuileGraphique(int, int pas)
 {
     if (pas == 0)
         return;
-    (void)joueur;
     Joueur& joueurCourant = partie.getJoueurMain();
     Tuile tuile = joueurCourant.getTuileEnMain();
     if (tuile.getNbHexa() == 0)

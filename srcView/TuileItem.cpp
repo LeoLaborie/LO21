@@ -165,6 +165,7 @@ void TuileItem::replacerCorrectement()
  */
 void TuileItem::setTaille(int nouvelleTaille)
 {
+    prepareGeometryChange();
     tailleHex = nouvelleTaille;
     for (QGraphicsItem* item : childItems())
     {
@@ -182,10 +183,10 @@ void TuileItem::setTaille(int nouvelleTaille)
         const auto& o = offsetsRelatifs[static_cast<size_t>(i)];
         hexItems[static_cast<size_t>(i)]->setPos(axialVersPixel(o.q, o.r, tailleHex));
     }
-    prepareGeometryChange();
     setTransformOriginPoint(boundingRect().center());
     // Le décalage d'étage dépend de la taille des hexagones : on le recalcule.
     setNiveauGraphique(niveauHauteur);
+    update();
 }
 
 void TuileItem::setNiveauGraphique(int niveau)

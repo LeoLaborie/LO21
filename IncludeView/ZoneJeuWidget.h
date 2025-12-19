@@ -77,6 +77,8 @@ private slots:
 private:
     bool panActif = false;
     QPoint panDernierePos{};
+    Qt::MouseButton panBouton = Qt::NoButton;
+    bool curseurPanActif = false;
     qreal zoomCourant = 1.0;
 };
 

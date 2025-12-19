@@ -39,7 +39,6 @@ static QPolygonF creerHexagone(double taille)
 HexItem::HexItem(const Hexagone* modele, double taille)
     : QGraphicsPolygonItem(nullptr)
 {
-    this->modele = modele;
     // initialise le polygone pour représenter l'hexagone
     setPolygon(creerHexagone(taille));
 
