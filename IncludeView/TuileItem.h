@@ -109,6 +109,8 @@ protected:
 
 private:
     HexItem* hexRef = nullptr;
+    std::vector<HexItem*> hexItems;
+    std::vector<OffsetQR> offsetsRelatifs;
     int tailleHex = 50;
     bool rotationAutorisee = true;
     unsigned int indice;  // utiliser que quand la tuile item est dans la pioche sinon inutile

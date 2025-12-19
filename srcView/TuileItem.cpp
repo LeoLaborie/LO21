@@ -38,6 +38,10 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
             rRef = it.currentItem().getY();
         }
     }
+    hexItems.clear();
+    offsetsRelatifs.clear();
+    hexItems.reserve(ref.getNbHexa());
+    offsetsRelatifs.reserve(ref.getNbHexa());
 
     if (mode != Mode::Pioche)
     {
@@ -50,12 +54,14 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
     for (Tuile::ConstIterator it = ref.getConstIterator(); !it.isDone(); it.next())
     {
         const Hexagone& hex = it.currentItem();
+        offsetsRelatifs.push_back({hex.getX() - qRef, hex.getY() - rRef});
         auto* hexItem = new HexItem(&hex, tailleHex);
         // Place les hexagones relativement à l'hexagone de référence de la tuile.
         // - En mode placement: les coords sont déjà relatives (autour de 0,0), donc ça ne change rien.
         // - En mode plateau: les coords sont absolues, donc on "recentre" pour que la position de groupe corresponde au repère.
         hexItem->setPos(axialVersPixel(hex.getX() - qRef, hex.getY() - rRef, tailleHex));
         addToGroup(hexItem);
+        hexItems.push_back(hexItem);
         if (i == 0)
             hexRef = hexItem;
         ++i;
@@ -165,6 +171,16 @@ void TuileItem::setTaille(int nouvelleTaille)
         HexItem* hex = dynamic_cast<HexItem*>(item);
         if (hex)
             hex->setTaille(nouvelleTaille);
+    }
+    // Repositionne aussi les hexagones : leurs positions dépendent directement de la taille (axialVersPixel).
+    // Sans ça, un resize (ex: tuile du chantier vers zone) crée des "trous" entre hexagones.
+    const int n = std::min(static_cast<int>(hexItems.size()), static_cast<int>(offsetsRelatifs.size()));
+    for (int i = 0; i < n; ++i)
+    {
+        if (!hexItems[static_cast<size_t>(i)])
+            continue;
+        const auto& o = offsetsRelatifs[static_cast<size_t>(i)];
+        hexItems[static_cast<size_t>(i)]->setPos(axialVersPixel(o.q, o.r, tailleHex));
     }
     prepareGeometryChange();
     setTransformOriginPoint(boundingRect().center());

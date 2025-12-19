@@ -93,7 +93,15 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     connect(chantierWidget, &ChantierWidget::tuileGraphiquePiochee, this, [this](TuileItem* tuile)
             {
         if (zoneJeuWidget)
+        {
+            if (tuile)
+            {
+                int taille = calculerTailleTuile(zoneJeuWidget);
+                taille = std::max(20, static_cast<int>(taille * 0.8));
+                tuile->setTaille(taille);
+            }
             zoneJeuWidget->placerTuileDansZoneJeu(tuile);
+        }
         if (!tuile)
             return;
 
@@ -177,6 +185,7 @@ void PlateauWidget::chargerPlateauJoueur(const int& index, const std::vector<Tui
         return;
     zone->viderZone();
     const QPointF origine = zone->getOrigineGrille();
+    const int tailleZone = std::max(20, static_cast<int>(calculerTailleTuile(zone) * 0.8));
     for (const Tuile& tuile : tuiles)
     {
         auto* item = creerTuileGraphique(tuile, TuileItem::Mode::ZoneJeu, zone);
@@ -192,11 +201,11 @@ void PlateauWidget::chargerPlateauJoueur(const int& index, const std::vector<Tui
                 rRef = it.currentItem().getY();
             }
         }
-        const int taille = calculerTailleTuile(zone);
-        zone->ajouterTuileDepuisModele(item, origine + axialVersPixel(qRef, rRef, taille));
+        zone->ajouterTuileDepuisModele(item, origine + axialVersPixel(qRef, rRef, tailleZone));
         int z = 0;
         for (Tuile::ConstIterator it = tuile.getConstIterator(); !it.isDone(); it.next())
             z = std::max(z, it.currentItem().getZ());
+        item->setNiveauGraphique(z);
         item->ModifierCouleurEtage(z);
     }
 }
@@ -272,7 +281,10 @@ void PlateauWidget::ModifierCouleurEtage(TuileItem* tuile, int z)
 
 TuileItem* PlateauWidget::creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone) const
 {
-    const int taille = calculerTailleTuile(zone ? zone : zoneJeuWidget);
+    int taille = calculerTailleTuile(zone ? zone : zoneJeuWidget);
+    // Dans la zone de jeu (placement + plateau), on réduit la taille des hexagones (~ -20%).
+    if (mode != TuileItem::Mode::Pioche)
+        taille = std::max(20, static_cast<int>(taille * 0.8));
     auto* item = new TuileItem(modele, nullptr, mode, taille);
     if (zone)
         item->definirOrigineGrille(zone->getOrigineGrille());
@@ -290,10 +302,12 @@ ZoneJeuWidget* PlateauWidget::recupererZone(const int& index) const
 
 int PlateauWidget::calculerTailleTuile(const ZoneJeuWidget* zone) const
 {
-    if (chantierWidget)
-        return chantierWidget->tailleTuileChantier();
     if (!zone)
+    {
+        if (chantierWidget)
+            return chantierWidget->tailleTuileChantier();
         return 50;
+    }
     const QRectF rect = zone->getZoneRect();
     const double base = std::min(rect.width(), rect.height());
     return std::max(30, static_cast<int>(base / 18.0));

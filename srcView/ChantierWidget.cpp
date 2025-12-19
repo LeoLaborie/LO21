@@ -118,6 +118,7 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
     tuile->setSelected(false);
     tuile->setRotation(0.0);
     tuile->setNiveauGraphique(0);
+    tuile->setTaille(calculerTailleTuile());
 
     // plus qu'a la remettre et rappeler la fonction qui ordonne les TUiles dans le chaniter
     chantierScene->addItem(tuile);
