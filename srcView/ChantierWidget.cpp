@@ -96,6 +96,7 @@ void ChantierWidget::piocherTuile(int indice)
     TuileItem * tuile = retirerTuilleDeChantier(indice);
     if (!tuile)
         return;
+    tuileEnTransit = tuile;
     // passe en mode placement pour autoriser déplacement/rotation dans la zone de jeu, à mettre dans
     tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
@@ -115,6 +116,8 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
     tuile->setMode(TuileItem::Mode::Pioche);
     tuile->setInteractivite(false, false);
     tuile->setSelected(false);
+    tuile->setRotation(0.0);
+    tuile->setNiveauGraphique(0);
 
     // plus qu'a la remettre et rappeler la fonction qui ordonne les TUiles dans le chaniter
     chantierScene->addItem(tuile);

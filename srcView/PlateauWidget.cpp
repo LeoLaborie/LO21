@@ -89,10 +89,6 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     // création de la scène chantier
     chantierWidget = new ChantierWidget(colonneDroiteLargeur, chantierHeight, panneauDroit);
     colonneDroite->addWidget(chantierWidget, 1);
-
-    // gestion des flux entre le chantier et la zone de jeu (pioche / validation / annulation)
-    //  Le contrôleur doit alimenter le chantier via ajouterTuilleDansChantier()
-    //  et appeler afficherPlateauJoueur(index) lorsqu'il change de joueur actif.
     connect(chantierWidget, &ChantierWidget::tuileGraphiquePiochee, this, [this](TuileItem* tuile)
             {
         if (zoneJeuWidget)
@@ -106,6 +102,11 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     for (auto* zone : zonesParJoueur)
     {
         connect(zone, &ZoneJeuWidget::placementTuileAnnule, chantierWidget, &ChantierWidget::remettreTuileDansChantier);
+        connect(zone, &ZoneJeuWidget::placementTuileAnnule, this, [this](TuileItem* tuile)
+                {
+            if (!tuile) return;
+            emit piocheAnnulee(static_cast<int>(tuile->getIndiceDansPioche()));
+            });
         connect(zone, &ZoneJeuWidget::placementTuileFinalise, this, &PlateauWidget::finaliserTourApresPlacement);
         connect(zone, &ZoneJeuWidget::validationPlacementDemandee, this, &PlateauWidget::relayerValidationPlacementDemandee);
     }

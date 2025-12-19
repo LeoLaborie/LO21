@@ -28,6 +28,7 @@ public slots:
     void lancerTour();
     void finDeTour();
     void joueurPiocheTuile(int idTuile);
+    void annulerPiocheTuile(int idTuile);
     void joueurPlaceTuiel(const Position& p);
     void rotationTuileGraphique(int joueur, int pas);
     void verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees);
@@ -64,6 +65,10 @@ private:
     void initPlateau();
     void synchroniserPlateauxGraphiques();
     void mettreAJourScoreCourant();
+
+    bool piocheEnCours = false;
+    int indicePiocheEnCours = -1;
+    Tuile tuilePiocheeInitiale;
 };
 
 #endif // CONTROLLERVIEW_H

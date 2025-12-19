@@ -60,6 +60,13 @@ public:
     }
 
     /**
+     * @brief Insère une tuile dans le chantier à une position donnée.
+     * @param index Position d'insertion (0..taille). Les valeurs hors bornes sont ramenées aux bornes.
+     * @param t Tuile à insérer
+     */
+    void insererTuile(int index, const Tuile& t);
+
+    /**
      * @brief Retire une tuile du chantier
      * @param id Identifiant de la tuile à retirer
      */

@@ -157,6 +157,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         connect(plateauWidget, &PlateauWidget::tourTermine, controleur, &ControllerView::finDeTour);
         connect(plateauWidget, &PlateauWidget::tuileRotationnee, controleur, &ControllerView::rotationTuileGraphique);
         connect(plateauWidget, &PlateauWidget::validationPlacementDemandee, controleur, &ControllerView::verifierPlacementGraphique);
+        connect(plateauWidget, &PlateauWidget::piocheAnnulee, controleur, &ControllerView::annulerPiocheTuile);
         connect(plateauWidget, &PlateauWidget::demandeSauvegarde, controleur, &ControllerView::sauvegarderPartieGraphique);
         connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
         connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
