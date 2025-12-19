@@ -7,6 +7,7 @@
 #include <QPen>
 #include <QPointF>
 #include <QSize>
+#include <QWheelEvent>
 #include <algorithm>
 
 #include "WidgetUtilitaire.h"
@@ -20,13 +21,20 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
 
     // application de paramètre et préférence
     setFrameStyle(QFrame::NoFrame);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setDragMode(QGraphicsView::NoDrag);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+    setRenderHint(QPainter::Antialiasing, true);
+    setFixedSize(width, height);
 
-    // on applique la taille et création de rectangle pour visualiser
-    zoneJeuScene->setSceneRect(0, 0, width, height);
-    zoneJeuRectItem = zoneJeuScene->addRect(0, 0, width, height, QPen(Qt::NoPen), QBrush(Qt::blue));
-    zoneJeuRect = zoneJeuRectItem->rect();
+    // Scène "très grande" pour éviter toute dépendance aux scrollbars.
+    constexpr qreal sceneSize = 20000.0;
+    zoneJeuScene->setSceneRect(-sceneSize / 2.0, -sceneSize / 2.0, sceneSize, sceneSize);
+    zoneJeuRectItem = zoneJeuScene->addRect(zoneJeuScene->sceneRect(), QPen(Qt::NoPen), QBrush(Qt::blue));
+    zoneJeuRect = zoneJeuScene->sceneRect();
+    centerOn(zoneJeuRect.center());
 
     // widget flottant utilisé pour confirmer/annuler un placement
     validerPlacementWidget = new ValiderPlacementWidget();
@@ -35,6 +43,71 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
     validerPlacementProxy->setVisible(false);
     connect(validerPlacementWidget, &ValiderPlacementWidget::confirmationDemandee, this, &ZoneJeuWidget::surConfirmationDemandee);
     connect(validerPlacementWidget, &ValiderPlacementWidget::annulationDemandee, this, &ZoneJeuWidget::surAnnulationDemandee);
+}
+
+void ZoneJeuWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event && event->button() == Qt::MiddleButton)
+    {
+        panActif = true;
+        panDernierePos = event->pos();
+        setCursor(Qt::ClosedHandCursor);
+        event->accept();
+        return;
+    }
+    QGraphicsView::mousePressEvent(event);
+}
+
+void ZoneJeuWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    if (panActif && event)
+    {
+        const QPoint deltaPx = event->pos() - panDernierePos;
+        panDernierePos = event->pos();
+
+        const QPointF centreScene = mapToScene(viewport()->rect().center());
+        const QPointF deltaScene = mapToScene(QPoint(0, 0)) - mapToScene(deltaPx);
+        centerOn(centreScene + deltaScene);
+
+        event->accept();
+        return;
+    }
+    QGraphicsView::mouseMoveEvent(event);
+}
+
+void ZoneJeuWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (panActif && event && event->button() == Qt::MiddleButton)
+    {
+        panActif = false;
+        unsetCursor();
+        event->accept();
+        return;
+    }
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
+void ZoneJeuWidget::wheelEvent(QWheelEvent* event)
+{
+    if (!event)
+        return;
+    // Molette = zoom (sans Ctrl) ; on garde des bornes pour éviter de "perdre" la scène.
+    constexpr qreal zoomStep = 1.15;
+    constexpr qreal zoomMin = 0.25;
+    constexpr qreal zoomMax = 3.5;
+
+    const qreal oldZoom = zoomCourant;
+    if (event->angleDelta().y() > 0)
+        zoomCourant *= zoomStep;
+    else if (event->angleDelta().y() < 0)
+        zoomCourant /= zoomStep;
+
+    zoomCourant = std::clamp(zoomCourant, zoomMin, zoomMax);
+    const qreal factor = (oldZoom == 0.0) ? 1.0 : (zoomCourant / oldZoom);
+    if (factor != 1.0)
+        scale(factor, factor);
+
+    event->accept();
 }
 
 QPointF ZoneJeuWidget::getOrigineGrille() const

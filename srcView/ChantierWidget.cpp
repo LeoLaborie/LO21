@@ -201,10 +201,11 @@ void ChantierWidget::mettreAJourDisponibilite()
 
 int ChantierWidget::calculerTailleTuile() const
 {
+    constexpr double TUILE_SCALE_CHANTIER = 1.10;
     const double largeur = width() - 20.0;
     const double hauteur = height() - 40.0;
     const double base = std::min(largeur / (1.5 + std::sqrt(3.0)), hauteur / ((2.0 + std::sqrt(3.0)) * NB_MAX_TUILES));
-    return std::max(30, static_cast<int>(base));
+    return std::max(30, static_cast<int>(base * TUILE_SCALE_CHANTIER));
 }
 
 int ChantierWidget::tailleTuileChantier() const

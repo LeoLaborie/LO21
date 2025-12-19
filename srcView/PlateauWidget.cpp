@@ -24,6 +24,7 @@
 PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
     : QWidget(parent)
 {
+    constexpr double TUILE_SCALE_ZONE = 0.8 * 1.10; // ancien -20%, puis +10%
     // définit la taille de la fenetre de jeu en fonction de la taille de l'écran
     resize(QGuiApplication::primaryScreen()->availableGeometry().size());              
     // création de l'organisation de la page avec un layout central
@@ -97,7 +98,7 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
             if (tuile)
             {
                 int taille = calculerTailleTuile(zoneJeuWidget);
-                taille = std::max(20, static_cast<int>(taille * 0.8));
+                taille = std::max(20, static_cast<int>(taille * TUILE_SCALE_ZONE));
                 tuile->setTaille(taille);
             }
             zoneJeuWidget->placerTuileDansZoneJeu(tuile);
@@ -161,8 +162,6 @@ void PlateauWidget::finaliserTourApresPlacement(TuileItem* t, const QPointF& pos
     t->setInteractivite(false, false);
     if (chantierWidget)
         chantierWidget->setEnabled(true);
-    // Le contrôleur gère le changement de joueur (main/plateau affiché, nb de pierres, etc.)
-    // via ses signaux (`setMainJoueurPlateau`, `setNbPierres`, ...). On ne change pas de joueur ici.
     emit tourTermine();
 }
 
@@ -283,10 +282,11 @@ void PlateauWidget::ModifierCouleurEtage(TuileItem* tuile, int z)
 
 TuileItem* PlateauWidget::creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone) const
 {
+    constexpr double TUILE_SCALE_ZONE = 0.8 * 1.10; // ancien -20%, puis +10%
     int taille = calculerTailleTuile(zone ? zone : zoneJeuWidget);
     // Dans la zone de jeu (placement + plateau), on réduit la taille des hexagones (~ -20%).
     if (mode != TuileItem::Mode::Pioche)
-        taille = std::max(20, static_cast<int>(taille * 0.8));
+        taille = std::max(20, static_cast<int>(taille * TUILE_SCALE_ZONE));
     auto* item = new TuileItem(modele, nullptr, mode, taille);
     if (zone)
         item->definirOrigineGrille(zone->getOrigineGrille());
@@ -310,9 +310,16 @@ int PlateauWidget::calculerTailleTuile(const ZoneJeuWidget* zone) const
             return chantierWidget->tailleTuileChantier();
         return 50;
     }
-    const QRectF rect = zone->getZoneRect();
-    const double base = std::min(rect.width(), rect.height());
-    return std::max(30, static_cast<int>(base / 18.0));
+    // Taille figée : sinon elle dépend du sceneRect (qui est énorme pour pan/zoom) ou de redimensionnements.
+    if (tailleTuileZoneCache > 0)
+        return tailleTuileZoneCache;
+
+
+    const int w = zone->width();
+    const int h = zone->height();
+    const double base = std::min(w > 0 ? w : 800, h > 0 ? h : 600);
+    tailleTuileZoneCache = std::max(30, static_cast<int>(base / 18.0));
+    return tailleTuileZoneCache;
 }
 
 void PlateauWidget::relayerValidationPlacementDemandee(TuileItem* tuile, const QPoint& coordonnees)

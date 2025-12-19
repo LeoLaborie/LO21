@@ -39,6 +39,7 @@ static QPolygonF creerHexagone(double taille)
 HexItem::HexItem(const Hexagone* modele, double taille)
     : QGraphicsPolygonItem(nullptr)
 {
+    this->modele = modele;
     // initialise le polygone pour représenter l'hexagone
     setPolygon(creerHexagone(taille));
 
@@ -97,11 +98,12 @@ HexItem::HexItem(const Hexagone* modele, double taille)
             break;
     }
 
-    QPixmap pix(basePath + imgFile);
+    imgPath = basePath + imgFile;
+    QPixmap pix(imgPath);
     QPixmap scaled = pix.scaled(taille * 1.5, taille * 1.5, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     // on affiche l'icône correspondante au type au centre de l'hexagone
-    auto* icon = new QGraphicsPixmapItem(scaled, this);
+    icon = new QGraphicsPixmapItem(scaled, this);
     icon->setOffset(-scaled.width() / 2.0, -scaled.height() / 2.0);
     icon->setZValue(1);
 }
@@ -110,4 +112,19 @@ void HexItem::setTaille(double nouvelleTaille)
 {
     prepareGeometryChange();
     setPolygon(creerHexagone(nouvelleTaille));
+
+    // Met à jour le "fond" (dégradé) pour rester cohérent avec la nouvelle taille.
+    QLinearGradient grad(QPointF(-nouvelleTaille, 0), QPointF(nouvelleTaille, 0));
+    grad.setColorAt(0.0, Qt::white);
+    grad.setColorAt(1.0, QColor(220, 220, 220));
+    setBrush(QBrush(grad));
+
+    // Re-scale l'icône, sinon elle garde l'ancienne taille et masque la bordure / le fond.
+    if (icon && !imgPath.isEmpty())
+    {
+        QPixmap pix(imgPath);
+        const QPixmap scaled = pix.scaled(nouvelleTaille * 1.5, nouvelleTaille * 1.5, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        icon->setPixmap(scaled);
+        icon->setOffset(-scaled.width() / 2.0, -scaled.height() / 2.0);
+    }
 }

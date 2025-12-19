@@ -63,6 +63,7 @@ private:
     ScorePanel* scorePanel = nullptr;
     EchapWidget* echapWidget = nullptr;
     QShortcut* raccourciEchap = nullptr;
+    mutable int tailleTuileZoneCache = -1;
 
     void basculerMenuEchap();
     void gererBlocageInteractions(bool widgetActif);

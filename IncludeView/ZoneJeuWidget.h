@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QPointF>
 #include <QRectF>
+#include <QMouseEvent>
 
 #include "TuileItem.h"
 
@@ -61,11 +62,22 @@ private:
 
     void masquerWidgetValidation();
 
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+
 private slots:
     void afficherPanneauValidation(TuileItem* tuile);
     void surConfirmationDemandee();
     void surAnnulationDemandee();
     void surDebutDeplacementTuile(TuileItem* tuile);
+
+private:
+    bool panActif = false;
+    QPoint panDernierePos{};
+    qreal zoomCourant = 1.0;
 };
 
 #endif
