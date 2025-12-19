@@ -253,7 +253,8 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     const auto positionsLegales = joueurCourant.getPlateau().getPositionsLegales(tuileEnMain);
     const auto it = std::find_if(positionsLegales.begin(), positionsLegales.end(), [&](const Position& p)
                                  {
-        return p.x == coordonnees.x() && p.y == coordonnees.y(); });
+        return p.x == coordonnees.x() && p.y == coordonnees.y();
+     });
     if (it == positionsLegales.end())
     {
         // Fournit une raison explicite : on teste le niveau "naturel" (au-dessus du plus haut hex présent à (x,y)).
@@ -282,7 +283,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
         emit afficherErreur(QString::fromStdString(e.what()));
         return;
     }
-
+    emit etageDetermine(tuileGraphique, positionChoisie.z);
     emit setNbPierres(joueurCourant.getNbrPierres());
     std::cout<<joueurCourant.getNbrPierres()<<std::endl;
     mettreAJourScoreCourant();

@@ -84,6 +84,8 @@ class TuileItem : public QObject, public QGraphicsItemGroup
          * @param origineScene Origine utilisée comme repère (ex: centre de la scène).
          */
         QPoint coordonneesAxiales(const QPointF& origineScene = QPointF()) const;
+    public slots:
+        void ModifierCouleurEtage(int z);
 
     signals:
     void rightClicked();

@@ -51,6 +51,7 @@ public slots:
     void finaliserTourApresPlacement(TuileItem* tuile, const QPointF& positionScene);
     void afficherMessage(const QString& message);
     void afficherErreur(const QString& message);
+    void ModifierCouleurEtage(TuileItem* tuile, int z);
 
 private:
     QStackedWidget* stackPlateaux = nullptr;

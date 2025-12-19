@@ -244,6 +244,13 @@ void PlateauWidget::afficherErreur(const QString& message)
     box.exec();
 }
 
+void PlateauWidget::ModifierCouleurEtage(TuileItem* tuile, int z)
+{
+    if (!tuile)
+        return;
+    tuile->ModifierCouleurEtage(z);
+}
+
 TuileItem* PlateauWidget::creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone) const
 {
     const int taille = calculerTailleTuile(zone ? zone : zoneJeuWidget);

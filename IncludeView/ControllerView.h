@@ -53,6 +53,7 @@ signals:
     void afficherTuileMain(int joueur, const Tuile& tuile);
     void afficherMessage(const QString& message);
     void afficherErreur(const QString& message);
+    void etageDetermine(TuileItem* tuile, int z);
 
 private:
     static ControllerView* instance;

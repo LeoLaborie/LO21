@@ -1,6 +1,8 @@
 #include "TuileItem.h"
 
+#include <QBrush>
 #include <QGraphicsSceneMouseEvent>
+#include <QLinearGradient>
 #include <QPen>
 #include <QColor>
 #include <QtMath>
@@ -179,3 +181,20 @@ QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
     const QPointF axialF = pixelVersAxial(relatif.x(), relatif.y(), tailleHex);
     return QPoint(qRound(axialF.x()), qRound(axialF.y()));
 }
+void TuileItem::ModifierCouleurEtage(int z)
+{
+    QLinearGradient grad(QPointF(-tailleHex, 0),QPointF(tailleHex, 0));
+    grad.setColorAt(0.0, QColor(245, 245, 245).darker(100+40*z));
+    grad.setColorAt(1.0, QColor(210, 210, 210).darker(100+40*z));
+
+    QBrush brushFond(grad);
+
+    for (QGraphicsItem* item : childItems())
+    {
+        if (auto* hex = dynamic_cast<HexItem*>(item))
+        {
+            hex->setBrush(brushFond);
+        }
+    }
+}
+

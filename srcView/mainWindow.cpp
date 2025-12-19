@@ -163,7 +163,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
         connect(controleur, &ControllerView::afficherMessage, plateauWidget, &PlateauWidget::afficherMessage);
         connect(controleur, &ControllerView::afficherErreur, plateauWidget, &PlateauWidget::afficherErreur);
-
+        connect(controleur, &ControllerView::etageDetermine, plateauWidget, &PlateauWidget::ModifierCouleurEtage);
         if (auto* chantier = plateauWidget->getChantierWidget())
         {
             connect(chantier, &ChantierWidget::tuileSelectionnee, controleur, &ControllerView::joueurPiocheTuile);
