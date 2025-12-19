@@ -6,16 +6,35 @@ Partie CreerNouvellePartie()
     std::cout << "===== DEMARRAGE PARTIE =====\n\n";
     texte_reset();
 
-    int nbrJoueurs;
-    std::cout << "Nombre de joueurs ? ";
-    while (!(std::cin >> nbrJoueurs))
-    {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        texte_couleur(ROUGE);
-        texte_gras_on();
-        std::cout << "Entrée invalide. Veuillez saisir un nombre de joueurs positif : ";
-        texte_reset();
+    int nbrJoueurs = 0;
+
+    while (true) {
+        std::cout << "Nombre de joueurs (1-4) ? ";
+        
+
+        if (std::cin >> nbrJoueurs) {
+            
+            
+            if (nbrJoueurs >= 1 && nbrJoueurs <= 4) {
+            
+                break; 
+            } else {
+                
+                texte_couleur(ROUGE);
+                texte_gras_on();
+                std::cout << "Erreur : Le nombre doit être compris entre 1 et 4." << std::endl;
+                texte_reset();
+            }
+            
+        } else {
+            std::cin.clear(); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+            
+            texte_couleur(ROUGE);
+            texte_gras_on();
+            std::cout << "Erreur : Veuillez entrer un chiffre valide." << std::endl;
+            texte_reset();
+        }
     }
 
     std::cout << nbrJoueurs << " joueurs dans la partie.\n\n";
