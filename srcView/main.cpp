@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
         // mode graphique standard
         QApplication app(argc, argv);
         MainWindow w;
-        w.showFullScreen();
+        w.show();
         return app.exec();
     }
     else
