@@ -33,6 +33,9 @@ Plateau::Plateau(const bool vs[5])
 
 Plateau::Plateau()
 {
+    for (int i = 0; i < 5; ++i)
+        variantesScores[i] = false;
+
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
