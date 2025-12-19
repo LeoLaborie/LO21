@@ -288,8 +288,19 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     }
 
     const auto positionsLegales = plateau.getPositionsLegales(tuileEnMain);
-    const auto it = std::find_if(positionsLegales.begin(), positionsLegales.end(), [&](const Position& p) { return p.x == x && p.y == y; });
-    if (it == positionsLegales.end())
+    bool trouve = false;
+    Position positionChoisie{};
+    for (const Position& p : positionsLegales)
+    {
+        if (p.x != x || p.y != y)
+            continue;
+        if (!trouve || p.z > positionChoisie.z)
+        {
+            positionChoisie = p;
+            trouve = true;
+        }
+    }
+    if (!trouve)
     {
         // Si (x,y) n'est pas légal, on redemande au à plateau une raison explicite avec un z candidat
         int zMax = -1;
@@ -304,8 +315,6 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
         emit afficherErreur(QString::fromStdString(raison.empty() ? "Placement invalide" : raison));
         return;
     }
-
-    Position positionChoisie = *it;
     try
     {
         joueurCourant.placerTuile(tuileEnMain, positionChoisie);

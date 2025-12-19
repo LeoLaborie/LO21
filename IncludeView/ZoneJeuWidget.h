@@ -3,6 +3,7 @@
 
 #include <QGraphicsView>
 #include <QPoint>
+#include <QPointF>
 #include <QRectF>
 
 #include "TuileItem.h"
@@ -29,8 +30,10 @@ class ZoneJeuWidget : public QGraphicsView
         {
             return zoneJeuRect;
         }
+        QPointF getOrigineGrille() const;
         void viderZone();
         void ajouterTuileDepuisModele(TuileItem* tuile);
+        void ajouterTuileDepuisModele(TuileItem* tuile, const QPointF& positionScene);
         void setBlocageInteractions(bool bloque);
         bool interactionsBloquees() const
         {

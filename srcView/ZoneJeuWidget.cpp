@@ -37,6 +37,13 @@ ZoneJeuWidget::ZoneJeuWidget(int width, int height, QWidget* parent)
     connect(validerPlacementWidget, &ValiderPlacementWidget::annulationDemandee, this, &ZoneJeuWidget::surAnnulationDemandee);
 }
 
+QPointF ZoneJeuWidget::getOrigineGrille() const
+{
+    if (!zoneJeuScene)
+        return QPointF();
+    return zoneJeuScene->sceneRect().center();
+}
+
 void ZoneJeuWidget::viderZone()
 {
     masquerWidgetValidation();
@@ -53,13 +60,19 @@ void ZoneJeuWidget::viderZone()
 
 void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem* t)
 {
+    ajouterTuileDepuisModele(t, getOrigineGrille());
+}
+
+void ZoneJeuWidget::ajouterTuileDepuisModele(TuileItem* t, const QPointF& positionScene)
+{
     if (!t || !zoneJeuScene)
         return;
     t->setMode(TuileItem::Mode::ZoneJeu);
     t->setInteractivite(false, false);
-    const QPointF centre = zoneJeuScene->sceneRect().center();
-    t->setPos(centre);
+    t->definirOrigineGrille(getOrigineGrille());
+    t->setPos(positionScene);
     zoneJeuScene->addItem(t);
+    // aligne sur la grille pour éviter les petits décalages dus aux conversions pixels<->axial
     t->replacerCorrectement();
     tuilesZoneJeu.push_back(t);
 }
@@ -74,6 +87,7 @@ void ZoneJeuWidget::ajouterTuileDansZoneJeu(TuileItem* t, int x, int y)
     }
 
     // positionne la tuile et désactive son interaction en pause
+    t->definirOrigineGrille(getOrigineGrille());
     t->setPos(x, y);
     t->setEnabled(!blocageInteractions);
 
@@ -145,9 +159,7 @@ void ZoneJeuWidget::surConfirmationDemandee()
 {
     if (!tuileEnValidation)
         return;
-    QPointF origineScene;
-    if (zoneJeuScene)
-        origineScene = zoneJeuScene->sceneRect().center();
+    const QPointF origineScene = getOrigineGrille();
     const QPoint coordonnees = tuileEnValidation->coordonneesAxiales(origineScene);
     emit validationPlacementDemandee(tuileEnValidation, coordonnees);
 }

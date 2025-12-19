@@ -39,6 +39,15 @@ class TuileItem : public QObject, public QGraphicsItemGroup
          */
         void replacerCorrectement();
         /**
+         * @brief Définit l'origine (en scène) utilisée pour l'alignement sur la grille.
+         *
+         * Quand une tuile est sur le plateau, l'origine correspond typiquement au centre logique de la zone de jeu.
+         */
+        void definirOrigineGrille(const QPointF& origine)
+        {
+            origineGrilleScene = origine;
+        }
+        /**
          * @brief Active/désactive le déplacement et la rotation de la tuile.
          */
         void setInteractivite(bool autoriserDeplacement, bool autoriserRotation);
@@ -105,12 +114,7 @@ private:
     unsigned int indice;  // utiliser que quand la tuile item est dans la pioche sinon inutile
     Mode mode;
     int niveauHauteur = 0;
-    /**
-     * @brief Décalage visuel vertical appliqué en fonction de la hauteur (en pixels).
-     *
-     * Il est compensé lors des conversions pixel<->axial pour ne pas fausser les coordonnées logiques.
-     */
-    double decalageEtageY = 0.0;
+    QPointF origineGrilleScene = QPointF(0.0, 0.0);
 };
 
 #endif  // TUILEITEM_H

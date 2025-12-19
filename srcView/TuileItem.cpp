@@ -28,6 +28,17 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
     , indice(indice)
     , mode(m)
 {
+    int qRef = 0;
+    int rRef = 0;
+    {
+        Tuile::ConstIterator it = ref.getConstIterator();
+        if (!it.isDone())
+        {
+            qRef = it.currentItem().getX();
+            rRef = it.currentItem().getY();
+        }
+    }
+
     if (mode != Mode::Pioche)
     {
         // dès qu'on sort de la pioche, autorise le déplacement libre
@@ -35,11 +46,18 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
     }
     setFlag(ItemIsSelectable, true);
     /* setFlag(ItemSendsGeometryChanges, true); peut etre utile mais pas encore utilisé*/
-    int i=0;
-    for(Tuile::ConstIterator it = ref.getConstIterator(); !it.isDone(); it.next()){
-        auto* hexItem = new HexItem(&it.currentItem(), tailleHex);
+    int i = 0;
+    for (Tuile::ConstIterator it = ref.getConstIterator(); !it.isDone(); it.next())
+    {
+        const Hexagone& hex = it.currentItem();
+        auto* hexItem = new HexItem(&hex, tailleHex);
+        // Place les hexagones relativement à l'hexagone de référence de la tuile.
+        // - En mode placement: les coords sont déjà relatives (autour de 0,0), donc ça ne change rien.
+        // - En mode plateau: les coords sont absolues, donc on "recentre" pour que la position de groupe corresponde au repère.
+        hexItem->setPos(axialVersPixel(hex.getX() - qRef, hex.getY() - rRef, tailleHex));
         addToGroup(hexItem);
-        if (i == 0) hexRef = hexItem;
+        if (i == 0)
+            hexRef = hexItem;
         ++i;
     }
     setTransformOriginPoint(boundingRect().center());
@@ -127,12 +145,11 @@ void TuileItem::replacerCorrectement()
     if (!hexRef)
         return;
     const QPointF centreScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    // Compense le décalage visuel d'étage pour ne pas fausser l'alignement logique sur la grille.
-    const QPointF centreLogique = centreScene - QPointF(0.0, decalageEtageY);
-    const QPointF axialF = pixelVersAxial(centreLogique.x(), centreLogique.y(), tailleHex);
+    const QPointF relatif = centreScene - origineGrilleScene;
+    const QPointF axialF = pixelVersAxial(relatif.x(), relatif.y(), tailleHex);
     const int q = qRound(axialF.x());
     const int r = qRound(axialF.y());
-    const QPointF cibleScene = axialVersPixel(q, r, tailleHex) + QPointF(0.0, decalageEtageY);
+    const QPointF cibleScene = origineGrilleScene + axialVersPixel(q, r, tailleHex);
     const QPointF deltaScene = cibleScene - centreScene;
     setPos(pos() + deltaScene);
 }
@@ -159,15 +176,6 @@ void TuileItem::setNiveauGraphique(int niveau)
 {
     niveauHauteur = std::max(0, niveau);
     setZValue(niveauHauteur * 10);
-
-    // Décalage visuel (vers le haut) pour distinguer les étages.
-    const double nouveauDecalage = -static_cast<double>(niveauHauteur) * (tailleHex * 0.35);
-    const double delta = nouveauDecalage - decalageEtageY;
-    decalageEtageY = nouveauDecalage;
-    if (delta != 0.0)
-        setPos(pos() + QPointF(0.0, delta));
-
-    replacerCorrectement();
 }
 
 QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
@@ -175,9 +183,7 @@ QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
     if (!hexRef)
         return QPoint();
     const QPointF centreScene = hexRef->mapToScene(hexRef->boundingRect().center());
-    // Compense le décalage visuel d'étage pour retourner des coordonnées logiques cohérentes.
-    const QPointF centreLogique = centreScene - QPointF(0.0, decalageEtageY);
-    const QPointF relatif = centreLogique - origineScene;
+    const QPointF relatif = centreScene - origineScene;
     const QPointF axialF = pixelVersAxial(relatif.x(), relatif.y(), tailleHex);
     return QPoint(qRound(axialF.x()), qRound(axialF.y()));
 }
@@ -197,4 +203,3 @@ void TuileItem::ModifierCouleurEtage(int z)
         }
     }
 }
-

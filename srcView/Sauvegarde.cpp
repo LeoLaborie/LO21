@@ -201,13 +201,22 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile)
     }
 
     // on utilise les des pointeurs temporaires pour créer les hexagones de la tuile vue qu'ils sont stocker par pointeurs
+    struct CoordXYZ
+    {
+        int x;
+        int y;
+        int z;
+    };
     std::vector<std::unique_ptr<Hexagone>> hexs;
     hexs.reserve(nbHex);
+    std::vector<CoordXYZ> coords;
+    coords.reserve(nbHex);
     for (int i = 0; i < nbHex; ++i)
     {
         Hexagone tmp(0, 0, 0, TypeHex::Carriere);
         if (!(is >>= tmp))
             return is;
+        coords.push_back({tmp.getX(), tmp.getY(), tmp.getZ()});
         hexs.push_back(std::make_unique<Hexagone>(tmp));
     }
 
@@ -216,6 +225,15 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile)
         tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release());
     else
         tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release(), hexs[3].release());
+
+    // IMPORTANT : la désérialisation doit préserver les coordonnées sauvegardées.
+    // Le constructeur de Tuile réinitialise les coords (0,0,0) pour une tuile "en main".
+    // On restaure donc ici les (x,y,z) lus depuis le fichier.
+    for (Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
+    {
+        const auto& c = coords[it.currentIndex()];
+        it.currentItem().setCoord(c.x, c.y, c.z);
+    }
 
     return is;
 }

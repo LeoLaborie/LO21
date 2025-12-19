@@ -18,6 +18,7 @@
 #include "EchapWidget.h"
 #include "ScorePanel.h"
 #include "Tuile.h"
+#include "HexItem.h"
 #include "ZoneJeuWidget.h"
 
 PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
@@ -175,12 +176,28 @@ void PlateauWidget::chargerPlateauJoueur(const int& index, const std::vector<Tui
     if (!zone)
         return;
     zone->viderZone();
+    const QPointF origine = zone->getOrigineGrille();
     for (const Tuile& tuile : tuiles)
     {
         auto* item = creerTuileGraphique(tuile, TuileItem::Mode::ZoneJeu, zone);
         if (!item)
             continue;
-        zone->ajouterTuileDepuisModele(item);
+        int qRef = 0;
+        int rRef = 0;
+        {
+            Tuile::ConstIterator it = tuile.getConstIterator();
+            if (!it.isDone())
+            {
+                qRef = it.currentItem().getX();
+                rRef = it.currentItem().getY();
+            }
+        }
+        const int taille = calculerTailleTuile(zone);
+        zone->ajouterTuileDepuisModele(item, origine + axialVersPixel(qRef, rRef, taille));
+        int z = 0;
+        for (Tuile::ConstIterator it = tuile.getConstIterator(); !it.isDone(); it.next())
+            z = std::max(z, it.currentItem().getZ());
+        item->ModifierCouleurEtage(z);
     }
 }
 
@@ -249,6 +266,7 @@ void PlateauWidget::ModifierCouleurEtage(TuileItem* tuile, int z)
 {
     if (!tuile)
         return;
+    tuile->setNiveauGraphique(z);
     tuile->ModifierCouleurEtage(z);
 }
 
@@ -256,7 +274,8 @@ TuileItem* PlateauWidget::creerTuileGraphique(const Tuile& modele, TuileItem::Mo
 {
     const int taille = calculerTailleTuile(zone ? zone : zoneJeuWidget);
     auto* item = new TuileItem(modele, nullptr, mode, taille);
-    item->setNiveauGraphique(modele.getHauteur());
+    if (zone)
+        item->definirOrigineGrille(zone->getOrigineGrille());
     return item;
 }
 

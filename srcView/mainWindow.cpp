@@ -9,12 +9,34 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <algorithm>
+#include <fstream>
 
 #include "PageWidget.h"
 #include "PlateauWidget.h"
 #include "ControllerView.h"
 #include "ChantierWidget.h"
 #include "ScorePanel.h"
+
+namespace
+{
+    int lireNbJoueursSauvegarde(std::string nomSauvegarde)
+    {
+        constexpr const char* extension = ".ratatata";
+        constexpr size_t extensionLen = 9; // strlen(".ratatata")
+        if (nomSauvegarde.size() < extensionLen || nomSauvegarde.substr(nomSauvegarde.size() - extensionLen) != extension)
+            nomSauvegarde += extension;
+
+        std::ifstream f("saves/" + nomSauvegarde);
+        if (!f)
+            return 1;
+
+        std::string tag;
+        int nb = 1;
+        if ((f >> tag >> nb) && tag == "PARTIE" && nb > 0)
+            return nb;
+        return 1;
+    }
+}
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -108,7 +130,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(loadPage, &chargerPartiePage::envoieArgument, this, [this,controleur](std::string nomSauvegarde)
             {
-        creerLePlateau(1);
+        creerLePlateau(lireNbJoueursSauvegarde(nomSauvegarde));
         const bool ok = controleur->chargerDepuisSauvegarde(nomSauvegarde);
         if (ok)
         {
