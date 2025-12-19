@@ -8,7 +8,7 @@ Partie CreerNouvellePartie()
 
     int nbrJoueurs;
     std::cout << "Nombre de joueurs ? ";
-    while (!(std::cin >> nbrJoueurs) || 4<=nbrJoueurs <= 0)
+    while (!(std::cin >> nbrJoueurs))
     {
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

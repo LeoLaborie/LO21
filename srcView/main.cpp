@@ -1,4 +1,6 @@
 #include <QApplication>
+#include <QPalette>
+#include <QStyleFactory>
 #include <fstream>
 #include <string>
 
@@ -6,7 +8,7 @@
 #include "mainwindow.h"
 
 // petite fonction utilitaire pour afficher un fichier texte dans la console (README notamment)
-void ouvrirFichier(const std::string& readme)
+void ouvrirFichier(const std::string &readme)
 {
     std::ifstream f(readme);
     if (!f)
@@ -14,9 +16,9 @@ void ouvrirFichier(const std::string& readme)
         std::cout << "Aucun readme disponible" << std::endl;
         return;
     }
-    std::cout << f.rdbuf()<<std::endl;
+    std::cout << f.rdbuf() << std::endl;
 }
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     // par défaut on lance l'interface graphique si aucun argument n'est fourni
     std::string argument;
@@ -41,8 +43,17 @@ int main(int argc, char* argv[])
     }
     if (argument == "-g" || argument == "-G")
     {
-        // mode graphique standard
         QApplication app(argc, argv);
+        app.setStyle(QStyleFactory::create("Fusion"));
+        QPalette pal;
+        pal.setColor(QPalette::Window, Qt::white);
+        pal.setColor(QPalette::WindowText, Qt::black);
+        pal.setColor(QPalette::Base, Qt::white);
+        pal.setColor(QPalette::Text, Qt::black);
+        pal.setColor(QPalette::Button, Qt::white);
+        pal.setColor(QPalette::ButtonText, Qt::black);
+        app.setPalette(pal);
+
         MainWindow w;
         w.showFullScreen();
         return app.exec();

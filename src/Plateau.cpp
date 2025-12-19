@@ -10,9 +10,9 @@
  * (en vérifiant les identifiants des hexagones sous la nouvelle position) et d'éviter ainsi qu'une tuile
  * élevée repose uniquement sur une tuile parente ou provoque une superposition.
  */
-static void reinitialiserParentsTuiles(std::vector<Tuile>& tuiles)
+static void reinitialiserParentsTuiles(std::vector<Tuile> &tuiles)
 {
-    for (Tuile& tuile : tuiles)
+    for (Tuile &tuile : tuiles)
         for (Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
             it.currentItem().setParent(tuile.getId());
 }
@@ -50,12 +50,11 @@ Plateau Plateau::fromSave(const bool variantes[5], std::vector<Tuile> tuiles)
 
 void Plateau::updateVoisins()
 {
-    pourChaqueHexagone([&](Hexagone* h){
-        h->clearVoisins();
-    });
+    pourChaqueHexagone([&](Hexagone *h)
+                       { h->clearVoisins(); });
 
-    pourChaqueHexagone([&](Hexagone* hexagone1)
-    {
+    pourChaqueHexagone([&](Hexagone *hexagone1)
+                       {
         if (hexagone1->getEstRecouvert()) return;
 
         pourChaqueHexagone([&](Hexagone* hexagone2)
@@ -77,12 +76,8 @@ void Plateau::updateVoisins()
                 } 
 
       
-        });
-    });
+        }); });
 }
-
-
-
 
 template <class T>
 bool ContientPas(const std::vector<T> &v, const T &valeur)
@@ -90,12 +85,12 @@ bool ContientPas(const std::vector<T> &v, const T &valeur)
     return std::find(v.begin(), v.end(), valeur) == v.end();
 }
 
-bool Plateau::verifierPlacementTuile(const Position& p, const Tuile& t) const
+bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t) const
 {
     return verifierPlacementTuile(p, t, nullptr);
 }
 
-bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t, std::string* raisonEchec) const
+bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t, std::string *raisonEchec) const
 {
     auto refuser = [&](std::string message)
     {
@@ -107,7 +102,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t, std::str
     std::vector<TuileId> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
-    int supports_par_hex = 0;  // pour vérifier qu’on pose bien sur 3 hexagones en hauteur
+    int supports_par_hex = 0; // pour vérifier qu’on pose bien sur 3 hexagones en hauteur
 
     int dx[6] = {+1, +1, 0, -1, -1, 0};
     int dy[6] = {0, -1, -1, 0, +1, +1};
@@ -128,7 +123,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t, std::str
     for (const auto &h : coords)
     {
         bool supportTrouve = false;
-        bool hexDejaComptePourBord = false;  // pour ne compter chaque hex qu'une seule fois
+        bool hexDejaComptePourBord = false; // pour ne compter chaque hex qu'une seule fois
         bool superposition = false;
 
         if (h.z > 0)
@@ -283,7 +278,6 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
     reinitialiserParentsTuiles(listeTuiles);
-   
 
     // Si on est en hauteur (z > 0), on recouvre ce qui est juste en dessous (z-1)
     if (p.z > 0)
@@ -312,7 +306,7 @@ int Plateau::placerTuile(Tuile &t, Position &p)
             Recouvrir(p.x + o.q, p.y + o.r);
     }
     updateVoisins();
-    
+
     return res;
 }
 
@@ -519,7 +513,6 @@ int Plateau::calculerPointsTemple(const Hexagone *h) const
     int mult = 1;
     if (variantesScores[3] && h->getZ() >= 1)
         mult = 2;
-    std::cout << h->getVoisins().size()<<std::endl;
     return (h->getVoisins().size() == 6) ? (h->getZ() + 1) * mult : 0;
 }
 
@@ -546,7 +539,7 @@ int Plateau::calculerPointsMarche(const Hexagone *h) const
     }
     if (!voisinMarche)
     {
-        nbpoint += h->getZ()+1;
+        nbpoint += h->getZ() + 1;
 
         if (variantesScores[1])
         {
