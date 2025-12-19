@@ -298,9 +298,9 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
             if (h && h->getX() == x && h->getY() == y)
                 zMax = std::max(zMax, h->getZ());
         });
-        const int zCandidat = std::max(0, zMax + 1);
+        const int zPossible = std::max(0, zMax + 1);
         std::string raison;
-        plateau.verifierPlacementTuile(Position{x, y, zCandidat}, tuileEnMain, &raison);
+        plateau.verifierPlacementTuile(Position{x, y, zPossible}, tuileEnMain, &raison);
         emit afficherErreur(QString::fromStdString(raison.empty() ? "Placement invalide" : raison));
         return;
     }
