@@ -1,8 +1,8 @@
 #ifndef HEXAGONE_H
 #define HEXAGONE_H
 
-#include <cstdint>
-using TuileId = std::uint32_t;
+#include <cstddef>
+using TuileId = std::size_t;
 
 #include <iostream>
 #include <utility>

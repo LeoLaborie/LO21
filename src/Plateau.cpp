@@ -4,19 +4,6 @@
 #include <unordered_map>
 #include <utility>
 
-/**
- * Chaque hexagone porte un `parentId` qui pointe vers l'identifiant unique de la tuile à laquelle il appartient.
- * Cela permet notamment à `verifierPlacementTuile` de savoir sur quelles tuiles repose une nouvelle tuile élevée
- * (en vérifiant les identifiants des hexagones sous la nouvelle position) et d'éviter ainsi qu'une tuile
- * élevée repose uniquement sur une tuile parente ou provoque une superposition.
- */
-static void reinitialiserParentsTuiles(std::vector<Tuile>& tuiles)
-{
-    for (Tuile& tuile : tuiles)
-        for (Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
-            it.currentItem().setParent(tuile.getId());
-}
-
 Plateau::Plateau(const bool vs[5])
 {
     for (int i = 0; i < 5; i++)
@@ -26,7 +13,6 @@ Plateau::Plateau(const bool vs[5])
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
-    reinitialiserParentsTuiles(listeTuiles);
 
     updateVoisins();
 }
@@ -36,14 +22,12 @@ Plateau::Plateau()
     listeTuiles.clear();
     Tuile tuileDepart{new Hexagone(0, 0, 0, TypeHex::PHabitation), new Hexagone(-1, 1, 0, TypeHex::Carriere), new Hexagone(0, -1, 0, TypeHex::Carriere), new Hexagone(1, 0, 0, TypeHex::Carriere)};
     listeTuiles.push_back(tuileDepart);
-    reinitialiserParentsTuiles(listeTuiles);
 }
 
 Plateau Plateau::fromSave(const bool variantes[5], std::vector<Tuile> tuiles)
 {
     Plateau p(variantes);
     p.listeTuiles = std::move(tuiles);
-    reinitialiserParentsTuiles(p.listeTuiles);
     p.updateVoisins();
     return p;
 }
@@ -282,7 +266,6 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
-    reinitialiserParentsTuiles(listeTuiles);
    
 
     // Si on est en hauteur (z > 0), on recouvre ce qui est juste en dessous (z-1)
@@ -319,7 +302,6 @@ int Plateau::placerTuile(Tuile &t, Position &p)
 int Plateau::placerTuile(Tuile &t)
 {
     listeTuiles.push_back(t);
-    reinitialiserParentsTuiles(listeTuiles);
     return 1;
 }
 
