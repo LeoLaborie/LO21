@@ -111,6 +111,12 @@ public:
     int calculerPointsia(int &diff) const;
 
     /**
+     * @brief Calcule les points par catégorie pour l'IA (habitation, marché, caserne, temple, jardin).
+     * @return Vecteur de 5 entiers (dans cet ordre).
+     */
+    std::vector<int> Plateau::calculerPointsiaTab(int &diff) const;
+
+    /**
      * @brief Calcule le nombre de points apportés par les habitations
      * @return Nombre total de points apportés par les habitations
      */
@@ -129,7 +135,7 @@ public:
     int calculerPointsJardin(const Hexagone *h) const;
 
     /**
-     * @brief Vérifie la condition de la variante de score "Jardin"
+     * @brief Vérifie la condition de la variante de score "Jardin" 
      * @param q Pointeur vers l'hexagone jardin
      * @return true si la condition est remplie, false sinon
      */

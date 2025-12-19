@@ -85,7 +85,7 @@ void ControllerView::sauvegarderPartieGraphique()
 {
     const bool ok = sauvegarderPartie(partie);
     if (ok)
-        emit afficherMessage(QStringLiteral("Sauvegarde effectuée"));
+        emit (QStringLiteral("Sauvegarde effectuée"));
     else
         emit afficherErreur(QStringLiteral("Erreur : sauvegarde échouée"));
 }
@@ -120,8 +120,6 @@ void ControllerView::lancerTour(){
     if (joueur.isIA())
     {
         const int joueurIndex = partie.getMainJoueur();
-        QTimer::singleShot(0, this, [this, joueurIndex]()
-                           {
             if (partieTerminee)
                 return;
             if (partie.getMainJoueur() != joueurIndex)
@@ -162,8 +160,7 @@ void ControllerView::lancerTour(){
             emit chargerPlateauGraphique(joueurIndex, joueurCourant.getPlateau().getTuiles());
             mettreAJourScoreCourant();
 
-            emit afficherMessage(QStringLiteral("Illustre Architecte a joué automatiquement."));
-            QTimer::singleShot(0, this, &ControllerView::finDeTour); });
+            afficherInfoIA(indiceChoisi);
     }
 }
 
@@ -279,6 +276,9 @@ void ControllerView::mettreAJourScoreCourant()
         return;
 
     Joueur& joueur = partie.getJoueurMain();
+    if (joueur.isIA()){
+        IllustreArchitecte& ia = dynamic_cast<IllustreArchitecte&>(joueur);
+    }
     joueur.setNbrPoints();
     const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
     const int total = joueur.getPlateau().calculerPoints();
@@ -326,10 +326,6 @@ void ControllerView::joueurPiocheTuile(TuileId idTuile)
     emit valideTuilePiochee(idTuile);
     emit setNbPierres(joueurcourant.getNbrPierres());
 
-    //pas utile je pense mais je laisse la au cas où
-    // if (partie.fauxJoueurPresent()){
-    //     plateau->updatePierres(partie.getFauxJoueur());
-    // }
 }
 
 void ControllerView::annulerPiocheTuile(TuileId idTuile)
@@ -462,3 +458,57 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     mettreAJourScoreCourant();
     zone->confirmerPlacementApprouve(tuileGraphique);
 }
+
+void ControllerView::afficherInfoIA(const int& idTuile){
+    QDialog dialog;
+    dialog.setWindowTitle("Tour Illustre Architecte");
+    dialog.resize(400, 500);
+    dialog.setModal(true);
+
+    dialog.setStyleSheet(
+        "QDialog { background-color: #2c3e50; color: white; }"
+        "QLabel { font-size: 18px; margin: 5px; }"
+        "QPushButton { "
+        "    background-color: #e67e22; color: white; "
+        "    padding: 12px; border-radius: 6px; font-weight: bold; font-size: 16px;"
+        "}"
+        "QPushButton:hover { background-color: #d35400; }"
+        );
+
+    QVBoxLayout *layout = new QVBoxLayout(&dialog);
+
+    QLabel *title = new QLabel("Infos sur le tour de l'Illustre Architecte");
+    title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet("font-size: 26px; font-weight: bold; color: #f1c40f; margin-bottom: 20px;");
+    layout->addWidget(title);
+
+    QString tuile = QString("Il a pioché la tuile n°%1").arg(idTuile);
+    QLabel *labeltuile = new QLabel(tuile);
+    labeltuile->setAlignment(Qt::AlignCenter);
+
+    QString nbPierres = QString("Il a %1 pierres").arg(partie.getFauxJoueur()->getNbrPierres());
+    QLabel *labelnbPierres = new QLabel(nbPierres);
+    labelnbPierres->setAlignment(Qt::AlignCenter);
+
+    QString score = QString("et %1 points").arg(partie.getFauxJoueur()->getNbrPoints());
+    QLabel *labelscore = new QLabel(score);
+    labelscore->setAlignment(Qt::AlignCenter);
+
+    layout->addWidget(labeltuile);
+    layout->addWidget(labelnbPierres);
+    layout->addWidget(labelscore);
+
+    layout->addStretch();
+
+    QPushButton *btnMenu = new QPushButton("OK");
+    layout->addWidget(btnMenu);
+
+    connect(btnMenu, &QPushButton::clicked, &dialog, &QDialog::reject);
+    int result = dialog.exec();
+
+    if (result == QDialog::Rejected) {
+        finDeTour();
+    }
+
+}
+

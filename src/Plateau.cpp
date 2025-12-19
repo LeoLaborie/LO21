@@ -423,8 +423,7 @@ int Plateau::calculerPoints() const
     return score;
 }
 
-int Plateau::calculerPointsia(int &diff) const
-{
+std::vector<int> Plateau::calculerPointsiaTab(int &diff) const{
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0;
     int nbHabitation = 0, nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbCarriere = 0;
     int total = 0;
@@ -483,8 +482,24 @@ int Plateau::calculerPointsia(int &diff) const
         nbTemple *= 2;
         nbJardin *= 2;
     }
-    total += nbHabitation * PlaceHabitation + nbMarche * PlaceMarche + nbCaserne * PlaceCaserne + nbTemple * PlaceTemple + nbJardin * PlaceJardin;
-    return total;
+
+    std::vector<int> tabscore;
+    tabscore.reserve(5);
+    tabscore.push_back(nbHabitation * PlaceHabitation);
+    tabscore.push_back(nbMarche * PlaceMarche);
+    tabscore.push_back(nbCaserne * PlaceCaserne);
+    tabscore.push_back(nbTemple * PlaceTemple);
+    tabscore.push_back(nbJardin * PlaceJardin);
+    return tabscore;
+}
+
+int Plateau::calculerPointsia(int &diff) const
+{
+        const std::vector<int> tabscore = calculerPointsiaTab(diff);
+    int score = 0;
+    for (const int s : tabscore)
+        score += s;
+    return score;
 }
 
 int Plateau::calculerPointsCaserne(const Hexagone *h) const

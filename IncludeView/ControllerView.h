@@ -68,6 +68,7 @@ private:
     void synchroniserPlateauxGraphiques();
     void mettreAJourScoreCourant();
     void afficherFinPartie();
+    void afficherInfoIA(const int& idTuile);
 
     bool piocheEnCours = false;
     int indicePiocheEnCours = -1;
