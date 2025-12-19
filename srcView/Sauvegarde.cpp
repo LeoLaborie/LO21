@@ -374,25 +374,14 @@ Partie Partie::FromSave(const std::string &nomFichier)
         enregistrerIdTuile(t);
     }
 
-    const std::streampos positionProchainId = f.tellg();
-    std::string etiquetteNextId;
-    if (f >> etiquetteNextId)
+    f >> std::ws;
+    if (f.peek() == 'N')
     {
-        if (etiquetteNextId == "NEXT_ID")
-        {
-            if (!(f >> prochainIdStocke))
-                throw std::runtime_error("Format invalide : NEXT_ID");
-        }
-        else
-        {
-            f.clear();
-            f.seekg(positionProchainId);
-        }
-    }
-    else
-    {
-        f.clear();
-        f.seekg(positionProchainId);
+        std::string etiquetteNextId;
+        if (!(f >> etiquetteNextId) || etiquetteNextId != "NEXT_ID")
+            throw std::runtime_error("Format invalide : NEXT_ID");
+        if (!(f >> prochainIdStocke))
+            throw std::runtime_error("Format invalide : NEXT_ID");
     }
 
     // gestion Piles

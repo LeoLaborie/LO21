@@ -182,7 +182,13 @@ class Hexagone
     {
         voisins.push_back(v);
     }
-
+     /**
+     * @brief Clear mes voisins d'un hexagone
+     */
+    void clearVoisins()
+    {
+    voisins.clear();
+    }
     /**
      * @brief Vérifie si l'hexagone est une place
      * @return bool : true si c'est une place, false sinon

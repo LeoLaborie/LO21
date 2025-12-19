@@ -4,6 +4,12 @@
 #include <unordered_map>
 #include <utility>
 
+/**
+ * Chaque hexagone porte un `parentId` qui pointe vers l'identifiant unique de la tuile à laquelle il appartient.
+ * Cela permet notamment à `verifierPlacementTuile` de savoir sur quelles tuiles repose une nouvelle tuile élevée
+ * (en vérifiant les identifiants des hexagones sous la nouvelle position) et d'éviter ainsi qu'une tuile
+ * élevée repose uniquement sur une tuile parente ou provoque une superposition.
+ */
 static void reinitialiserParentsTuiles(std::vector<Tuile>& tuiles)
 {
     for (Tuile& tuile : tuiles)
@@ -44,31 +50,39 @@ Plateau Plateau::fromSave(const bool variantes[5], std::vector<Tuile> tuiles)
 
 void Plateau::updateVoisins()
 {
-    // algo en O(n²), on pouurrait le rendre en O(n), mais vu qu'on a tres peu d'hexagone par plateau le n² n'est pas dérangeant
-    // Parcourir toutes les tuiles du plateau
-    pourChaqueHexagone([&](Hexagone *hexagone1)
-                       { pourChaqueHexagone([&](Hexagone *hexagone2)
-                                            {
+    pourChaqueHexagone([&](Hexagone* h){
+        h->clearVoisins();
+    });
+
+    pourChaqueHexagone([&](Hexagone* hexagone1)
+    {
+        if (hexagone1->getEstRecouvert()) return;
+
+        pourChaqueHexagone([&](Hexagone* hexagone2)
+        {
+            if (hexagone2->getEstRecouvert()) return;
+            if (hexagone1 == hexagone2) return;
+
             int dx = hexagone1->getX() - hexagone2->getX();
             int dy = hexagone1->getY() - hexagone2->getY();
-
-            if (hexagone1 != hexagone2 &&
-                ((abs(dx) == 1 && dy == 0) || // voisins horizontaux
-                 (dx == 0 && abs(dy) == 1) || // voisins verticaux
-                 (dx == 1 && dy == -1) ||     // diagonales valides
-                 (dx == -1 && dy == 1)))      // diagonales valides
-            {
-                // cherche si ils sont deja voisins ou non. Si ils ne le sont pas, -> addVoisin()
+            if ((std::abs(dx) == 1 && dy == 0) ||
+                (dx == 0 && std::abs(dy) == 1) ||
+                (dx == 1 && dy == -1) ||
+                (dx == -1 && dy == 1)){
                 if (std::find(hexagone1->getVoisins().begin(), hexagone1->getVoisins().end(), hexagone2) == hexagone1->getVoisins().end())
-                {
                     hexagone1->addVoisin(hexagone2);
-                }
                 if (std::find(hexagone2->getVoisins().begin(), hexagone2->getVoisins().end(), hexagone1) == hexagone2->getVoisins().end())
-                {
                     hexagone2->addVoisin(hexagone1);
-                }
-            } }); });
+                    
+                } 
+
+      
+        });
+    });
 }
+
+
+
 
 template <class T>
 bool ContientPas(const std::vector<T> &v, const T &valeur)
@@ -269,7 +283,7 @@ int Plateau::placerTuile(Tuile &t, Position &p)
     // Insérer la tuile dans le plateau
     listeTuiles.push_back(t);
     reinitialiserParentsTuiles(listeTuiles);
-    updateVoisins();
+   
 
     // Si on est en hauteur (z > 0), on recouvre ce qui est juste en dessous (z-1)
     if (p.z > 0)
@@ -297,7 +311,8 @@ int Plateau::placerTuile(Tuile &t, Position &p)
         for (const auto &o : t.getOffsets())
             Recouvrir(p.x + o.q, p.y + o.r);
     }
-
+    updateVoisins();
+    
     return res;
 }
 
@@ -489,6 +504,7 @@ int Plateau::calculerPointsTemple(const Hexagone *h) const
     int mult = 1;
     if (variantesScores[3] && h->getZ() >= 1)
         mult = 2;
+    std::cout << h->getVoisins().size()<<std::endl;
     return (h->getVoisins().size() == 6) ? (h->getZ() + 1) * mult : 0;
 }
 
