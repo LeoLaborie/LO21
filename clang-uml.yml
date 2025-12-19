@@ -1,7 +1,0 @@
-compilation_database_dir: build
-output_directory: uml
-
-diagrams:
-  classes:
-    type: class
-
