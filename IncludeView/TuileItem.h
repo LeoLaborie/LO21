@@ -59,6 +59,10 @@ class TuileItem : public QObject, public QGraphicsItemGroup
         {
             return indice;
         }
+        TuileId getTuileId() const
+        {
+            return tuileId;
+        }
         /**
          * @brief Changer le mode de la TuileItem.
          */
@@ -98,7 +102,7 @@ class TuileItem : public QObject, public QGraphicsItemGroup
 
     signals:
     void rightClicked();
-    void estPiocher(int indice);
+    void estPiocher(TuileId id);
     void demandeValidationPlacement(TuileItem* tuile);
     void deplacementDemarre(TuileItem* tuile);
     void rotationEffectuee(int pas);
@@ -114,6 +118,7 @@ private:
     int tailleHex = 50;
     bool rotationAutorisee = true;
     unsigned int indice;  // utiliser que quand la tuile item est dans la pioche sinon inutile
+    TuileId tuileId = 0;
     Mode mode;
     int niveauHauteur = 0;
     QPointF origineGrilleScene = QPointF(0.0, 0.0);

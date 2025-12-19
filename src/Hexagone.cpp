@@ -1,5 +1,10 @@
 #include "Hexagone.h"
 
+void Hexagone::setParent(TuileId id)
+{
+    parentId = id;
+}
+
 void Hexagone::afficher(bool court) const
 {
     if (court)

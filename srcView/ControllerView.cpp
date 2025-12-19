@@ -105,6 +105,7 @@ void ControllerView::lancerTour(){
     // Nouveau tour : on "oublie" toute pioche en cours (on ne doit plus pouvoir annuler une ancienne sélection).
     piocheEnCours = false;
     indicePiocheEnCours = -1;
+    idPiocheEnCours = 0;
     tuilePiocheeInitiale = Tuile();
     emit setMainJoueurPlateau(partie.getMainJoueur());
     emit joueurActifChange(QString::fromStdString(joueur.getNom()));
@@ -130,7 +131,8 @@ void ControllerView::lancerTour(){
                 return;
 
             IllustreArchitecte& ia = dynamic_cast<IllustreArchitecte&>(joueurCourant);
-            const int idTuile = ia.choixTuile(partie.getChantier());
+            const int indiceChoisi = ia.choixTuile(partie.getChantier());
+            const TuileId idTuile = partie.getChantier().getTuiles()[indiceChoisi].getId();
 
             Joueur* receveurPierres = nullptr;
             if (partie.fauxJoueurPresent())
@@ -286,15 +288,22 @@ void ControllerView::mettreAJourScoreCourant()
         emit setScore(total, 0, 0, 0, 0, 0);
 }
 
-void ControllerView::joueurPiocheTuile(int idTuile){
-
+void ControllerView::joueurPiocheTuile(TuileId idTuile)
+{
     Joueur &joueurcourant = partie.getJoueurMain();
 
     // Pendant le tour de l'IA, l'utilisateur ne doit pas pouvoir piocher.
-    // Le chantier ayant déjà retiré visuellement la tuile au clic, on demande une annulation pour la remettre.
     if (joueurcourant.isIA())
     {
         emit afficherMessage(QStringLiteral("C'est le tour de l'Illustre Architecte."));
+        emit validePasTuilePiochee(idTuile);
+        return;
+    }
+
+    const int indice = partie.getChantier().indexOf(idTuile);
+    if (indice < 0)
+    {
+        emit afficherErreur(QStringLiteral("Tuile introuvable."));
         emit validePasTuilePiochee(idTuile);
         return;
     }
@@ -311,11 +320,11 @@ void ControllerView::joueurPiocheTuile(int idTuile){
     }
     // Pioche validée : on mémorise l'état pour permettre une annulation (remettre la tuile et rembourser les pierres).
     piocheEnCours = true;
-    indicePiocheEnCours = idTuile;
+    indicePiocheEnCours = indice;
+    idPiocheEnCours = idTuile;
     tuilePiocheeInitiale = joueurcourant.getTuileEnMain();
     emit valideTuilePiochee(idTuile);
     emit setNbPierres(joueurcourant.getNbrPierres());
-
 
     //pas utile je pense mais je laisse la au cas où
     // if (partie.fauxJoueurPresent()){
@@ -323,7 +332,7 @@ void ControllerView::joueurPiocheTuile(int idTuile){
     // }
 }
 
-void ControllerView::annulerPiocheTuile(int idTuile)
+void ControllerView::annulerPiocheTuile(TuileId idTuile)
 {
     // Annulation via l'UI (bouton "annuler placement") : on remet la tuile dans le chantier et on rembourse les pierres.
     if (!piocheEnCours)
@@ -333,8 +342,10 @@ void ControllerView::annulerPiocheTuile(int idTuile)
     if (joueurCourant.getTuileEnMain().getNbHexa() == 0)
         return;
 
-    const int indice = (idTuile >= 0) ? idTuile : indicePiocheEnCours;
-    if (indice != indicePiocheEnCours)
+    if (idTuile != idPiocheEnCours)
+        return;
+    const int indice = indicePiocheEnCours;
+    if (indice < 0)
         return;
 
     partie.getChantier().insererTuile(indice, tuilePiocheeInitiale);
@@ -345,6 +356,7 @@ void ControllerView::annulerPiocheTuile(int idTuile)
 
     piocheEnCours = false;
     indicePiocheEnCours = -1;
+    idPiocheEnCours = 0;
     tuilePiocheeInitiale = Tuile();
 
     emit setChantier(partie.getChantier().getTuiles());
@@ -445,6 +457,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     // Le placement est validé : il n'y a plus de pioche "annulable".
     piocheEnCours = false;
     indicePiocheEnCours = -1;
+    idPiocheEnCours = 0;
     tuilePiocheeInitiale = Tuile();
     mettreAJourScoreCourant();
     zone->confirmerPlacementApprouve(tuileGraphique);

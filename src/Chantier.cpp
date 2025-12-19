@@ -9,10 +9,35 @@ void Chantier::insererTuile(int index, const Tuile& t)
     tuilesChantier.insert(tuilesChantier.begin() + index, t);
 }
 
-void Chantier::retirerTuile(int id)
+int Chantier::indexOf(TuileId id) const
 {
-    if (id >= 0 && static_cast<size_t>(id) < getTaille())
+    for (size_t i = 0; i < tuilesChantier.size(); ++i)
     {
-        tuilesChantier.erase(tuilesChantier.begin() + id);
+        if (tuilesChantier[i].getId() == id)
+            return static_cast<int>(i);
     }
+    return -1;
+}
+
+const Tuile* Chantier::trouverParId(TuileId id) const
+{
+    const int idx = indexOf(id);
+    if (idx < 0)
+        return nullptr;
+    return &tuilesChantier[static_cast<size_t>(idx)];
+}
+
+Tuile* Chantier::trouverParId(TuileId id)
+{
+    const int idx = indexOf(id);
+    if (idx < 0)
+        return nullptr;
+    return &tuilesChantier[static_cast<size_t>(idx)];
+}
+
+void Chantier::retirerTuile(TuileId id)
+{
+    const int idx = indexOf(id);
+    if (idx >= 0)
+        tuilesChantier.erase(tuilesChantier.begin() + idx);
 }

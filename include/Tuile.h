@@ -2,6 +2,7 @@
 #define TUILE_H
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -31,6 +32,8 @@ class Tuile
 private:
     std::vector<std::shared_ptr<Hexagone>> hex;
     std::vector<OffsetQR> offsets;
+    TuileId id = 0;
+    static inline TuileId nextId = 1;
 
 public:
     /**
@@ -185,7 +188,7 @@ public:
      * @param hex2 Pointeur vers le deuxième hexagone
      * @param hex3 Pointeur vers le troisième hexagone
      */
-    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3);
+    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3, TuileId id = 0);
 
     /**
      * @brief Constructeur de Tuile avec quatre hexagones
@@ -194,7 +197,7 @@ public:
      * @param hex3 Pointeur vers le troisième hexagone
      * @param hex4 Pointeur vers le quatrième hexagone
      */
-    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3, Hexagone *hex4);
+    Tuile(Hexagone *hex1, Hexagone *hex2, Hexagone *hex3, Hexagone *hex4, TuileId id = 0);
 
     // Getters
 
@@ -214,6 +217,10 @@ public:
     size_t getNbHexa() const { return hex.size(); }
 
     int getHauteur() const {return hex[0]->getZ();}
+    TuileId getId() const { return id; }
+
+    static TuileId getNextId();
+    static void setNextId(TuileId next);
 
     // Manipulations de la tuile
 

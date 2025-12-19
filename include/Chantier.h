@@ -70,7 +70,24 @@ public:
      * @brief Retire une tuile du chantier
      * @param id Identifiant de la tuile à retirer
      */
-    void retirerTuile(int id);
+    void retirerTuile(TuileId id);
+
+    /**
+     * @brief Retourne l'indice d'une tuile par son ID
+     * @param id ID de la tuile
+     * @return indice (>=0) ou -1 si non trouvé
+     */
+    int indexOf(TuileId id) const;
+
+    /**
+     * @brief Cherche une tuile par son ID (const)
+     */
+    const Tuile* trouverParId(TuileId id) const;
+
+    /**
+     * @brief Cherche une tuile par son ID (modifiable)
+     */
+    Tuile* trouverParId(TuileId id);
 
     /**
      * @brief Surcharge de l'opérateur d'affichage pour le Chantier

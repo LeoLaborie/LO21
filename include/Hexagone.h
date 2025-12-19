@@ -1,13 +1,14 @@
 #ifndef HEXAGONE_H
 #define HEXAGONE_H
 
+#include <cstdint>
+using TuileId = std::uint32_t;
+
 #include <iostream>
 #include <utility>
 #include <vector>
 
 #include "couleurs_console.h"
-
-class Tuile;
 
 /**
  * @enum TypeHex
@@ -34,25 +35,25 @@ enum class TypeHex
  */
 class Hexagone
 {
-private:
+ private:
     std::vector<Hexagone *> voisins;
     int x{}, y{}, z{};
-    Tuile *parent{};
+    TuileId parentId = 0;
     bool est_recouvert = false;
     TypeHex type_ = TypeHex::Habitation;
 
-public:
+ public:
     /**
      * @brief Constructeur de Hexagone
      * @param x_coord Coordonnée x
      * @param y_coord Coordonnée y
      * @param z_coord Coordonnée z
      * @param type Type de l'hexagone
-     * @param p Pointeur vers la tuile parente (default nullptr)
+     * @param parent Identifiant de la tuile parente (default 0)
      * @param v Vecteur de pointeurs vers les hexagones voisins (optionnel)
      */
-    Hexagone(int x_coord, int y_coord, int z_coord, TypeHex type, Tuile *p = nullptr, std::vector<Hexagone *> v = {})
-        : voisins(std::move(v)), x(x_coord), y(y_coord), z(z_coord), parent(p), type_(type) {}
+    Hexagone(int x_coord, int y_coord, int z_coord, TypeHex type, TuileId parent = 0, std::vector<Hexagone *> v = {})
+        : voisins(std::move(v)), x(x_coord), y(y_coord), z(z_coord), parentId(parent), type_(type) {}
 
     /**
      * @brief Destructeur de Hexagone
@@ -60,24 +61,6 @@ public:
     ~Hexagone() = default;
 
     // Getters
-
-    /**
-     * @brief Retourne le pointeur vers la tuile parente
-     * @return Tuile* : pointeur vers la tuile parente
-     */
-    Tuile *getParent()
-    {
-        return parent;
-    }
-
-    /**
-     * @brief Retourne le pointeur constant vers la tuile parente
-     * @return const Tuile* : pointeur constant vers la tuile parente
-     */
-    const Tuile *getParent() const
-    {
-        return parent;
-    }
 
     /**
      * @brief Retourne les voisins de l'hexagone
@@ -145,12 +128,17 @@ public:
     }
 
     /**
-     * @brief Définit le pointeur vers la tuile parente
-     * @param p Pointeur vers la tuile parente
+     * @brief Définit l'identifiant de la tuile parente
+     * @param id Identifiant de la tuile parente
      */
-    void setParent(Tuile *p)
+    void setParent(TuileId id);
+
+    /**
+     * @brief Retourne l'id de la tuile parente
+     */
+    TuileId getParentId() const
     {
-        parent = p;
+        return parentId;
     }
 
     /**

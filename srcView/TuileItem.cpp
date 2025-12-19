@@ -26,6 +26,7 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
     , tailleHex(tailleTuile)
     , rotationAutorisee(true)
     , indice(indice)
+    , tuileId(ref.getId())
     , mode(m)
 {
     int qRef = 0;
@@ -71,7 +72,7 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
 
     // Donne une bordure différente à chaque tuile pour les distinguer visuellement.
     static int nextVisualId = 0;
-    const int visualId = (indice >= 0) ? indice : nextVisualId++;
+    const int visualId = (tuileId > 0) ? static_cast<int>(tuileId) : ((indice >= 0) ? static_cast<int>(indice) : nextVisualId++);
     const bool estTuileDepart = (ref.getNbHexa() == 4);
     const QPen pen(estTuileDepart ? QColor(Qt::black) : couleurTuileDepuisId(visualId), 3.0);
     for (QGraphicsItem* item : childItems())
@@ -113,7 +114,7 @@ void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         if (mode == Mode::Pioche)
         {
-            emit estPiocher(indice);
+            emit estPiocher(tuileId);
         }
         else
         {

@@ -224,7 +224,8 @@ void lancerPartie(Partie &partie)
 
                 try
                 {
-                    tuilePiochee = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
+                    const TuileId idUnique = partie.getChantier().getTuiles()[idTuile].getId();
+                    tuilePiochee = ia.piocherTuile(idUnique, partie.getChantier(), nullptr);
                     std::cout << "\nTuile piochée :\n\n";
                     std::cout << tuilePiochee;
                 }
@@ -259,7 +260,8 @@ void lancerPartie(Partie &partie)
                     {
                         try
                         {
-                            tuilePiochee = joueurCourant.piocherTuile(idTuile, partie.getChantier(), partie.getFauxJoueur());
+                            const TuileId idUnique = partie.getChantier().getTuiles()[idTuile].getId();
+                            tuilePiochee = joueurCourant.piocherTuile(idUnique, partie.getChantier(), partie.getFauxJoueur());
                             std::cout << "\nTuile piochée :\n\n";
                             std::cout << tuilePiochee; // operator<< respecte les offsets
                             piocheReussie = true;

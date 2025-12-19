@@ -117,8 +117,8 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
         connect(zone, &ZoneJeuWidget::placementTuileAnnule, this, [this](TuileItem* tuile)
                 {
             if (!tuile) return;
-            emit piocheAnnulee(static_cast<int>(tuile->getIndiceDansPioche()));
-            });
+            emit piocheAnnulee(tuile->getTuileId());
+                });
         connect(zone, &ZoneJeuWidget::placementTuileFinalise, this, &PlateauWidget::finaliserTourApresPlacement);
         connect(zone, &ZoneJeuWidget::validationPlacementDemandee, this, &PlateauWidget::relayerValidationPlacementDemandee);
     }

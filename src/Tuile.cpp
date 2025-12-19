@@ -1,11 +1,13 @@
 #include "Tuile.h"
 
-Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4)
+Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4, TuileId forcedId)
+    : id(forcedId != 0 ? forcedId : nextId++)
 {
-    hex1->setParent(this);
-    hex2->setParent(this);
-    hex3->setParent(this);
-    hex4->setParent(this);
+    const TuileId uid = getId();
+    hex1->setParent(uid);
+    hex2->setParent(uid);
+    hex3->setParent(uid);
+    hex4->setParent(uid);
     // z = niveau (hauteur) : une tuile "en main" est toujours au niveau 0.
     // Les positions relatives de la tuile sont portées par `offsets` (q,r).
     hex1->setCoord(0, 0, 0);
@@ -30,13 +32,18 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, Hexagone* hex4)
     offsets.push_back({0, -1});  // bas-gauche
     offsets.push_back({-1, 1});  // bas-centre
     offsets.push_back({1, 0});   // bas-droit
+
+    if (forcedId != 0 && forcedId >= nextId)
+        nextId = forcedId + 1;
 }
 
-Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3)
+Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3, TuileId forcedId)
+    : id(forcedId != 0 ? forcedId : nextId++)
 {
-    hex1->setParent(this);
-    hex2->setParent(this);
-    hex3->setParent(this);
+    const TuileId uid = getId();
+    hex1->setParent(uid);
+    hex2->setParent(uid);
+    hex3->setParent(uid);
     hex1->setCoord(0, 0, 0);
     // z = niveau (hauteur) : une tuile "en main" est toujours au niveau 0.
     hex2->setCoord(1, -1, 0);
@@ -56,4 +63,19 @@ Tuile::Tuile(Hexagone* hex1, Hexagone* hex2, Hexagone* hex3)
     offsets.push_back({0, 0});
     offsets.push_back({+1, -1});
     offsets.push_back({0, -1});
+
+    if (forcedId != 0 && forcedId >= nextId)
+        nextId = forcedId + 1;
+}
+
+TuileId Tuile::getNextId()
+{
+    return nextId;
+}
+
+void Tuile::setNextId(TuileId next)
+{
+    if (next == 0)
+        next = 1;
+    nextId = next;
 }

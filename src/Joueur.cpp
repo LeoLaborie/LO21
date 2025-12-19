@@ -1,6 +1,7 @@
 #include "Joueur.h"
 
 #include <limits>
+#include <stdexcept>
 #include <utility>
 
 Joueur::Joueur(const bool variantesScore[5], std::string nom)
@@ -51,26 +52,36 @@ void IllustreArchitecte::setNbrPoints()
     nbrPoints = getPlateau().calculerPoints();
 }
 
-Tuile &Joueur::piocherTuile(int id, Chantier &chantier, Joueur *fauxJoueur)
+Tuile &Joueur::piocherTuile(TuileId id, Chantier &chantier, Joueur *fauxJoueur)
 {
-    if (id < 0 || static_cast<size_t>(id) >= chantier.getTaille())
+    const int indice = chantier.indexOf(id);
+    if (indice < 0)
         throw std::out_of_range("ID de tuile invalide.");
-    if (id > getNbrPierres())
+    if (indice > getNbrPierres())
         throw std::invalid_argument("Nombre de pierres insuffisant.");
-    setNbrPierres(getNbrPierres() - id);
+    setNbrPierres(getNbrPierres() - indice);
     if (fauxJoueur)
     {
-        fauxJoueur->setNbrPierres(fauxJoueur->getNbrPierres() + id);
+        fauxJoueur->setNbrPierres(fauxJoueur->getNbrPierres() + indice);
     }
-    setTuileEnMain(chantier.getTuiles()[id]);
+    const Tuile* tuile = chantier.trouverParId(id);
+    if (!tuile)
+        throw std::out_of_range("ID de tuile invalide.");
+    setTuileEnMain(*tuile);
     chantier.retirerTuile(id);
     return tuileEnMain;
 }
 
-Tuile &IllustreArchitecte::piocherTuile(int id, Chantier &chantier, Joueur * /*fauxjoueur*/)
+Tuile &IllustreArchitecte::piocherTuile(TuileId id, Chantier &chantier, Joueur * /*fauxjoueur*/)
 {
-    setNbrPierres(getNbrPierres() - id);
-    setTuileEnMain(chantier.getTuiles()[id]);
+    const int indice = chantier.indexOf(id);
+    if (indice < 0)
+        throw std::out_of_range("ID de tuile invalide.");
+    setNbrPierres(getNbrPierres() - indice);
+    const Tuile* tuile = chantier.trouverParId(id);
+    if (!tuile)
+        throw std::out_of_range("ID de tuile invalide.");
+    setTuileEnMain(*tuile);
     chantier.retirerTuile(id);
     return tuileEnMain;
 }

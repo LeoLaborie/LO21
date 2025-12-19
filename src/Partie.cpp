@@ -70,7 +70,7 @@ Hexagone* creerHexagone(TypeHex type, Tuile& tuile, bool* marcheDejaPresent)
     if (type == TypeHex::Marche)
         *marcheDejaPresent = true;
 
-    return new Hexagone(0, 0, 0, type, &tuile);
+    return new Hexagone(0, 0, 0, type, tuile.getId());
 }
 
 void Partie::addTuileInChantierFromPiles()

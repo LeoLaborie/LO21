@@ -27,8 +27,8 @@ public slots:
     bool chargerDepuisSauvegarde(const std::string& nomSauvegarde);
     void lancerTour();
     void finDeTour();
-    void joueurPiocheTuile(int idTuile);
-    void annulerPiocheTuile(int idTuile);
+    void joueurPiocheTuile(TuileId idTuile);
+    void annulerPiocheTuile(TuileId idTuile);
     void joueurPlaceTuiel(const Position& p);
     void rotationTuileGraphique(int joueur, int pas);
     void verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur, TuileItem* tuileGraphique, const QPoint& coordonnees);
@@ -48,9 +48,9 @@ signals:
                   int scoreTemple,
                   int scoreJardin);
     void joueurActifChange(const QString& nom);
-    void valideTuilePiochee(int idTuile);
-    void validePasTuilePiochee(int idTuile);
-    void fauxJoueurPiocheTuile(int idTuile);
+    void valideTuilePiochee(TuileId idTuile);
+    void validePasTuilePiochee(TuileId idTuile);
+    void fauxJoueurPiocheTuile(TuileId idTuile);
     void chargerPlateauGraphique(int joueur, const std::vector<Tuile>& tuiles);
     void afficherTuileMain(int joueur, const Tuile& tuile);
     void afficherMessage(const QString& message);
@@ -71,6 +71,7 @@ private:
 
     bool piocheEnCours = false;
     int indicePiocheEnCours = -1;
+    TuileId idPiocheEnCours = 0;
     Tuile tuilePiocheeInitiale;
     bool partieTerminee = false;
 };

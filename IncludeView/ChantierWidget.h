@@ -27,15 +27,15 @@ public:
     TuileItem* retirerTuilleDeChantier(int indice);
 
 signals:
-    void tuileSelectionnee(int indice);
+    void tuileSelectionnee(TuileId id);
     void tuileGraphiquePiochee(TuileItem* tuile);
 
 public slots:
     void definirChantier(const std::vector<Tuile>& tuiles);
     void mettreAJourPierres(int nbPierres);
     void remettreTuileDansChantier(TuileItem* tuile);
-    void annulerPiocheEnCours(int indice);
-    void fauxJoueurRetireTuile(int indice);
+    void annulerPiocheEnCours(TuileId id);
+    void fauxJoueurRetireTuile(TuileId id);
 
 private:
     QGraphicsScene* chantierScene = nullptr;
@@ -48,9 +48,10 @@ private:
     void viderChantier();
     void mettreAJourDisponibilite();
     int calculerTailleTuile() const;
+    int trouverIndiceDepuisId(TuileId id) const;
 
 private slots:
-    void piocherTuile(int indice);
+    void piocherTuile(TuileId id);
 };
 
 #endif  // CHANTIERWIDGET_H

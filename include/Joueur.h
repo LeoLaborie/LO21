@@ -141,14 +141,14 @@ public:
 
     /**
      * @brief Permet au joueur de piocher une tuile dans le chantier
-     * @param id Identifiant de la tuile à piocher
+     * @param id Identifiant unique de la tuile à piocher
      * @param chantier Chantier de la partie
      * @param fauxJoueur Pointeur vers le faux joueur (Illustre Architecte), nullptr si pas utilisé
      * @return Référence vers la tuile piochée
      * @throws std::out_of_range si l'ID est invalide
      * @throws std::invalid_argument si le nombre de pierres est insuffisant
      */
-    virtual Tuile &piocherTuile(int id, Chantier &chantier, Joueur *fauxJoueur = nullptr);
+    virtual Tuile &piocherTuile(TuileId id, Chantier &chantier, Joueur *fauxJoueur = nullptr);
 
     /**
      * @brief Permet au joueur de placer une tuile sur son plateau
@@ -218,11 +218,11 @@ public:
     using Joueur::piocherTuile;
     /**
      * @brief Permet au joueur IA de piocher une tuile dans le chantier
-     * @param id Identifiant de la tuile à piocher
+     * @param id Identifiant unique de la tuile à piocher
      * @param chantier Chantier de la partie
      * @return Référence vers la tuile piochée
      */
-    Tuile &piocherTuile(int id, Chantier &chantier, Joueur *fauxJoueur) override;
+    Tuile &piocherTuile(TuileId id, Chantier &chantier, Joueur *fauxJoueur) override;
 
     /**
      * @brief Reconstruit un Illustre Architecte depuis une sauvegarde.

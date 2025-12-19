@@ -1,7 +1,9 @@
 #include "Sauvegarde.h"
 
 #include <QCoreApplication>
+#include <algorithm>
 #include <chrono>
+#include <cctype>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -160,7 +162,7 @@ std::istream &operator>>=(std::istream &is, Hexagone &h)
 pour sauvegarder les hexagones de la tuile
 */
 std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
-    os << "TUILE " << t.getNbHexa() << '\n';
+    os << "TUILE " << t.getNbHexa() << ' ' << t.getId() << '\n';
 
     for(Tuile::ConstIterator it = t.getConstIterator(); !it.isDone(); it.next())
         os <<= it.currentItem();
@@ -183,9 +185,21 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile)
 
     int nbHex = 0;
     if (!(is >> nbHex))
-    {
+        {
         is.setstate(std::ios::failbit);
         return is;
+    }
+
+    TuileId idTuileSauvegardee = 0;
+    is >> std::ws;
+    int peek = is.peek();
+    if (peek != EOF && std::isdigit(static_cast<unsigned char>(peek)))
+    {
+        if (!(is >> idTuileSauvegardee))
+        {
+            is.setstate(std::ios::failbit);
+            return is;
+        }
     }
 
     if (nbHex == 0)
@@ -222,13 +236,10 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile)
 
     // on change le propriétaire des pointeurs  des hexagones pour la tuile
     if (nbHex == 3)
-        tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release());
+        tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release(), idTuileSauvegardee);
     else
-        tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release(), hexs[3].release());
+        tuile = Tuile(hexs[0].release(), hexs[1].release(), hexs[2].release(), hexs[3].release(), idTuileSauvegardee);
 
-    // IMPORTANT : la désérialisation doit préserver les coordonnées sauvegardées.
-    // Le constructeur de Tuile réinitialise les coords (0,0,0) pour une tuile "en main".
-    // On restaure donc ici les (x,y,z) lus depuis le fichier.
     for (Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
     {
         const auto& c = coords[it.currentIndex()];
@@ -258,6 +269,7 @@ bool sauvegarderPartie(const Partie &p)
     {
         f <<= t;
     }
+    f << "NEXT_ID " << Tuile::getNextId() << '\n';
     const auto &piles = p.getPile();
     f << "PILES " << piles.size() << '\n';
 
@@ -324,6 +336,13 @@ Partie Partie::FromSave(const std::string &nomFichier)
     int present = 0;
     int difficulteFaux = 0, pierresFaux = 0, pointsFaux = 0;
     std::vector<Tuile> plateauFaux;
+    TuileId maxIdSauvegarde = 0;
+    TuileId prochainIdStocke = 0;
+    auto enregistrerIdTuile = [&](const Tuile& t)
+    {
+        if (t.getId() > maxIdSauvegarde)
+            maxIdSauvegarde = t.getId();
+    };
 
     // gestion Partie
     expectLigne("PARTIE");
@@ -352,6 +371,28 @@ Partie Partie::FromSave(const std::string &nomFichier)
         if (!(f >>= t))
             throw std::runtime_error("Format invalide : tuile chantier");
         tuilesChantier.push_back(t);
+        enregistrerIdTuile(t);
+    }
+
+    const std::streampos positionProchainId = f.tellg();
+    std::string etiquetteNextId;
+    if (f >> etiquetteNextId)
+    {
+        if (etiquetteNextId == "NEXT_ID")
+        {
+            if (!(f >> prochainIdStocke))
+                throw std::runtime_error("Format invalide : NEXT_ID");
+        }
+        else
+        {
+            f.clear();
+            f.seekg(positionProchainId);
+        }
+    }
+    else
+    {
+        f.clear();
+        f.seekg(positionProchainId);
     }
 
     // gestion Piles
@@ -380,6 +421,7 @@ Partie Partie::FromSave(const std::string &nomFichier)
             if (!(f >>= t))
                 throw std::runtime_error("Format invalide : tuile pile");
             piles[id].push_back(t);
+            enregistrerIdTuile(t);
         }
     }
 
@@ -469,6 +511,7 @@ Partie Partie::FromSave(const std::string &nomFichier)
         expectLigne("TUILE_MAIN");
         if (!(f >>= tuileMain))
             throw std::runtime_error("Format invalide : tuile main joueur");
+        enregistrerIdTuile(tuileMain);
 
         expectLigne("PLATEAU");
         size_t nbTP = 0;
@@ -481,6 +524,7 @@ Partie Partie::FromSave(const std::string &nomFichier)
             if (!(f >>= t))
                 throw std::runtime_error("Format invalide : tuile du plateau joueur");
             plateau.push_back(t);
+            enregistrerIdTuile(t);
         }
 
         expectLigne("VARIANTES");
@@ -545,6 +589,7 @@ Partie Partie::FromSave(const std::string &nomFichier)
                         if (!(f >>= t))
                             throw std::runtime_error("Format invalide : tuile IA");
                         plateauFaux.push_back(t);
+                        enregistrerIdTuile(t);
                     }
 
                     auto* ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
@@ -563,8 +608,8 @@ Partie Partie::FromSave(const std::string &nomFichier)
     }
 
     Chantier chantierConstruits = Chantier::fromSave(std::move(tuilesChantier));
-
     Partie partie(nbJoueurs, nbTours, maitreArchitecte, mainJoueur, std::move(chantierConstruits), std::move(piles), std::move(joueursConstruits), fauxJoueurPresent);
-
+    const TuileId prochainId = static_cast<TuileId>(maxIdSauvegarde + 1);
+    Tuile::setNextId(prochainId);
     return partie;
 }

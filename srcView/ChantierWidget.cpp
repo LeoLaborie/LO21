@@ -90,8 +90,11 @@ TuileItem* ChantierWidget::retirerTuilleDeChantier(int indice)
     reordonnerTuiles();
     return tuile;
 }
-void ChantierWidget::piocherTuile(int indice)
+void ChantierWidget::piocherTuile(TuileId id)
 {
+    const int indice = trouverIndiceDepuisId(id);
+    if (indice < 0)
+        return;
     TuileItem * tuile = retirerTuilleDeChantier(indice);
     if (!tuile)
         return;
@@ -100,7 +103,7 @@ void ChantierWidget::piocherTuile(int indice)
     tuile->setMode(TuileItem::Mode::Placement);
     tuile->setInteractivite(true, true);
     emit tuileGraphiquePiochee(tuile);
-    emit tuileSelectionnee(indice);
+    emit tuileSelectionnee(id);
     setEnabled(false);
 }
 
@@ -129,18 +132,21 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
         tuileEnTransit = nullptr;
 }
 
-void ChantierWidget::annulerPiocheEnCours(int /*indice*/)
+void ChantierWidget::annulerPiocheEnCours(TuileId id)
 {
-    if (!tuileEnTransit)
+    if (!tuileEnTransit || tuileEnTransit->getTuileId() != id)
         return;
     remettreTuileDansChantier(tuileEnTransit);
     tuileEnTransit = nullptr;
 }
 
-void ChantierWidget::fauxJoueurRetireTuile(int indice)
+void ChantierWidget::fauxJoueurRetireTuile(TuileId id)
 {
     // Le faux joueur joue sans interaction : on retire juste visuellement la tuile choisie.
     // On ignore toute tuile en transit (elle ne devrait pas exister pendant le tour IA).
+    const int indice = trouverIndiceDepuisId(id);
+    if (indice < 0)
+        return;
     TuileItem* tuile = retirerTuilleDeChantier(indice);
     if (!tuile)
         return;
@@ -196,6 +202,17 @@ void ChantierWidget::mettreAJourDisponibilite()
         tuile->setEnabled(abordable);
         tuile->setOpacity(abordable ? 1.0 : 0.35);
     }
+}
+
+int ChantierWidget::trouverIndiceDepuisId(TuileId id) const
+{
+    for (int i = 0; i < static_cast<int>(listeTuilesChantier.size()); ++i)
+    {
+        TuileItem* tuile = listeTuilesChantier[static_cast<size_t>(i)];
+        if (tuile && tuile->getTuileId() == id)
+            return i;
+    }
+    return -1;
 }
 
 int ChantierWidget::calculerTailleTuile() const

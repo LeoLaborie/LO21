@@ -8,7 +8,7 @@ static void reinitialiserParentsTuiles(std::vector<Tuile>& tuiles)
 {
     for (Tuile& tuile : tuiles)
         for (Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
-            it.currentItem().setParent(&tuile);
+            it.currentItem().setParent(tuile.getId());
 }
 
 Plateau::Plateau(const bool vs[5])
@@ -90,7 +90,7 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t, std::str
         return false;
     };
 
-    std::vector<const Tuile *> tuiles_en_dessous;
+    std::vector<TuileId> tuiles_en_dessous;
     bool surElever = false;
     bool toucheParBord = false;
     int supports_par_hex = 0;  // pour vérifier qu’on pose bien sur 3 hexagones en hauteur
@@ -138,9 +138,9 @@ bool Plateau::verifierPlacementTuile(const Position &p, const Tuile &t, std::str
             {
                 supportTrouve = true;
                 ++supports_par_hex; // on compte le support pour cet hexagone
-                const Tuile *parent = hex_plateau->getParent();
-                if (ContientPas(tuiles_en_dessous, parent))
-                    tuiles_en_dessous.push_back(parent);
+                    const TuileId parentId = hex_plateau->getParentId();
+                    if (parentId != 0 && ContientPas(tuiles_en_dessous, parentId))
+                        tuiles_en_dessous.push_back(parentId);
             }
 
             // on vérifie si on touche par le bord une tuile du plateau (si on est au niveau 0)

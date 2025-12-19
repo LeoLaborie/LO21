@@ -102,7 +102,7 @@ void ZoneJeuWidget::wheelEvent(QWheelEvent* event)
 {
     if (!event)
         return;
-    // Molette = zoom (sans Ctrl) ; on garde des bornes pour éviter de "perdre" la scène.
+    // Molette = zoom 
     constexpr qreal zoomStep = 1.15;
     constexpr qreal zoomMin = 0.25;
     constexpr qreal zoomMax = 3.5;

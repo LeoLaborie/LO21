@@ -43,7 +43,7 @@ signals:
     void tourTermine();
     void tuileRotationnee(int joueur, int pas);
     void validationPlacementDemandee(ZoneJeuWidget* zone, int joueur, TuileItem* tuile, const QPoint& coordonneesTheoriques);
-    void piocheAnnulee(int indiceTuile);
+    void piocheAnnulee(TuileId idTuile);
 
 public slots:
     void afficherPlateauJoueur(const int& index);
