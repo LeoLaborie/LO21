@@ -27,6 +27,8 @@ void ControllerView::freeInstance(){
 
 void ControllerView::creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes)
 {
+    try
+    {
     bool utiliserToutesLesTuiles = variantes[0];
 
     bool variantesPoints[5] = {false};
@@ -46,23 +48,40 @@ void ControllerView::creerNouvellePartie(int nb, const QStringList& pseudos, con
 
     partie = Partie(nb, p, variantesPoints, utiliserToutesLesTuiles);
     initPlateau();
+    }
+    catch (const std::exception& e)
+    {
+        emit afficherErreur(QString::fromStdString(e.what()));
+    }
 }
 
 
-void ControllerView::chargerDepuisSauvegarde(const std::string& nomSauvegarde){
-    std::string nom = nomSauvegarde;
-    constexpr const char* extension = ".ratatata";
-    constexpr size_t extensionLen = 9; // strlen(".ratatata")
-    if (nom.size() < extensionLen || nom.substr(nom.size() - extensionLen) != extension)
-        nom += ".ratatata";
-    partie = Partie::FromSave("saves/" + nom);
-    initPlateau();
+bool ControllerView::chargerDepuisSauvegarde(const std::string& nomSauvegarde){
+    try
+    {
+        std::string nom = nomSauvegarde;
+        constexpr const char* extension = ".ratatata";
+        constexpr size_t extensionLen = 9; // strlen(".ratatata")
+        if (nom.size() < extensionLen || nom.substr(nom.size() - extensionLen) != extension)
+            nom += ".ratatata";
+        partie = Partie::FromSave("saves/" + nom);
+        initPlateau();
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        emit afficherErreur(QString::fromStdString(e.what()));
+        return false;
+    }
 }
 
 void ControllerView::sauvegarderPartieGraphique()
 {
     const bool ok = sauvegarderPartie(partie);
-    emit afficherMessage(ok ? QStringLiteral("Sauvegarde effectuée") : QStringLiteral("Erreur : sauvegarde échouée"));
+    if (ok)
+        emit afficherMessage(QStringLiteral("Sauvegarde effectuée"));
+    else
+        emit afficherErreur(QStringLiteral("Erreur : sauvegarde échouée"));
 }
 
 void ControllerView::initPlateau(){
@@ -150,13 +169,22 @@ void ControllerView::joueurPiocheTuile(int idTuile){
     }
 
     if (idTuile < joueurcourant.getNbrPierres()){
-        joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
+        try
+        {
+            joueurcourant.piocherTuile(idTuile ,partie.getChantier() ,partie.getFauxJoueur());
+        }
+        catch (const std::exception& e)
+        {
+            emit afficherErreur(QString::fromStdString(e.what()));
+            emit validePasTuilePiochee(idTuile);
+            return;
+        }
         //plateau->updatePierres(joueur);
         emit valideTuilePiochee(idTuile);
         emit setNbPierres(joueurcourant.getNbrPierres());
     }else{
         const QString message = QString("Vous n'avez pas assez de pierres pour piocher cette tuile");
-        emit afficherMessage(message);
+        emit afficherErreur(message);
         emit validePasTuilePiochee(idTuile);
     }
 
@@ -175,7 +203,7 @@ void ControllerView::joueurPlaceTuiel(const Position& p){
     {
         if (raison.empty())
             raison = "Vous ne pouvez pas placer cette tuile ici";
-        emit afficherMessage(QString::fromStdString(raison));
+        emit afficherErreur(QString::fromStdString(raison));
         return;
     }
 
@@ -186,7 +214,7 @@ void ControllerView::joueurPlaceTuiel(const Position& p){
     }
     catch (const std::exception& e)
     {
-        emit afficherMessage(QString::fromStdString(e.what()));
+        emit afficherErreur(QString::fromStdString(e.what()));
     }
 }
 
@@ -219,7 +247,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     Tuile tuileEnMain = joueurCourant.getTuileEnMain();
     if (tuileEnMain.getNbHexa() == 0)
     {
-        emit afficherMessage(QStringLiteral("Placement invalide : aucune tuile en main"));
+        emit afficherErreur(QStringLiteral("Placement invalide : aucune tuile en main"));
         return;
     }
     const auto positionsLegales = joueurCourant.getPlateau().getPositionsLegales(tuileEnMain);
@@ -240,7 +268,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
         joueurCourant.getPlateau().verifierPlacementTuile(Position{coordonnees.x(), coordonnees.y(), zCandidat}, tuileEnMain, &raison);
         if (raison.empty())
             raison = "Placement invalide";
-        emit afficherMessage(QString::fromStdString(raison));
+        emit afficherErreur(QString::fromStdString(raison));
         return;
     }
 
@@ -251,7 +279,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     }
     catch (const std::exception& e)
     {
-        emit afficherMessage(QString::fromStdString(e.what()));
+        emit afficherErreur(QString::fromStdString(e.what()));
         return;
     }
 

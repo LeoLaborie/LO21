@@ -24,7 +24,7 @@ public:
 
 public slots:
     void creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes);
-    void chargerDepuisSauvegarde(const std::string& nomSauvegarde);
+    bool chargerDepuisSauvegarde(const std::string& nomSauvegarde);
     void lancerTour();
     void finDeTour();
     void joueurPiocheTuile(int idTuile);
@@ -52,6 +52,7 @@ signals:
     void chargerPlateauGraphique(int joueur, const std::vector<Tuile>& tuiles);
     void afficherTuileMain(int joueur, const Tuile& tuile);
     void afficherMessage(const QString& message);
+    void afficherErreur(const QString& message);
 
 private:
     static ControllerView* instance;

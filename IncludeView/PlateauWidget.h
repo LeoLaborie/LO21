@@ -50,6 +50,7 @@ public slots:
     void afficherTuileEnMain(const int& index, const Tuile& tuile);
     void finaliserTourApresPlacement(TuileItem* tuile, const QPointF& positionScene);
     void afficherMessage(const QString& message);
+    void afficherErreur(const QString& message);
 
 private:
     QStackedWidget* stackPlateaux = nullptr;

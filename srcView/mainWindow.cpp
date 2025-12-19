@@ -109,9 +109,17 @@ MainWindow::MainWindow(QWidget* parent)
     connect(loadPage, &chargerPartiePage::envoieArgument, this, [this,controleur](std::string nomSauvegarde)
             {
         creerLePlateau(1);
-        controleur->chargerDepuisSauvegarde(nomSauvegarde);
+        const bool ok = controleur->chargerDepuisSauvegarde(nomSauvegarde);
+        if (ok)
+        {
             if (plateauWidget)
-                stackWidget->setCurrentWidget(plateauWidget); });
+                stackWidget->setCurrentWidget(plateauWidget);
+        }
+        else
+        {
+            if (stackWidget && menuPage)
+                stackWidget->setCurrentWidget(menuPage);
+        } });
 
     connect(newGamePage, &newPartiePage::retourMenu, this, [this]
             { stackWidget->setCurrentWidget(menuPage); });
@@ -154,6 +162,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
         connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
         connect(controleur, &ControllerView::afficherMessage, plateauWidget, &PlateauWidget::afficherMessage);
+        connect(controleur, &ControllerView::afficherErreur, plateauWidget, &PlateauWidget::afficherErreur);
 
         if (auto* chantier = plateauWidget->getChantierWidget())
         {

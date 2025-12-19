@@ -7,6 +7,7 @@
 #include <QPointF>
 #include <QRect>
 #include <QShortcut>
+#include <QMessageBox>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <algorithm>
@@ -228,6 +229,19 @@ void PlateauWidget::afficherMessage(const QString& message)
 
     popup->show();
     QTimer::singleShot(3000, popup, &QWidget::close);
+}
+
+void PlateauWidget::afficherErreur(const QString& message)
+{
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Warning);
+    box.setWindowTitle(tr("Oh zut..."));
+    box.setText(message);
+    box.setStandardButtons(QMessageBox::Ok);
+    box.setStyleSheet(
+        "QMessageBox QLabel { font-size: 18px; font-weight: 700; }"
+        "QMessageBox QPushButton { font-size: 12px; min-width: 70px; padding: 4px 10px; }");
+    box.exec();
 }
 
 TuileItem* PlateauWidget::creerTuileGraphique(const Tuile& modele, TuileItem::Mode mode, ZoneJeuWidget* zone) const
