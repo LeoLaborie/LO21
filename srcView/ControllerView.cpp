@@ -291,7 +291,7 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget* zone, int joueur,
     const auto it = std::find_if(positionsLegales.begin(), positionsLegales.end(), [&](const Position& p) { return p.x == x && p.y == y; });
     if (it == positionsLegales.end())
     {
-        // Si (x,y) n'est pas légal, on redemande au modèle une raison explicite avec un z "naturel" (zMax+1).
+        // Si (x,y) n'est pas légal, on redemande au à plateau une raison explicite avec un z candidat
         int zMax = -1;
         plateau.pourChaqueHexagone([&](const Hexagone* h)
                                    {
