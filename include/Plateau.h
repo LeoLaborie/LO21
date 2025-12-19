@@ -108,13 +108,13 @@ public:
      * @param diff
      * @return Nombre de points gagnés
      */
-    int calculerPointsia(int &diff) const;
+    int calculerPointsia(const int &diff) const;
 
     /**
      * @brief Calcule les points par catégorie pour l'IA (habitation, marché, caserne, temple, jardin).
      * @return Vecteur de 5 entiers (dans cet ordre).
      */
-    std::vector<int> Plateau::calculerPointsiaTab(int &diff) const;
+    std::vector<int> calculerPointsiaTab(const int &diff) const;
 
     /**
      * @brief Calcule le nombre de points apportés par les habitations

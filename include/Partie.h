@@ -265,12 +265,14 @@ public:
         return fauxJoueurP;
     }
     /**
-     * @brief Retourne le faux joueur (Illustre Architecte)
-     * @return IllustreArchitecte* : pointeur vers le faux joueur
+     * @brief Retourne le faux joueur (Illustre Architecte) si il existe
+     * @return IllustreArchitecte* : pointeur vers le faux joueur, ou nullptr
      */
     IllustreArchitecte *getFauxJoueur() const
     {
-        return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
+        if (fauxJoueurPresent())
+            return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
+        return nullptr;
     }
 
     /**

@@ -132,21 +132,21 @@ void ControllerView::lancerTour(){
             const int indiceChoisi = ia.choixTuile(partie.getChantier());
             const TuileId idTuile = partie.getChantier().getTuiles()[indiceChoisi].getId();
 
-            Joueur* receveurPierres = nullptr;
-            if (partie.fauxJoueurPresent())
-            {
-                // Dans le mode "1 joueur + Illustre Architecte", quand l'IA pioche, les pierres vont au joueur humain.
-                const auto& joueurs = partie.getJoueurs();
-                const int dernierIndex = partie.getNbrJoueurs() - 1;
-                if (joueurIndex == dernierIndex && !joueurs.empty())
-                    receveurPierres = joueurs.front();
-                else
-                    receveurPierres = partie.getFauxJoueur();
-            }
+            // Joueur* receveurPierres = nullptr;
+            // if (partie.fauxJoueurPresent())
+            // {
+            //     // Dans le mode "1 joueur + Illustre Architecte", quand l'IA pioche, les pierres vont au joueur humain.
+            //     const auto& joueurs = partie.getJoueurs();
+            //     const int dernierIndex = partie.getNbrJoueurs() - 1;
+            //     if (joueurIndex == dernierIndex && !joueurs.empty())
+            //         receveurPierres = joueurs.front();
+            //     else
+            //         receveurPierres = partie.getFauxJoueur();
+            // }
 
             try
             {
-                Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), receveurPierres);
+                Tuile& tuile = ia.piocherTuile(idTuile, partie.getChantier(), nullptr);
                 ia.placerTuile(tuile);
             }
             catch (const std::exception& e)
@@ -278,14 +278,23 @@ void ControllerView::mettreAJourScoreCourant()
     Joueur& joueur = partie.getJoueurMain();
     if (joueur.isIA()){
         IllustreArchitecte& ia = dynamic_cast<IllustreArchitecte&>(joueur);
+        ia.setNbrPoints();
+        const std::vector<int> tabscore = joueur.getPlateau().calculerPointsiaTab(ia.getdifficulte());
+        const int total = joueur.getNbrPoints();
+        if (tabscore.size() >= 6)
+            emit setScore(total, tabscore[0], tabscore[1], tabscore[2], tabscore[3], tabscore[4]);
+        else
+            emit setScore(total, 0, 0, 0, 0, 0);
+    }else{
+        joueur.setNbrPoints();
+        const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
+        const int total = joueur.getNbrPoints();
+        if (tabscore.size() >= 5)
+            emit setScore(total, tabscore[0], tabscore[1], tabscore[2], tabscore[3], tabscore[4]);
+        else
+            emit setScore(total, 0, 0, 0, 0, 0);
     }
-    joueur.setNbrPoints();
-    const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
-    const int total = joueur.getPlateau().calculerPoints();
-    if (tabscore.size() >= 5)
-        emit setScore(total, tabscore[0], tabscore[1], tabscore[2], tabscore[3], tabscore[4]);
-    else
-        emit setScore(total, 0, 0, 0, 0, 0);
+
 }
 
 void ControllerView::joueurPiocheTuile(TuileId idTuile)
