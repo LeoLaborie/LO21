@@ -84,9 +84,6 @@ MainWindow::MainWindow(QWidget* parent)
     stackWidget->addWidget(loadPage);
     stackWidget->addWidget(settingsPage);
 
-    //initialisation du controleur
-    ControllerView* controleur = ControllerView::giveInstance();
-
 
     const QString background = QCoreApplication::applicationDirPath() + "/img/akropolis.png";
     const QString stylesheet = QString(R"(
@@ -120,18 +117,21 @@ MainWindow::MainWindow(QWidget* parent)
                                  QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant."));
             });
     connect(quitter, &QPushButton::clicked, this, &QWidget::close);
-    connect(newGamePage, &newPartiePage::envoieArgument, this, [this,controleur](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
+    connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
             {
             creerLePlateau(nb);
-            controleur->creerNouvellePartie(nb, pseudos, variantes);
+            if (ControllerView* controleur = ControllerView::giveInstance())
+                controleur->creerNouvellePartie(nb, pseudos, variantes);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
 
 
-    connect(loadPage, &chargerPartiePage::envoieArgument, this, [this,controleur](std::string nomSauvegarde)
+    connect(loadPage, &chargerPartiePage::envoieArgument, this, [this](std::string nomSauvegarde)
             {
         creerLePlateau(lireNbJoueursSauvegarde(nomSauvegarde));
-        const bool ok = controleur->chargerDepuisSauvegarde(nomSauvegarde);
+        bool ok = false;
+        if (ControllerView* controleur = ControllerView::giveInstance())
+            ok = controleur->chargerDepuisSauvegarde(nomSauvegarde);
         if (ok)
         {
             if (plateauWidget)
