@@ -122,6 +122,9 @@ PlateauWidget::PlateauWidget(QWidget* parent, int nbJoueurs)
         connect(zone, &ZoneJeuWidget::placementTuileFinalise, this, &PlateauWidget::finaliserTourApresPlacement);
         connect(zone, &ZoneJeuWidget::validationPlacementDemandee, this, &PlateauWidget::relayerValidationPlacementDemandee);
     }
+
+    // Affiche l'aide au lancement de la partie.
+    QTimer::singleShot(0, this, &PlateauWidget::afficherAideCommandes);
 }
 
 void PlateauWidget::basculerMenuEchap()
@@ -257,6 +260,22 @@ void PlateauWidget::afficherMessage(const QString& message)
 
     popup->show();
     QTimer::singleShot(3000, popup, &QWidget::close);
+}
+
+void PlateauWidget::afficherAideCommandes()
+{
+    if (aideDejaAffichee)
+        return;
+    aideDejaAffichee = true;
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Information);
+    box.setWindowTitle(tr("Information"));
+    box.setText(tr("Astuce : maintenez la molette pour bouger la vue, faites defiler avec la molette pour zoomer/dezoomer, et appuyez sur Echap pour mettre en pause."));
+    box.setStandardButtons(QMessageBox::Ok);
+    box.setStyleSheet(
+        "QMessageBox QLabel { font-size: 18px; font-weight: 700; }"
+        "QMessageBox QPushButton { font-size: 12px; min-width: 70px; padding: 4px 10px; }");
+    box.exec();
 }
 
 void PlateauWidget::afficherErreur(const QString& message)

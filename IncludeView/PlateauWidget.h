@@ -51,6 +51,7 @@ public slots:
     void afficherTuileEnMain(const int& index, const Tuile& tuile);
     void finaliserTourApresPlacement(TuileItem* tuile, const QPointF& positionScene);
     void afficherMessage(const QString& message);
+    void afficherAideCommandes();
     void afficherErreur(const QString& message);
     void ModifierCouleurEtage(TuileItem* tuile, int z);
 
@@ -64,6 +65,7 @@ private:
     EchapWidget* echapWidget = nullptr;
     QShortcut* raccourciEchap = nullptr;
     mutable int tailleTuileZoneCache = -1;
+    bool aideDejaAffichee = false;
 
     void basculerMenuEchap();
     void gererBlocageInteractions(bool widgetActif);
