@@ -184,3 +184,7 @@ void ChantierWidget::mettreAJourDisponibilite()
         tuile->setOpacity(abordable ? 1.0 : 0.35);
     }
 }
+
+void ChantierWidget::fauxJoueurRetireTuile(int tuile){
+    retirerTuilleDeChantier(tuile);
+}

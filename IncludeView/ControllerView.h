@@ -41,9 +41,8 @@ signals:
     void validePasTuilePiochee(int idTuile);
     void chargerPlateauGraphique(int joueur, const std::vector<Tuile>& tuiles);
     void afficherTuileMain(int joueur, const Tuile& tuile);
-    void afficherMessage(const QString& message);
-    void tourfauxjoueur(int& idTuile);
     void partieFinie();
+    void fauxJoueurPiocheTuile(int idTuile);
 
 
 
@@ -56,7 +55,9 @@ private:
     void initPlateau();
     void synchroniserPlateauxGraphiques();
     void mettreAJourScoreCourant();
-    void finPartie();
+    void afficheScore();
+    void afficherInfoIA(int& idTuile);
+    void afficherMessage(const QString& message);
 };
 
 #endif // CONTROLLERVIEW_H

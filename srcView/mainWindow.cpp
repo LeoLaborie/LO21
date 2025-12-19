@@ -142,8 +142,8 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         connect(controleur, &ControllerView::setMainJoueurPlateau, plateauWidget, &PlateauWidget::afficherPlateauJoueur);
         connect(controleur, &ControllerView::chargerPlateauGraphique, plateauWidget, &PlateauWidget::chargerPlateauJoueur);
         connect(controleur, &ControllerView::afficherTuileMain, plateauWidget, &PlateauWidget::afficherTuileEnMain);
-        //informe le plateau que c'est l'Illustre Architecte qui joue
-        connect(controleur, &ControllerView::tourfauxjoueur, plateauWidget, &PlateauWidget::tourFauxJoueur);
+        //fin de la partie
+        connect(controleur, &ControllerView::partieFinie, this, &MainWindow::retourMenu);
 
         if (auto* chantier = plateauWidget->getChantierWidget())
         {
@@ -151,6 +151,7 @@ void MainWindow::creerLePlateau(int nbJoueurs)
             connect(controleur, &ControllerView::validePasTuilePiochee, chantier, &ChantierWidget::annulerPiocheEnCours);
             connect(controleur, &ControllerView::setChantier, chantier, &ChantierWidget::definirChantier);
             connect(controleur, &ControllerView::setNbPierres, chantier, &ChantierWidget::mettreAJourPierres);
+            connect(controleur, &ControllerView::fauxJoueurPiocheTuile, chantier, &ChantierWidget::fauxJoueurRetireTuile);
         }
 
         if (auto* score = plateauWidget->getScorePanel())
@@ -173,4 +174,14 @@ void MainWindow::creerLePlateau(int nbJoueurs)
             stackWidget->setCurrentWidget(menuPage); });
     connect(plateauWidget, &PlateauWidget::demandeQuitter, this, [this]
             { close(); });
+}
+
+void MainWindow::retourMenu(){
+    stackWidget->setCurrentWidget(menuPage);
+
+    stackWidget->removeWidget(plateauWidget);
+    plateauWidget->deleteLater();
+    plateauWidget = nullptr;
+
+    ControllerView::freeInstance();
 }

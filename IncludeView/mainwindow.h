@@ -11,6 +11,8 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    public slots:
+    void retourMenu();
     public:
         explicit MainWindow(QWidget* parent = nullptr);
 

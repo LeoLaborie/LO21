@@ -33,7 +33,6 @@ public slots:
     void chargerPlateauJoueur(const int& index, const std::vector<Tuile>& tuiles);
     void afficherTuileEnMain(const int& index, const Tuile& tuile);
     void validerPlacementTuile(TuileItem* tuile);
-    void tourFauxJoueur(int& idTuile);
 
 private:
     QStackedWidget* stackPlateaux = nullptr;
