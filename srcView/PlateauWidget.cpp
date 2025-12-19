@@ -205,7 +205,8 @@ void PlateauWidget::chargerPlateauJoueur(const int& index, const std::vector<Tui
         int z = 0;
         for (Tuile::ConstIterator it = tuile.getConstIterator(); !it.isDone(); it.next())
             z = std::max(z, it.currentItem().getZ());
-        item->setNiveauGraphique(z);
+        // Toutes les tuiles au même niveau graphique : l'ordre d'ajout dans la scène fait foi.
+        item->setNiveauGraphique(0);
         item->ModifierCouleurEtage(z);
     }
 }
@@ -275,7 +276,8 @@ void PlateauWidget::ModifierCouleurEtage(TuileItem* tuile, int z)
 {
     if (!tuile)
         return;
-    tuile->setNiveauGraphique(z);
+    // Toutes les tuiles au même niveau graphique : l'ordre d'ajout dans la scène fait foi.
+    tuile->setNiveauGraphique(0);
     tuile->ModifierCouleurEtage(z);
 }
 
