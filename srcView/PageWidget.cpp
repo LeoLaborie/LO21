@@ -273,11 +273,16 @@ QString recupererNomSansExtension(const std::string &nomAvecExtension)
 void chargerPartiePage::rafraichirSauvegardes()
 {
     NomSauvegarde->clear();
-    if (getSauvegardes().size() == 0)
+    const auto sauvegardes = getSauvegardes();
+    if (sauvegardes.empty())
     {
         this->erreur->setText("Pas de sauvegardes disponible");
     }
+    else
+    {
+        this->erreur->clear();
+    }
     // alimentation de la combo à partir des fichiers présents
-    for (auto &sauvegarde : getSauvegardes())
+    for (const auto &sauvegarde : sauvegardes)
         NomSauvegarde->addItem(recupererNomSansExtension(sauvegarde), QString::fromStdString(sauvegarde));
 }

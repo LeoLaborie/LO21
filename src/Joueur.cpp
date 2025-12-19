@@ -161,7 +161,7 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
                  h.getType() == TypeHex::PJardin) &&
                 (getNbrPierres() >= static_cast<int>(i)))
             {
-                return i;
+                return static_cast<int>(i);
             }
         }
         i++;

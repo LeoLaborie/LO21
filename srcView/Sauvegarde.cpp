@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cctype>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -50,8 +51,14 @@ std::vector<std::string> getSauvegardes()
 std::string getCurrentDate()
 {
     std::time_t t = std::time(nullptr);
+    std::tm timeinfo{};
+    if (localtime_s(&timeinfo, &t) != 0)
+    {
+        return "00-00-0000_00-00";
+    }
+
     char buf[32];
-    std::strftime(buf, sizeof(buf), "%d-%m-%Y_%H-%M", std::localtime(&t));
+    std::strftime(buf, sizeof(buf), "%d-%m-%Y_%H-%M", &timeinfo);
     return buf;
 }
 

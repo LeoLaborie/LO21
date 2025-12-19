@@ -580,12 +580,12 @@ int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) c
             tailleQuartier += 1;
             scoreQuartier += grapheHabitation[currentIndex].current->getZ() + 1;
 
-            for (int voisinIndex : grapheHabitation[currentIndex].voisins)
+        for (std::size_t voisinIndex : grapheHabitation[currentIndex].voisins)
+        {
+            std::size_t voisin = voisinIndex;
+            if (!grapheHabitation[voisin].dejaVisite)
             {
-                std::size_t voisin = voisinIndex;
-                if (!grapheHabitation[voisin].dejaVisite)
-                {
-                    grapheHabitation[voisin].dejaVisite = true;
+                grapheHabitation[voisin].dejaVisite = true;
                     aVisiter.push_back(voisin);
                 }
             }
