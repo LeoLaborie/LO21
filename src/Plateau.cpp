@@ -515,7 +515,7 @@ int Plateau::calculerPointsMarche(const Hexagone *h) const
     }
     if (!voisinMarche)
     {
-        nbpoint += h->getZ();
+        nbpoint += h->getZ()+1;
 
         if (variantesScores[1])
         {
