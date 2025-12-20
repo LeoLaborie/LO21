@@ -59,6 +59,16 @@ public:
      */
     virtual ~Joueur() = default;
 
+    /**
+     * @brief Constructeur de déplacement par défaut
+     */
+    Joueur(Joueur &&) noexcept = default;
+
+    /**
+     * @brief Opérateur d'affectation de déplacement par défaut
+     */
+    Joueur &operator=(Joueur &&) noexcept = default;
+
     // Getters
 
     /**
@@ -214,6 +224,16 @@ public:
      * @brief Définit le nombre de points du joueur IA
      */
     void setNbrPoints() override;
+
+    /**
+     * @brief Constructeur de déplacement par défaut
+     */
+    IllustreArchitecte(IllustreArchitecte &&) noexcept = default;
+
+    /**
+     * @brief Opérateur d'affectation de déplacement par défaut
+     */
+    IllustreArchitecte &operator=(IllustreArchitecte &&) noexcept = default;
 
     using Joueur::piocherTuile;
     /**
