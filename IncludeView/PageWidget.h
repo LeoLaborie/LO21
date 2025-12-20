@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QSpinBox>
 #include <QStringList>
+#include <QVector>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -15,35 +16,37 @@ class newPartiePage : public QWidget
 {
     Q_OBJECT
 
-    public:
-        explicit newPartiePage(QWidget* parent = nullptr);
+public:
+    explicit newPartiePage(QWidget* parent = nullptr);
 
-    private:
-        QSpinBox* NbJoueurs;
-        QVector<QLineEdit*> PseudoJoueurs;
-        QVector<QCheckBox*> variantesOptions;
-        // déclarer le destructeur peut etre
-    private slots:
-        void lancerLaPartie();
-    signals:
-    void envoieArgument(int nb, const QStringList& pseudos,const QVector<bool>& variantes);
+private:
+    QSpinBox* NbJoueurs = nullptr;
+    QVector<QLineEdit*> PseudoJoueurs;
+    QVector<QCheckBox*> variantesOptions;
+    QLabel* difficulteLabel = nullptr;
+    QComboBox* difficulteIA = nullptr;
+    // dǸclarer le destructeur peut etre
+private slots:
+    void lancerLaPartie();
+signals:
+    void envoieArgument(int nb, const QStringList& pseudos, const QVector<bool>& variantes, int difficulteIA);
     void retourMenu();
 };
 
 class chargerPartiePage : public QWidget
 {
     Q_OBJECT
-    public:
-        explicit chargerPartiePage(QWidget* parent = nullptr);
-        QLabel* erreur;
-    public slots:
-        void rafraichirSauvegardes();
+public:
+    explicit chargerPartiePage(QWidget* parent = nullptr);
+    QLabel* erreur;
+public slots:
+    void rafraichirSauvegardes();
 
-    private:
-        QComboBox* NomSauvegarde;
-    private slots:
-        void chargerLaPartie();
-    signals:
+private:
+    QComboBox* NomSauvegarde;
+private slots:
+    void chargerLaPartie();
+signals:
     void envoieArgument(std::string nom);
     void retourMenu();
 };

@@ -5,15 +5,19 @@
 
 namespace
 {
-const std::map<int, std::map<TypeHex, int>> &stockCartes()
-{
-    static const std::map<int, std::map<TypeHex, int>> cartes = {
-        {2, {{TypeHex::PHabitation, 5}, {TypeHex::PMarche, 4}, {TypeHex::PCaserne, 4}, {TypeHex::PTemple, 4}, {TypeHex::PJardin, 3}, {TypeHex::Habitation, 18}, {TypeHex::Marche, 12}, {TypeHex::Caserne, 10}, {TypeHex::Temple, 8}, {TypeHex::Jardin, 6}, {TypeHex::Carriere, 37}}},
-        {3, {{TypeHex::PHabitation, 6}, {TypeHex::PMarche, 5}, {TypeHex::PCaserne, 5}, {TypeHex::PTemple, 5}, {TypeHex::PJardin, 4}, {TypeHex::Habitation, 27}, {TypeHex::Marche, 16}, {TypeHex::Caserne, 13}, {TypeHex::Temple, 10}, {TypeHex::Jardin, 7}, {TypeHex::Carriere, 49}}},
-        {4, {{TypeHex::PHabitation, 7}, {TypeHex::PMarche, 6}, {TypeHex::PCaserne, 6}, {TypeHex::PTemple, 6}, {TypeHex::PJardin, 5}, {TypeHex::Habitation, 36}, {TypeHex::Marche, 20}, {TypeHex::Caserne, 16}, {TypeHex::Temple, 12}, {TypeHex::Jardin, 8}, {TypeHex::Carriere, 61}}}};
-    return cartes;
-}
-}  // namespace
+    const std::map<int, std::map<TypeHex, int>> &stockCartes()
+    {
+        static const std::map<int, std::map<TypeHex, int>> cartes = {
+            {2, {{TypeHex::PHabitation, 5}, {TypeHex::PMarche, 4}, {TypeHex::PCaserne, 4}, {TypeHex::PTemple, 4}, {TypeHex::PJardin, 3}, {TypeHex::Habitation, 18}, {TypeHex::Marche, 12}, {TypeHex::Caserne, 10}, {TypeHex::Temple, 8}, {TypeHex::Jardin, 6}, {TypeHex::Carriere, 37}}},
+            {3, {{TypeHex::PHabitation, 6}, {TypeHex::PMarche, 5}, {TypeHex::PCaserne, 5}, {TypeHex::PTemple, 5}, {TypeHex::PJardin, 4}, {TypeHex::Habitation, 27}, {TypeHex::Marche, 16}, {TypeHex::Caserne, 13}, {TypeHex::Temple, 10}, {TypeHex::Jardin, 7}, {TypeHex::Carriere, 49}}},
+            {4, {{TypeHex::PHabitation, 7}, {TypeHex::PMarche, 6}, {TypeHex::PCaserne, 6}, {TypeHex::PTemple, 6}, {TypeHex::PJardin, 5}, {TypeHex::Habitation, 36}, {TypeHex::Marche, 20}, {TypeHex::Caserne, 16}, {TypeHex::Temple, 12}, {TypeHex::Jardin, 8}, {TypeHex::Carriere, 61}}}};
+        return cartes;
+    }
+    bool estMarche(TypeHex t)
+    {
+        return t == TypeHex::Marche || t == TypeHex::PMarche;
+    }
+} // namespace
 
 const std::map<int, std::map<TypeHex, int>> &TuileGenerator::cartesBase()
 {
@@ -81,15 +85,43 @@ Tuile TuileGenerator::creerTuile()
 {
     std::vector<std::unique_ptr<Hexagone>> hexas;
     hexas.reserve(3);
+
     bool marcheDejaPresent = false;
 
-    for (int k = 0; k < 3; ++k)
+    // Force les marché au début pour éviter qu'il s'accumule
+    if (stock[TypeHex::Marche] > 0)
     {
-        hexas.push_back(creerHexagone(marcheDejaPresent));
+        stock[TypeHex::Marche]--;
+        marcheDejaPresent = true;
+        hexas.push_back(std::make_unique<Hexagone>(0, 0, 0, TypeHex::Marche));
     }
+
+    while (static_cast<int>(hexas.size()) < 3)
+    {
+        // Empêcher 3 fois le même type
+        bool interdireType = false;
+        TypeHex typeInterdit = TypeHex::Carriere;
+
+        if (hexas.size() == 2)
+        {
+            const TypeHex t0 = hexas[0]->getType();
+            const TypeHex t1 = hexas[1]->getType();
+            if (t0 == t1)
+            {
+                interdireType = true;
+                typeInterdit = t0;
+            }
+        }
+
+        TypeHex type = tirerCarte(marcheDejaPresent, interdireType, typeInterdit);
+        if (type == TypeHex::Marche)
+            marcheDejaPresent = true;
+
+        hexas.push_back(std::make_unique<Hexagone>(0, 0, 0, type));
+    }
+
     return Tuile(hexas[0].release(), hexas[1].release(), hexas[2].release());
 }
-
 std::unique_ptr<Hexagone> TuileGenerator::creerHexagone(bool &marcheDejaPresent)
 {
     TypeHex type = tirerCarte(marcheDejaPresent);
@@ -100,17 +132,29 @@ std::unique_ptr<Hexagone> TuileGenerator::creerHexagone(bool &marcheDejaPresent)
 
 TypeHex TuileGenerator::tirerCarte(bool marcheDejaPresent)
 {
+    return tirerCarte(marcheDejaPresent, false, TypeHex::Carriere);
+}
+
+TypeHex TuileGenerator::tirerCarte(bool marcheDejaPresent, bool interdireType, TypeHex typeInterdit)
+{
     std::vector<TypeHex> pool;
     pool.reserve(stock.size());
+
     for (const auto &[type, quantite] : stock)
     {
         if (quantite <= 0)
             continue;
         if (type == TypeHex::Marche && marcheDejaPresent)
             continue;
-        for (int index = 0; index < quantite; ++index)
+        if (interdireType && type == typeInterdit)
+            continue;
+
+        for (int i = 0; i < quantite; ++i)
             pool.push_back(type);
     }
+    // si on a pas de chance et qu'on a comme même 3 fois le même type on le créer comme même pour éviter les erreurs
+    if (pool.empty() && interdireType)
+        return tirerCarte(marcheDejaPresent, false, typeInterdit);
 
     if (pool.empty())
         throw std::runtime_error("ya plus de cartes frr");

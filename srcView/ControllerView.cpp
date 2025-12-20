@@ -30,7 +30,7 @@ void ControllerView::freeInstance()
     instance = nullptr;
 }
 
-void ControllerView::creerNouvellePartie(int nb, const QStringList &pseudos, const QVector<bool> &variantes)
+void ControllerView::creerNouvellePartie(int nb, const QStringList &pseudos, const QVector<bool> &variantes, int difficulteIA)
 {
     try
     {
@@ -54,7 +54,10 @@ void ControllerView::creerNouvellePartie(int nb, const QStringList &pseudos, con
             p.push_back(pseudo.toStdString());
         }
 
-        partie = Partie(nb, p, variantesPoints, utiliserToutesLesTuiles);
+        if (nb == 1)
+            partie = Partie(nb, p, variantesPoints, utiliserToutesLesTuiles, difficulteIA);
+        else
+            partie = Partie(nb, p, variantesPoints, utiliserToutesLesTuiles);
         initPlateau();
     }
     catch (const std::exception &e)
@@ -476,6 +479,7 @@ void ControllerView::afficherInfoIA(const int &idTuile)
 {
     QDialog dialog;
     dialog.setWindowTitle("Tour Illustre Architecte");
+    dialog.setMinimumSize(200, 150);
     dialog.resize(320, 260);
     dialog.setModal(true);
 

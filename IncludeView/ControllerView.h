@@ -23,7 +23,7 @@ public:
     static void freeInstance();
 
 public slots:
-    void creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes);
+    void creerNouvellePartie(int nb, const QStringList& pseudos, const QVector<bool>& variantes, int difficulteIA);
     bool chargerDepuisSauvegarde(const std::string& nomSauvegarde);
     void lancerTour();
     void finDeTour();

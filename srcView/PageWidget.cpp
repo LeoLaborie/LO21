@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSignalBlocker>
+#include <QSpinBox>
 #include <QVector>
 #include <iostream>
 #include <string>
@@ -27,7 +28,8 @@ void newPartiePage::lancerLaPartie()
     variantes.reserve(variantesOptions.size());
     for (auto *checkbox : variantesOptions)
         variantes.push_back(checkbox->isChecked());
-    emit envoieArgument(nb, pseudos, variantes);
+    const int difficulte = (nb == 1 && difficulteIA) ? difficulteIA->currentData().toInt() : 0;
+    emit envoieArgument(nb, pseudos, variantes, difficulte);
 }
 
 newPartiePage::newPartiePage(QWidget *parent)
@@ -84,6 +86,18 @@ newPartiePage::newPartiePage(QWidget *parent)
     NbJoueurs->setAlignment(Qt::AlignCenter);
     layoutJoueur->addWidget(NbJoueurs, 0, Qt::AlignCenter);
 
+    difficulteLabel = new QLabel("Difficulté du faux joueur (solo)");
+    difficulteLabel->setStyleSheet("font-size: 14px; font-weight: 600;");
+    difficulteIA = new QComboBox();
+    difficulteIA->setFixedHeight(34);
+    difficulteIA->setFixedWidth(160);
+    difficulteIA->addItem("Facile (1)", 1);
+    difficulteIA->addItem("Normal (2)", 2);
+    difficulteIA->addItem("Difficile (3)", 3);
+    difficulteIA->setCurrentIndex(1); // par défaut : difficulté 2
+    layoutJoueur->addWidget(difficulteLabel, 0, Qt::AlignCenter);
+    layoutJoueur->addWidget(difficulteIA, 0, Qt::AlignCenter);
+
     auto *pseudoLabel = new QLabel("Pseudos des joueurs");
     pseudoLabel->setStyleSheet("font-size: 14px; font-weight: 600;");
     layoutJoueur->addWidget(pseudoLabel);
@@ -113,6 +127,12 @@ newPartiePage::newPartiePage(QWidget *parent)
             GrillePseudo->addWidget(ChampPseudo, 0, Qt::AlignCenter);
             PseudoJoueurs.append(ChampPseudo);
         }
+
+        const bool modeSolo = (nbJoueur == 1);
+        if (difficulteLabel)
+            difficulteLabel->setVisible(modeSolo);
+        if (difficulteIA)
+            difficulteIA->setVisible(modeSolo);
     };
 
     QObject::connect(NbJoueurs, QOverload<int>::of(&QSpinBox::valueChanged), updateNbPseudo);

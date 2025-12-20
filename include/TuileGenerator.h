@@ -42,7 +42,7 @@ private:
     Tuile creerTuile();
     std::unique_ptr<Hexagone> creerHexagone(bool &marcheDejaPresent);
     TypeHex tirerCarte(bool marcheDejaPresent);
-
+    TypeHex tirerCarte(bool marcheDejaPresent, bool interdireType, TypeHex typeInterdit);
     static const std::map<int, std::map<TypeHex, int>> &cartesBase();
 
     std::map<TypeHex, int> stock;

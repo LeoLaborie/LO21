@@ -117,11 +117,11 @@ MainWindow::MainWindow(QWidget* parent)
                                  QStringLiteral("Paramètres : pas le temps de l'implémenter pour l'instant."));
             });
     connect(quitter, &QPushButton::clicked, this, &QWidget::close);
-    connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes)
+    connect(newGamePage, &newPartiePage::envoieArgument, this, [this](int nb, const QStringList& pseudos, const QVector<bool>& variantes, int difficulteIA)
             {
             creerLePlateau(nb);
             if (ControllerView* controleur = ControllerView::giveInstance())
-                controleur->creerNouvellePartie(nb, pseudos, variantes);
+                controleur->creerNouvellePartie(nb, pseudos, variantes, difficulteIA);
             if (plateauWidget)
                 stackWidget->setCurrentWidget(plateauWidget); });
 
