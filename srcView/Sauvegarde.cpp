@@ -545,53 +545,58 @@ Partie Partie::FromSave(const std::string &nomFichier)
         }
     }
     {
-        std::streampos pos = f.tellg();
-        std::string tag;
-        if (f >> tag)
+    // Sauvegarde le point de départ au cas où ce bloc ne correspondrait pas au faux joueur
+    std::streampos pos = f.tellg();
+    std::string tag;
+    if (f >> tag)
+    {
+        // On ne traite ce bloc que si le tag correspond bien au faux joueur.
+        if (tag == "FAUX_JOUEUR")
         {
-            if (tag == "FAUX_JOUEUR")
+            if (!(f >> present))
+                throw std::runtime_error("Format invalide : FAUX_JOUEUR");
+            if (present == 1)
             {
-                if (!(f >> present))
-                    throw std::runtime_error("Format invalide : FAUX_JOUEUR");
-                if (present == 1)
+                fauxJoueurPresent = true;
+                // Chaque champ attendu doit apparaître, sinon la sauvegarde est invalide.
+                expectLigne("DIFFICULTE");
+                if (!(f >> difficulteFaux))
+                    throw std::runtime_error("Format invalide : difficulté IA");
+
+                expectLigne("PIERRES");
+                if (!(f >> pierresFaux))
+                    throw std::runtime_error("Format invalide : pierres IA");
+
+                expectLigne("POINTS");
+                if (!(f >> pointsFaux))
+                    throw std::runtime_error("Format invalide : points IA");
+
+                // Lecture du plateau du faux joueur 
+                expectLigne("PLATEAU");
+                size_t nbIA = 0;
+                if (!(f >> nbIA))
+                    throw std::runtime_error("Format invalide : taille plateau IA");
+
+                plateauFaux.reserve(nbIA);
+                for (size_t k = 0; k < nbIA; ++k)
                 {
-                    fauxJoueurPresent = true;
-                    expectLigne("DIFFICULTE");
-                    if (!(f >> difficulteFaux))
-                        throw std::runtime_error("Format invalide : difficulté IA");
-
-                    expectLigne("PIERRES");
-                    if (!(f >> pierresFaux))
-                        throw std::runtime_error("Format invalide : pierres IA");
-
-                    expectLigne("POINTS");
-                    if (!(f >> pointsFaux))
-                        throw std::runtime_error("Format invalide : points IA");
-
-                    expectLigne("PLATEAU");
-                    size_t nbIA = 0;
-                    if (!(f >> nbIA))
-                        throw std::runtime_error("Format invalide : taille plateau IA");
-
-                    plateauFaux.reserve(nbIA);
-                    for (size_t k = 0; k < nbIA; ++k)
-                    {
-                        Tuile t;
-                        if (!(f >>= t))
-                            throw std::runtime_error("Format invalide : tuile IA");
-                        plateauFaux.push_back(t);
-                        enregistrerIdTuile(t);
-                    }
-
-                    auto *ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
-                    joueursConstruits.push_back(std::unique_ptr<Joueur>(ia));
+                    Tuile t;
+                    if (!(f >>= t))
+                        throw std::runtime_error("Format invalide : tuile IA");
+                    plateauFaux.push_back(t);
+                    enregistrerIdTuile(t);
                 }
-            }
-            else
-            {
-                f.seekg(pos);
+
+                auto *ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
+                joueursConstruits.push_back(std::unique_ptr<Joueur>(ia));
             }
         }
+        else
+        {
+            // Ce bloc ne concernait pas le faux joueur : on remet le flux là où il était pour pouvoir ajouter d'autre ia après
+            f.seekg(pos);
+        }
+    }
         else
         {
             f.clear();
