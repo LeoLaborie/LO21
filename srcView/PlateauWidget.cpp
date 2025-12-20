@@ -7,6 +7,7 @@
 #include <QPointF>
 #include <QRect>
 #include <QShortcut>
+#include <QPushButton>
 #include <QMessageBox>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -267,15 +268,27 @@ void PlateauWidget::afficherAideCommandes()
     if (aideDejaAffichee)
         return;
     aideDejaAffichee = true;
-    QMessageBox box(this);
-    box.setIcon(QMessageBox::Information);
-    box.setWindowTitle(tr("Information"));
-    box.setText(tr("Astuce : maintenez la molette pour bouger la vue, faites defiler avec la molette pour zoomer/dezoomer, et appuyez sur Echap pour mettre en pause."));
-    box.setStandardButtons(QMessageBox::Ok);
-    box.setStyleSheet(
-        "QMessageBox QLabel { font-size: 18px; font-weight: 700; }"
-        "QMessageBox QPushButton { font-size: 12px; min-width: 70px; padding: 4px 10px; }");
-    box.exec();
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Information"));
+    dialog.setModal(true);
+    dialog.setWindowFlags(dialog.windowFlags() | Qt::Tool | Qt::WindowStaysOnTopHint);
+
+    auto* layout = new QVBoxLayout(&dialog);
+    layout->setContentsMargins(18, 14, 18, 14);
+    layout->setSpacing(12);
+
+    auto* label = new QLabel(tr("Astuce : maintenez la molette pour bouger la vue, faites defiler avec la molette pour zoomer/dezoomer, et appuyez sur Echap pour mettre en pause."), &dialog);
+    label->setWordWrap(true);
+    label->setAlignment(Qt::AlignCenter);
+    label->setStyleSheet("font-size: 18px; font-weight: 700;");
+    layout->addWidget(label);
+
+    auto* okBtn = new QPushButton(tr("OK"), &dialog);
+    okBtn->setStyleSheet("font-size: 12px; min-width: 80px; padding: 6px 12px;");
+    connect(okBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
+    layout->addWidget(okBtn, 0, Qt::AlignCenter);
+
+    dialog.exec();
 }
 
 void PlateauWidget::afficherErreur(const QString& message)
