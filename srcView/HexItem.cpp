@@ -48,8 +48,6 @@ HexItem::HexItem(const Hexagone* modele, double taille)
     setPos(axialVersPixel(q, r, taille));
 
     setPen(QPen(Qt::black, 2.0));
-
-    // dégradé simple pour donner un léger relief si aucune texture n'est chargée
     QLinearGradient grad(QPointF(-taille, 0), QPointF(taille, 0));
     grad.setColorAt(0.0, Qt::white);
     grad.setColorAt(1.0, QColor(220, 220, 220));
