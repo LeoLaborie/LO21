@@ -113,7 +113,8 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
         return;
 
     // on récupere les informations qu'on a besion (comme l'utilisateur ne peux pas ajouter manuelement des tuiles dans le chantier pas besion de vérfier le nb max de Tuile est déjà atteint)
-    const int index = tuile->getIndiceDansPioche();
+    // l'indice peut être invalide (ex: tuile reconstruite depuis une sauvegarde), on le borne donc à la taille actuelle du chantier.
+    const size_t index = std::min<std::size_t>(tuile->getIndiceDansPioche(), listeTuilesChantier.size());
     // on remet le mode de la tuile sur Pioche et désactive tout ce qu'on a pas besion
     tuile->setMode(TuileItem::Mode::Pioche);
     tuile->setInteractivite(false, false);
@@ -124,7 +125,7 @@ void ChantierWidget::remettreTuileDansChantier(TuileItem* tuile)
 
     // plus qu'a la remettre et rappeler la fonction qui ordonne les TUiles dans le chaniter
     chantierScene->addItem(tuile);
-    listeTuilesChantier.insert(listeTuilesChantier.begin() + index, tuile);
+    listeTuilesChantier.insert(listeTuilesChantier.begin() + static_cast<long long>(index), tuile);
     reordonnerTuiles();
     mettreAJourDisponibilite();
     setEnabled(true);

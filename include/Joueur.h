@@ -40,7 +40,7 @@ protected:
      * @param variantesScore Tableau des variantes de score
      * @param nom Nom du joueur
      */
-    explicit Joueur(const bool variantesScore[5], std::string nom);  // le joueur est créé au début de la partie, par la partie (composition)
+    explicit Joueur(const bool variantesScore[5], std::string nom); // le joueur est créé au début de la partie, par la partie (composition)
 
     /**
      * @brief Constructeur de Joueur
@@ -132,7 +132,10 @@ public:
      * @param n Nombre de pierres
      */
     void setNbrPierres(int);
-
+    /**
+     * @brief Définit le nombre de points du joueur à la fin de la partie
+     */
+    virtual void setNbrPointsFinal();
     /**
      * @brief Définit le nombre de points du joueur
      */
@@ -182,10 +185,10 @@ public:
      */
     virtual int choixTuile(const Chantier &chantier);
 
-    /** 
+    /**
      * @brief Permet de savoir si je joueur actuel est un IlllustreArchitecte
      * @return un booléen
-    */
+     */
     virtual bool isIA() const { return false; }
 
     /**
@@ -210,7 +213,7 @@ class IllustreArchitecte : public Joueur
     friend class FactoryIllustreArchitecte;
 
 private:
-    int difficulte{};  // Si c'est le faux joueur, c'est etre 1 et 3
+    int difficulte{}; // Si c'est le faux joueur, c'est etre 1 et 3
     ~IllustreArchitecte() = default;
 
     /**
@@ -224,6 +227,13 @@ public:
      * @brief Définit le nombre de points du joueur IA
      */
     void setNbrPoints() override;
+    /**
+     * @brief Définit le nombre de points du joueur IA à la fin
+     */
+    void setNbrPointsFinal() override
+    {
+        setNbrPoints();
+    }
 
     /**
      * @brief Constructeur de déplacement par défaut
@@ -276,11 +286,11 @@ public:
         return difficulte;
     }
 
-    /** 
+    /**
      * @brief Permet de savoir si je joueur actuel est un IlllustreArchitecte
      * @return un booléen
-    */
-    bool isIA() const override { return true; } 
+     */
+    bool isIA() const override { return true; }
 };
 
 #endif

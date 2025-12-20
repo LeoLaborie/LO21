@@ -8,28 +8,32 @@ Partie CreerNouvellePartie()
 
     int nbrJoueurs = 0;
 
-    while (true) {
+    while (true)
+    {
         std::cout << "Nombre de joueurs (1-4) ? ";
-        
 
-        if (std::cin >> nbrJoueurs) {
-            
-            
-            if (nbrJoueurs >= 1 && nbrJoueurs <= 4) {
-            
-                break; 
-            } else {
-                
+        if (std::cin >> nbrJoueurs)
+        {
+
+            if (nbrJoueurs >= 1 && nbrJoueurs <= 4)
+            {
+
+                break;
+            }
+            else
+            {
+
                 texte_couleur(ROUGE);
                 texte_gras_on();
                 std::cout << "Erreur : Le nombre doit être compris entre 1 et 4." << std::endl;
                 texte_reset();
             }
-            
-        } else {
-            std::cin.clear(); 
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
-            
+        }
+        else
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
             texte_couleur(ROUGE);
             texte_gras_on();
             std::cout << "Erreur : Veuillez entrer un chiffre valide." << std::endl;
@@ -480,6 +484,7 @@ void lancerPartie(Partie &partie)
         std::cout << " " << joueur.getNom();
         texte_reset();
         texte_couleur(JAUNE);
+        joueur.setNbrPointsFinal();
         std::cout << " : " << joueur.getNbrPoints() << " points\n";
         partie.setProchainJoueur();
     }

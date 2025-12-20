@@ -205,7 +205,7 @@ void ControllerView::afficherFinPartie()
     for (auto it = partie.getIterator(); !it.isDone(); it.next())
     {
         Joueur &j = it.currentItem();
-        j.setNbrPoints();
+        j.setNbrPointsFinal();
         scores.append(qMakePair(j.getNbrPoints(), QString::fromStdString(j.getNom())));
     }
 
