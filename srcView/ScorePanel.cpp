@@ -36,8 +36,6 @@ ScorePanel::ScorePanel(int width, int height, QWidget *parent)
         "  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,"
         "      stop:0 #ffffff, stop:0.4 #f3f3f3, stop:1 #d5d5d5);"
         "}");
-
-    // création du lien vers les images donc le dossier /img/ ajouté lors de la compilation
     const QString basePath = QCoreApplication::applicationDirPath() + "/img/";
 
     auto *scoreLayout = new QVBoxLayout(this);
