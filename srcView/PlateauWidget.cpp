@@ -254,12 +254,14 @@ void PlateauWidget::afficherMessage(const QString& message)
     auto* layout = new QVBoxLayout(popup);
     layout->setContentsMargins(12, 10, 12, 12);
     layout->setSpacing(8);
+    layout->setSizeConstraint(QLayout::SetFixedSize);
 
     auto* label = new QLabel(message, popup);
     label->setWordWrap(true);
     layout->addWidget(label);
 
     popup->show();
+    popup->adjustSize();
     QTimer::singleShot(3000, popup, &QWidget::close);
 }
 

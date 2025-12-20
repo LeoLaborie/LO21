@@ -55,14 +55,8 @@ std::vector<std::string> getSauvegardes()
 std::string getCurrentDate()
 {
     std::time_t t = std::time(nullptr);
-    std::tm timeinfo{};
-    if (localtime_s(&timeinfo, &t) != 0)
-    {
-        return "00-00-0000_00-00";
-    }
-
     char buf[32];
-    std::strftime(buf, sizeof(buf), "%d-%m-%Y_%H-%M", &timeinfo);
+    std::strftime(buf, sizeof(buf), "%d-%m-%Y_%H-%M", std::localtime(&t));
     return buf;
 }
 
@@ -550,8 +544,6 @@ Partie Partie::FromSave(const std::string &nomFichier)
             joueursConstruits.push_back(std::unique_ptr<Joueur>(ia));
         }
     }
-
-    // compat format ancien : FAUX_JOUEUR est stocké après la liste des joueurs
     {
         std::streampos pos = f.tellg();
         std::string tag;

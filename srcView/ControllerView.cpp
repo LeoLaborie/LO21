@@ -473,8 +473,8 @@ void ControllerView::afficherInfoIA(const int &idTuile)
 {
     QDialog dialog;
     dialog.setWindowTitle("Tour Illustre Architecte");
-    dialog.setMinimumSize(200, 150);
-    dialog.resize(320, 260);
+    dialog.setMinimumSize(205, 180);
+    dialog.resize(550, 280);
     dialog.setModal(true);
 
     dialog.setStyleSheet(

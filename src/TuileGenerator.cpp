@@ -13,10 +13,6 @@ namespace
             {4, {{TypeHex::PHabitation, 7}, {TypeHex::PMarche, 6}, {TypeHex::PCaserne, 6}, {TypeHex::PTemple, 6}, {TypeHex::PJardin, 5}, {TypeHex::Habitation, 36}, {TypeHex::Marche, 20}, {TypeHex::Caserne, 16}, {TypeHex::Temple, 12}, {TypeHex::Jardin, 8}, {TypeHex::Carriere, 61}}}};
         return cartes;
     }
-    bool estMarche(TypeHex t)
-    {
-        return t == TypeHex::Marche || t == TypeHex::PMarche;
-    }
 } // namespace
 
 const std::map<int, std::map<TypeHex, int>> &TuileGenerator::cartesBase()

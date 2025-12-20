@@ -174,8 +174,7 @@ int IllustreArchitecte::choixTuile(const Chantier &chantier)
     return idTuile;
 }
 
-IllustreArchitecte *
-IllustreArchitecte::fromSave(int diff, int pierres, int points,
+IllustreArchitecte * IllustreArchitecte::fromSave(int diff, int pierres, int points,
                              const bool variantes[5],
                              std::vector<Tuile> plateauSave)
 {
