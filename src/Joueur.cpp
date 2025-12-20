@@ -64,7 +64,7 @@ Tuile &Joueur::piocherTuile(TuileId id, Chantier &chantier, Joueur *fauxJoueur)
     {
         fauxJoueur->setNbrPierres(fauxJoueur->getNbrPierres() + indice);
     }
-    const Tuile* tuile = chantier.trouverParId(id);
+    const Tuile *tuile = chantier.trouverParId(id);
     if (!tuile)
         throw std::out_of_range("ID de tuile invalide.");
     setTuileEnMain(*tuile);
@@ -72,13 +72,14 @@ Tuile &Joueur::piocherTuile(TuileId id, Chantier &chantier, Joueur *fauxJoueur)
     return tuileEnMain;
 }
 
-Tuile &IllustreArchitecte::piocherTuile(TuileId id, Chantier &chantier, Joueur * /*fauxjoueur*/)
+Tuile &IllustreArchitecte::piocherTuile(TuileId id, Chantier &chantier, Joueur *fauxjoueur)
 {
+    (void)fauxjoueur; // pour enlever warning et garder polymorphisme
     const int indice = chantier.indexOf(id);
     if (indice < 0)
         throw std::out_of_range("ID de tuile invalide.");
     setNbrPierres(getNbrPierres() - indice);
-    const Tuile* tuile = chantier.trouverParId(id);
+    const Tuile *tuile = chantier.trouverParId(id);
     if (!tuile)
         throw std::out_of_range("ID de tuile invalide.");
     setTuileEnMain(*tuile);
