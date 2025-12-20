@@ -7,7 +7,6 @@
 #include "ControleConsole.h"
 #include "mainwindow.h"
 
-// petite fonction utilitaire pour afficher un fichier texte dans la console (README notamment)
 void ouvrirFichier(const std::string &readme)
 {
     std::ifstream f(readme);
