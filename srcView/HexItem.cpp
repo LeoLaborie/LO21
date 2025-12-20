@@ -110,7 +110,7 @@ void HexItem::setTaille(double nouvelleTaille)
     prepareGeometryChange();
     setPolygon(creerHexagone(nouvelleTaille));
 
-    // Met à jour le "fond" (dégradé) pour rester cohérent avec la nouvelle taille.
+   
     QLinearGradient grad(QPointF(-nouvelleTaille, 0), QPointF(nouvelleTaille, 0));
     grad.setColorAt(0.0, Qt::white);
     grad.setColorAt(1.0, QColor(220, 220, 220));
