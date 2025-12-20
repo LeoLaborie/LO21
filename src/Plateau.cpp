@@ -420,7 +420,8 @@ int Plateau::calculerPoints() const
     return score;
 }
 
-std::vector<int> Plateau::calculerPointsiaTab(const int &diff) const{
+std::vector<int> Plateau::calculerPointsiaTab(const int &diff) const
+{
     int PlaceHabitation = 0, PlaceMarche = 0, PlaceCaserne = 0, PlaceTemple = 0, PlaceJardin = 0;
     int nbHabitation = 0, nbMarche = 0, nbCaserne = 0, nbTemple = 0, nbJardin = 0, nbCarriere = 0;
 
@@ -466,7 +467,7 @@ std::vector<int> Plateau::calculerPointsiaTab(const int &diff) const{
                            default:
                                break;
                            } });
- 
+
     if (diff == 3)
     {
         nbHabitation *= 2;
@@ -475,14 +476,6 @@ std::vector<int> Plateau::calculerPointsiaTab(const int &diff) const{
         nbTemple *= 2;
         nbJardin *= 2;
     }
-
-    std::cout<< "nbhabitation : " << nbHabitation << " placehabitations : " << PlaceHabitation << "\n";
-    std::cout<< "nbmarche : " << nbMarche << " placehamarches : " << PlaceMarche << "\n";
-    std::cout<< "nbcaserne : " << nbCaserne << " placeCasernes : " << PlaceCaserne << "\n";
-    std::cout<< "nbtemple : " << nbTemple << " placetemples : " << PlaceTemple << "\n";
-    std::cout<< "nbjardin : " << nbJardin << " placejardins : " << PlaceJardin << "\n";
-    std::cout<< "nbcarrière : " << nbCarriere << "\n";
-
     std::vector<int> tabscore;
     tabscore.reserve(6);
     tabscore.push_back(nbHabitation * PlaceHabitation);
@@ -498,10 +491,11 @@ int Plateau::calculerPointsia(const int &diff) const
 {
     const std::vector<int> tabscore = calculerPointsiaTab(diff);
     int score = 0;
-    for (size_t i = 0; i<5;i++)
+    for (size_t i = 0; i < 5; i++)
         score += tabscore[i];
-    if (diff == 2){
-        score += tabscore[5]*2;
+    if (diff == 2)
+    {
+        score += tabscore[5] * 2;
     }
     return score;
 }
@@ -587,12 +581,12 @@ int Plateau::calculerPointsHabitation(std::vector<SommetHab> grapheHabitation) c
             tailleQuartier += 1;
             scoreQuartier += grapheHabitation[currentIndex].current->getZ() + 1;
 
-        for (std::size_t voisinIndex : grapheHabitation[currentIndex].voisins)
-        {
-            std::size_t voisin = voisinIndex;
-            if (!grapheHabitation[voisin].dejaVisite)
+            for (std::size_t voisinIndex : grapheHabitation[currentIndex].voisins)
             {
-                grapheHabitation[voisin].dejaVisite = true;
+                std::size_t voisin = voisinIndex;
+                if (!grapheHabitation[voisin].dejaVisite)
+                {
+                    grapheHabitation[voisin].dejaVisite = true;
                     aVisiter.push_back(voisin);
                 }
             }
