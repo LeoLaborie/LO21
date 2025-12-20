@@ -1,20 +1,15 @@
 #ifndef PARTIE_H
 #define PARTIE_H
 
-#include <math.h>
-#include <map>
-#include <memory>
-#include <random>
-#include <stdexcept>
 #include <string>
 #include <vector>
-#include "JoueurFactory.h"
+
 #include "Chantier.h"
 #include "Joueur.h"
+#include "JoueurFactory.h"
 #include "Tuile.h"
-#include "TuileGeneratorFactory.h"
-#include "Hexagone.h"
-#include "Sauvegarde.h"
+
+class TuileGeneratorFactory;
 
 /**
  * @class Partie

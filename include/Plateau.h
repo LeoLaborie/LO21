@@ -1,15 +1,13 @@
 #ifndef PLATEAU_H
 #define PLATEAU_H
 
-#include <algorithm>
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #include <vector>
 
 #include "Hexagone.h"
 #include "Position.h"
 #include "Tuile.h"
-#include "couleurs_console.h"
 
 // Déclarations anticipées pour l'amitié
 class Partie;

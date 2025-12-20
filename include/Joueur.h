@@ -1,9 +1,9 @@
 #ifndef JOUEUR_H
 #define JOUEUR_H
 
-#include <iostream>
+#include <iosfwd>
 #include <memory>
-#include <utility>
+#include <string>
 #include <vector>
 
 #include "Chantier.h"

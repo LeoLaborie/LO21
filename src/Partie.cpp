@@ -1,6 +1,12 @@
 #include "Partie.h"
 #include "TuileGeneratorFactory.h"
 
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include <utility>
+
 // Constructeur privé utilisé par fromSave (factory de chargement)
 Partie::Partie(int nbJoueursInit,
                int nbToursInit,
@@ -8,8 +14,8 @@ Partie::Partie(int nbJoueursInit,
                int mainJoueurInit,
                Chantier chantierInit,
                std::vector<std::vector<Tuile>> pilesInit,
-               std::vector<Joueur*> joueursInit,
-               bool fauxJoueurPInit )
+               std::vector<Joueur *> joueursInit,
+               bool fauxJoueurPInit)
     : nbrJoueurs(nbJoueursInit),
       maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)),
       mainJoueur(mainJoueurInit % (nbJoueursInit ? nbJoueursInit : 1)),
@@ -44,8 +50,10 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
 
     if (nbrJoueurs == 1)
     {
-        if (difficulte>3) difficulte=3;
-        if (difficulte<1) difficulte=1;
+        if (difficulte > 3)
+            difficulte = 3;
+        if (difficulte < 1)
+            difficulte = 1;
         nbrJoueurs++;
         JoueurConfig cfg;
         cfg.nom = "Illustre Architecte";
@@ -65,12 +73,11 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
     genererTuilesParties(varianteFullTuile);
 }
 
-
 void Partie::addTuileInChantierFromPiles()
 {
     std::vector<Tuile> pileActuel = piles.back();
     piles.pop_back();
-    for (int i = 0; i < nbrJoueurs + 1; i++)  // nbrJoeurs + 1 = nombre de tuiles dans une pile
+    for (int i = 0; i < nbrJoueurs + 1; i++) // nbrJoeurs + 1 = nombre de tuiles dans une pile
     {
         chantier.ajouterTuile(pileActuel.back());
         pileActuel.pop_back();
@@ -80,7 +87,7 @@ void Partie::addTuileInChantierFromPiles()
 void Partie::genererTuilesParties(bool fullTuiles, const TuileGeneratorFactory *factory)
 {
     static DefaultTuileGeneratorFactory defaultFactory;
-    const TuileGeneratorFactory &usedFactory = factory ? *factory : defaultFactory; //on vérfie que la factory n'est pas nul sinon on met celle par default qui est la seule à exister
+    const TuileGeneratorFactory &usedFactory = factory ? *factory : defaultFactory; // on vérfie que la factory n'est pas nul sinon on met celle par default qui est la seule à exister
     auto generator = usedFactory.creer(nbrJoueurs, fullTuiles);
     piles = generator->genererPiles();
     chantier.ajouterTuile(generator->genererTuileBonus());
