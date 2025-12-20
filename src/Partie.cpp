@@ -34,8 +34,6 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
         throw std::invalid_argument("nbrJoueurs doit être > 0 et ≤ 4");
 
     nbrJoueurs = nbJouer;
-
-    // creation des joueurs (alloués dynamiquement pour éviter dangling pointers)
     joueurs.clear();
 
     for (int i = 0; i < nbrJoueurs; ++i)
