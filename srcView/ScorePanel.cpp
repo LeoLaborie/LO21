@@ -10,10 +10,10 @@
 #include <QSizePolicy>
 #include <algorithm>
 
-ScorePanel::ScorePanel(int width, int height, QWidget* parent)
+ScorePanel::ScorePanel(int width, int height, QWidget *parent)
     : QWidget(parent)
 {
-    //défintion des styles
+    // défintion des styles
     setAttribute(Qt::WA_StyledBackground, true);
     setFixedWidth(width);
     setMinimumHeight(height);
@@ -37,18 +37,18 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
         "      stop:0 #ffffff, stop:0.4 #f3f3f3, stop:1 #d5d5d5);"
         "}");
 
-    //création du lien vers les images donc le dossier /img/ ajouté lors de la compilation
+    // création du lien vers les images donc le dossier /img/ ajouté lors de la compilation
     const QString basePath = QCoreApplication::applicationDirPath() + "/img/";
 
-    auto* scoreLayout = new QVBoxLayout(this);
+    auto *scoreLayout = new QVBoxLayout(this);
     scoreLayout->setContentsMargins(13, 8, 8, 8);
     scoreLayout->setSpacing(4);
 
     // Ligne joueur courant
-    auto* joueurLayout = new QHBoxLayout();
+    auto *joueurLayout = new QHBoxLayout();
     joueurLayout->setSpacing(4);
-    auto* joueurLabel = new QLabel(tr("Joueur courant :"), this);
-    
+    auto *joueurLabel = new QLabel(tr("Joueur courant :"), this);
+
     joueurLabel->setStyleSheet("font-weight: 600; color: #111; text-decoration: underline;");
     joueurLayout->addWidget(joueurLabel);
     labelJoueurActif = new QLabel(tr("Joueur 1"), this);
@@ -56,19 +56,19 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     scoreLayout->addLayout(joueurLayout);
 
     // Ligne pierres
-    auto* pierreLayout = new QHBoxLayout();
+    auto *pierreLayout = new QHBoxLayout();
     pierreLayout->setSpacing(4);
-    auto* pierreLibelle = new QLabel("Nombre de pierre :", this);
+    auto *pierreLibelle = new QLabel("Nombre de pierre :", this);
     pierreLibelle->setStyleSheet("color: #444;");
     pierreLayout->addWidget(pierreLibelle, 1);
 
-    //gestion label du nombre de score
+    // gestion label du nombre de score
     labelNombrePierre = new QLabel("0", this);
     labelNombrePierre->setStyleSheet("font-size: 16px; font-weight: bold;");
     pierreLayout->addWidget(labelNombrePierre);
-        
-    //ajout de l'image
-    auto* pierreImage = new QLabel(this);
+
+    // ajout de l'image
+    auto *pierreImage = new QLabel(this);
     pierreImage->setFixedSize(28, 28);
     QPixmap pierrePix(basePath + "Pierre.png");
     if (!pierrePix.isNull())
@@ -78,37 +78,37 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     pierreLayout->addWidget(pierreImage);
     scoreLayout->addLayout(pierreLayout);
 
-    //creaton du bloc scores
-    auto* blocScoresWidget = new QWidget(this);
+    // creaton du bloc scores
+    auto *blocScoresWidget = new QWidget(this);
     blocScoresWidget->setObjectName("scoreBloc");
-    auto* blocScoresLayout = new QVBoxLayout(blocScoresWidget);
+    auto *blocScoresLayout = new QVBoxLayout(blocScoresWidget);
     blocScoresLayout->setContentsMargins(6, 6, 6, 6);
     blocScoresLayout->setSpacing(4);
     scoreLayout->addWidget(blocScoresWidget, 1);
 
-    const QStringList labels = {"Score total :","Score habitation :","Score marché :",
-                                  "Score caserne :","Score temple :","Score jardin :"};
-    const QStringList images = {"","Habitation.png","Marche.png","Carserne.png","Temple.png","Jardin.png"};
-    
-    //ajout de chaque label du score et des images
+    const QStringList labels = {"Score total :", "Score habitation :", "Score marché :",
+                                "Score caserne :", "Score temple :", "Score jardin :"};
+    const QStringList images = {"", "Habitation.png", "Marche.png", "Carserne.png", "Temple.png", "Jardin.png"};
+
+    // ajout de chaque label du score et des images
     for (int i = 0; i < labels.size(); ++i)
     {
-        auto* ligne = new QHBoxLayout();
+        auto *ligne = new QHBoxLayout();
         ligne->setSpacing(4);
-        //définition de chaque label 
-        auto* libelle = new QLabel(labels[i], blocScoresWidget);
+        // définition de chaque label
+        auto *libelle = new QLabel(labels[i], blocScoresWidget);
         libelle->setStyleSheet("color: #444;");
         ligne->addWidget(libelle, 1);
 
-        auto* valeurLabel = new QLabel("0", blocScoresWidget);
+        auto *valeurLabel = new QLabel("0", blocScoresWidget);
         valeurLabel->setStyleSheet("font-size: 18px; font-weight: bold;");
         ligne->addWidget(valeurLabel);
 
-        //ajout d'image pour chaque score
+        // ajout d'image pour chaque score
         if (!images[i].isEmpty())
         {
-            auto* imageLabel = new QLabel(blocScoresWidget);
-            imageLabel->setFixedSize(28, 28);
+            auto *imageLabel = new QLabel(blocScoresWidget);
+            imageLabel->setFixedSize(22, 22);
             QPixmap pix(basePath + images[i]);
             if (!pix.isNull())
             {
@@ -116,16 +116,15 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
             }
             ligne->addWidget(imageLabel);
         }
-        //ajout du label score dans la ligne
+        // ajout du label score dans la ligne
         blocScoresLayout->addLayout(ligne);
-        //ajout dans le vector du label
+        // ajout dans le vector du label
         scoreLabels.append(valeurLabel);
     }
 
-    // Ligne piles restantes (en dehors du bloc des scores détaillés)
-    auto* pileLayout = new QHBoxLayout();
+    auto *pileLayout = new QHBoxLayout();
     pileLayout->setSpacing(4);
-    auto* pileLibelle = new QLabel("Piles restantes :", this);
+    auto *pileLibelle = new QLabel("Piles restantes :", this);
     pileLibelle->setStyleSheet("color: #444;");
     pileLayout->addWidget(pileLibelle, 1);
 
@@ -133,7 +132,7 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
     labelNombrePiles->setStyleSheet("font-size: 16px; font-weight: bold;");
     pileLayout->addWidget(labelNombrePiles);
 
-    auto* pileImage = new QLabel(this);
+    auto *pileImage = new QLabel(this);
     pileImage->setFixedSize(28, 28);
     QPixmap pilePix(basePath + "pile.png");
     if (!pilePix.isNull())
@@ -177,7 +176,7 @@ void ScorePanel::setNbPiles(int nbPiles)
         labelNombrePiles->setText(QString::number(nbPiles));
 }
 
-void ScorePanel::setNomJoueurActif(const QString& nom)
+void ScorePanel::setNomJoueurActif(const QString &nom)
 {
     if (labelJoueurActif)
     {

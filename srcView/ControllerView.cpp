@@ -274,7 +274,7 @@ void ControllerView::synchroniserPlateauxGraphiques()
 
 void ControllerView::mettreAJourScoreCourant()
 {
-    // Recalcule/rafraîchit le score du joueur courant.
+
     if (partie.getNbrJoueurs() == 0)
         return;
 
@@ -304,7 +304,6 @@ void ControllerView::joueurPiocheTuile(TuileId idTuile)
 {
     Joueur &joueurcourant = partie.getJoueurMain();
 
-    // Pendant le tour de l'IA, l'utilisateur ne doit pas pouvoir piocher.
     if (joueurcourant.isIA())
     {
         emit afficherMessage(QStringLiteral("C'est le tour de l'Illustre Architecte."));
@@ -330,7 +329,6 @@ void ControllerView::joueurPiocheTuile(TuileId idTuile)
         emit validePasTuilePiochee(idTuile);
         return;
     }
-    // Pioche validée : on mémorise l'état pour permettre une annulation (remettre la tuile et rembourser les pierres).
     piocheEnCours = true;
     indicePiocheEnCours = indice;
     idPiocheEnCours = idTuile;
@@ -341,7 +339,6 @@ void ControllerView::joueurPiocheTuile(TuileId idTuile)
 
 void ControllerView::annulerPiocheTuile(TuileId idTuile)
 {
-    // Annulation via l'UI (bouton "annuler placement") : on remet la tuile dans le chantier et on rembourse les pierres.
     if (!piocheEnCours)
         return;
 
@@ -408,7 +405,6 @@ void ControllerView::rotationTuileGraphique(int, int pas)
 
 void ControllerView::verifierPlacementGraphique(ZoneJeuWidget *zone, int joueur, TuileItem *tuileGraphique, const QPoint &coordonnees)
 {
-    // Vérifie côté modèle si le placement demandé par l'UI est autorisé, puis valide (ou affiche une erreur).
     if (!zone || !tuileGraphique || partie.getNbrJoueurs() == 0 || joueur != partie.getMainJoueur())
         return;
 
@@ -438,7 +434,6 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget *zone, int joueur,
     }
     if (!trouve)
     {
-        // Si (x,y) n'est pas légal, on redemande au à plateau une raison explicite avec un z candidat
         int zMax = -1;
         plateau.pourChaqueHexagone([&](const Hexagone *h)
                                    {
@@ -461,7 +456,6 @@ void ControllerView::verifierPlacementGraphique(ZoneJeuWidget *zone, int joueur,
     }
     emit etageDetermine(tuileGraphique, positionChoisie.z);
     emit setNbPierres(joueurCourant.getNbrPierres());
-    // Le placement est validé : il n'y a plus de pioche "annulable".
     piocheEnCours = false;
     indicePiocheEnCours = -1;
     idPiocheEnCours = 0;

@@ -20,14 +20,8 @@ namespace
     }
 }
 
-TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int tailleTuile, int indice)
-    : QObject()
-    , QGraphicsItemGroup(parent)
-    , tailleHex(tailleTuile)
-    , rotationAutorisee(true)
-    , indice(indice)
-    , tuileId(ref.getId())
-    , mode(m)
+TuileItem::TuileItem(const Tuile &ref, QGraphicsItem *parent, Mode m, int tailleTuile, int indice)
+    : QObject(), QGraphicsItemGroup(parent), tailleHex(tailleTuile), rotationAutorisee(true), indice(indice), tuileId(ref.getId()), mode(m)
 {
     int qRef = 0;
     int rRef = 0;
@@ -54,12 +48,9 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
     int i = 0;
     for (Tuile::ConstIterator it = ref.getConstIterator(); !it.isDone(); it.next())
     {
-        const Hexagone& hex = it.currentItem();
+        const Hexagone &hex = it.currentItem();
         offsetsRelatifs.push_back({hex.getX() - qRef, hex.getY() - rRef});
-        auto* hexItem = new HexItem(&hex, tailleHex);
-        // Place les hexagones relativement à l'hexagone de référence de la tuile.
-        // - En mode placement: les coords sont déjà relatives (autour de 0,0), donc ça ne change rien.
-        // - En mode plateau: les coords sont absolues, donc on "recentre" pour que la position de groupe corresponde au repère.
+        auto *hexItem = new HexItem(&hex, tailleHex);
         hexItem->setPos(axialVersPixel(hex.getX() - qRef, hex.getY() - rRef, tailleHex));
         addToGroup(hexItem);
         hexItems.push_back(hexItem);
@@ -75,9 +66,9 @@ TuileItem::TuileItem(const Tuile& ref, QGraphicsItem* parent, Mode m, int taille
     const int visualId = (tuileId > 0) ? static_cast<int>(tuileId) : ((indice >= 0) ? static_cast<int>(indice) : nextVisualId++);
     const bool estTuileDepart = (ref.getNbHexa() == 4);
     const QPen pen(estTuileDepart ? QColor(Qt::black) : couleurTuileDepuisId(visualId), 3.0);
-    for (QGraphicsItem* item : childItems())
+    for (QGraphicsItem *item : childItems())
     {
-        if (auto* hex = dynamic_cast<HexItem*>(item))
+        if (auto *hex = dynamic_cast<HexItem *>(item))
             hex->setPen(pen);
     }
 }
@@ -104,7 +95,7 @@ void TuileItem::setIndiceDansPioche(unsigned int nouvelIndice)
     indice = nouvelIndice;
 }
 
-void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
+void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::RightButton && rotationAutorisee && mode != Mode::Pioche)
         emit rightClicked();
@@ -124,7 +115,7 @@ void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
     }
 }
 
-void TuileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+void TuileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
@@ -168,24 +159,21 @@ void TuileItem::setTaille(int nouvelleTaille)
 {
     prepareGeometryChange();
     tailleHex = nouvelleTaille;
-    for (QGraphicsItem* item : childItems())
+    for (QGraphicsItem *item : childItems())
     {
-        HexItem* hex = dynamic_cast<HexItem*>(item);
+        HexItem *hex = dynamic_cast<HexItem *>(item);
         if (hex)
             hex->setTaille(nouvelleTaille);
     }
-    // Repositionne aussi les hexagones : leurs positions dépendent directement de la taille (axialVersPixel).
-    // Sans ça, un resize (ex: tuile du chantier vers zone) crée des "trous" entre hexagones.
     const int n = std::min(static_cast<int>(hexItems.size()), static_cast<int>(offsetsRelatifs.size()));
     for (int i = 0; i < n; ++i)
     {
         if (!hexItems[static_cast<size_t>(i)])
             continue;
-        const auto& o = offsetsRelatifs[static_cast<size_t>(i)];
+        const auto &o = offsetsRelatifs[static_cast<size_t>(i)];
         hexItems[static_cast<size_t>(i)]->setPos(axialVersPixel(o.q, o.r, tailleHex));
     }
     setTransformOriginPoint(boundingRect().center());
-    // Le décalage d'étage dépend de la taille des hexagones : on le recalcule.
     setNiveauGraphique(niveauHauteur);
     update();
 }
@@ -196,7 +184,7 @@ void TuileItem::setNiveauGraphique(int niveau)
     setZValue(niveauHauteur * 10);
 }
 
-QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
+QPoint TuileItem::coordonneesAxiales(const QPointF &origineScene) const
 {
     if (!hexRef)
         return QPoint();
@@ -207,15 +195,15 @@ QPoint TuileItem::coordonneesAxiales(const QPointF& origineScene) const
 }
 void TuileItem::ModifierCouleurEtage(int z)
 {
-    QLinearGradient grad(QPointF(-tailleHex, 0),QPointF(tailleHex, 0));
-    grad.setColorAt(0.0, QColor(245, 245, 245).darker(100+40*z));
-    grad.setColorAt(1.0, QColor(210, 210, 210).darker(100+40*z));
+    QLinearGradient grad(QPointF(-tailleHex, 0), QPointF(tailleHex, 0));
+    grad.setColorAt(0.0, QColor(245, 245, 245).darker(100 + 40 * z));
+    grad.setColorAt(1.0, QColor(210, 210, 210).darker(100 + 40 * z));
 
     QBrush brushFond(grad);
 
-    for (QGraphicsItem* item : childItems())
+    for (QGraphicsItem *item : childItems())
     {
-        if (auto* hex = dynamic_cast<HexItem*>(item))
+        if (auto *hex = dynamic_cast<HexItem *>(item))
         {
             hex->setBrush(brushFond);
         }
