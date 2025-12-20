@@ -47,6 +47,7 @@ signals:
                   int scoreCaserne,
                   int scoreTemple,
                   int scoreJardin);
+    void setNbPiles(int nbPiles);
     void joueurActifChange(const QString& nom);
     void valideTuilePiochee(TuileId idTuile);
     void validePasTuilePiochee(TuileId idTuile);

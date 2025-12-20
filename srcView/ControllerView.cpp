@@ -100,6 +100,7 @@ void ControllerView::initPlateau()
     // Synchronise toute l'UI avec l'état courant du modèle (plateaux, chantier, pierres), puis démarre le tour.
     synchroniserPlateauxGraphiques();
     emit setChantier(partie.getChantier().getTuiles());
+    emit setNbPiles(static_cast<int>(partie.getNbrPiles()));
     emit setNbPierres(partie.getJoueurMain().getNbrPierres());
     lancerTour();
 }
@@ -182,9 +183,11 @@ void ControllerView::finDeTour()
         {
             partie.addTuileInChantierFromPiles();
             emit setChantier(partie.getChantier().getTuiles());
+            emit setNbPiles(static_cast<int>(partie.getNbrPiles()));
         }
         else
         {
+            emit setNbPiles(0);
             afficherFinPartie();
             return;
         }

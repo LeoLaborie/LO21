@@ -200,8 +200,9 @@ void MainWindow::creerLePlateau(int nbJoueurs)
         {
             connect(controleur, &ControllerView::setNbPierres, score, &ScorePanel::setNbPierres);
             connect(controleur, &ControllerView::setScore, score, &ScorePanel::setScore);
-        connect(controleur, &ControllerView::joueurActifChange, score, &ScorePanel::setNomJoueurActif);
-    }
+            connect(controleur, &ControllerView::setNbPiles, score, &ScorePanel::setNbPiles);
+            connect(controleur, &ControllerView::joueurActifChange, score, &ScorePanel::setNomJoueurActif);
+        }
 
         connect(controleur, &ControllerView::partieFinie, this, &MainWindow::retourMenu);
     }

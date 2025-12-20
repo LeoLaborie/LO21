@@ -22,12 +22,14 @@ public slots:
                   int scoreTemple,
                   int scoreJardin);
     void setNbPierres(int nbPierres);
+    void setNbPiles(int nbPiles);
     void setNomJoueurActif(const QString& nom);
 
 private:
     QVector<QLabel*> scoreLabels;
     QLabel* labelJoueurActif = nullptr;
     QLabel* labelNombrePierre = nullptr;
+    QLabel* labelNombrePiles = nullptr;
 };
 
 #endif

@@ -15,7 +15,8 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
 {
     //défintion des styles
     setAttribute(Qt::WA_StyledBackground, true);
-    setFixedSize(width, height);
+    setFixedWidth(width);
+    setMinimumHeight(height);
     setObjectName("scorePanelWidget");
     setStyleSheet(
         "#scorePanelWidget {"
@@ -120,6 +121,26 @@ ScorePanel::ScorePanel(int width, int height, QWidget* parent)
         //ajout dans le vector du label
         scoreLabels.append(valeurLabel);
     }
+
+    // Ligne piles restantes (en dehors du bloc des scores détaillés)
+    auto* pileLayout = new QHBoxLayout();
+    pileLayout->setSpacing(4);
+    auto* pileLibelle = new QLabel("Piles restantes :", this);
+    pileLibelle->setStyleSheet("color: #444;");
+    pileLayout->addWidget(pileLibelle, 1);
+
+    labelNombrePiles = new QLabel("0", this);
+    labelNombrePiles->setStyleSheet("font-size: 16px; font-weight: bold;");
+    pileLayout->addWidget(labelNombrePiles);
+
+    auto* pileImage = new QLabel(this);
+    pileImage->setFixedSize(28, 28);
+    QPixmap pilePix(basePath + "pile.png");
+    if (!pilePix.isNull())
+        pileImage->setPixmap(pilePix.scaled(pileImage->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    pileLayout->addWidget(pileImage);
+
+    scoreLayout->addLayout(pileLayout);
 }
 
 void ScorePanel::setScore(int scoreTotal,
@@ -148,6 +169,12 @@ void ScorePanel::setNbPierres(int nbPierres)
 {
     if (labelNombrePierre)
         labelNombrePierre->setText(QString::number(nbPierres));
+}
+
+void ScorePanel::setNbPiles(int nbPiles)
+{
+    if (labelNombrePiles)
+        labelNombrePiles->setText(QString::number(nbPiles));
 }
 
 void ScorePanel::setNomJoueurActif(const QString& nom)
