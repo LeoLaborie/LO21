@@ -461,7 +461,7 @@ std::vector<int> Plateau::calculerPointsiaTab(const int &diff) const{
                                PlaceJardin += 3;
                                break;
                            case TypeHex::Carriere:
-                               nbCarriere += 2;
+                               nbCarriere += 1;
                                break;
                            default:
                                break;
@@ -475,6 +475,13 @@ std::vector<int> Plateau::calculerPointsiaTab(const int &diff) const{
         nbTemple *= 2;
         nbJardin *= 2;
     }
+
+    std::cout<< "nbhabitation : " << nbHabitation << " placehabitations : " << PlaceHabitation << "\n";
+    std::cout<< "nbmarche : " << nbMarche << " placehamarches : " << PlaceMarche << "\n";
+    std::cout<< "nbcaserne : " << nbCaserne << " placeCasernes : " << PlaceCaserne << "\n";
+    std::cout<< "nbtemple : " << nbTemple << " placetemples : " << PlaceTemple << "\n";
+    std::cout<< "nbjardin : " << nbJardin << " placejardins : " << PlaceJardin << "\n";
+    std::cout<< "nbcarrière : " << nbCarriere << "\n";
 
     std::vector<int> tabscore;
     tabscore.reserve(6);
@@ -491,7 +498,7 @@ int Plateau::calculerPointsia(const int &diff) const
 {
     const std::vector<int> tabscore = calculerPointsiaTab(diff);
     int score = 0;
-    for (size_t i = 0; i<6;i++)
+    for (size_t i = 0; i<5;i++)
         score += tabscore[i];
     if (diff == 2){
         score += tabscore[5]*2;

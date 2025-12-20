@@ -279,7 +279,6 @@ void ControllerView::mettreAJourScoreCourant()
     if (joueur.isIA())
     {
         IllustreArchitecte &ia = dynamic_cast<IllustreArchitecte &>(joueur);
-        ia.setNbrPoints();
         const std::vector<int> tabscore = joueur.getPlateau().calculerPointsiaTab(ia.getdifficulte());
         const int total = joueur.getNbrPoints();
         if (tabscore.size() >= 6)
@@ -289,7 +288,6 @@ void ControllerView::mettreAJourScoreCourant()
     }
     else
     {
-        joueur.setNbrPoints();
         const std::vector<int> tabscore = joueur.getPlateau().calculerPointsTab();
         const int total = joueur.getNbrPoints();
         if (tabscore.size() >= 5)

@@ -49,7 +49,7 @@ void Joueur::setNbrPoints()
 
 void IllustreArchitecte::setNbrPoints()
 {
-    nbrPoints = getPlateau().calculerPointsia(getdifficulte());
+    nbrPoints = getPlateau().calculerPointsia(getdifficulte()) + getNbrPierres();
 }
 
 Tuile &Joueur::piocherTuile(TuileId id, Chantier &chantier, Joueur *fauxJoueur)
