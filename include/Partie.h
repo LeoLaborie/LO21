@@ -1,6 +1,7 @@
 #ifndef PARTIE_H
 #define PARTIE_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,7 @@ private:
     bool fauxJoueurP = false;
 
     Chantier chantier;
-    std::vector<Joueur *> joueurs;
+    std::vector<std::unique_ptr<Joueur>> joueurs;
     std::vector<std::vector<Tuile>> piles;
     /**
      * @brief Constructeur privé utilisé uniquement pour reconstruire une partie depuis une sauvegarde.
@@ -39,7 +40,7 @@ private:
            int mainJoueur,
            Chantier chantier,
            std::vector<std::vector<Tuile>> piles,
-           std::vector<Joueur *> joueurs,
+           std::vector<std::unique_ptr<Joueur>> joueurs,
            bool fauxJoueurP);
 
     /**
@@ -56,6 +57,74 @@ private:
     void genererTuilesParties(bool fullTuiles = false, const TuileGeneratorFactory *factory = nullptr);
 
 public:
+    class JoueurIterator
+    {
+        std::vector<std::unique_ptr<Joueur>> &liste;
+        std::size_t idx = 0;
+        std::size_t nb = 0;
+        Joueur *courant = nullptr;
+
+    public:
+        JoueurIterator(std::vector<std::unique_ptr<Joueur>> &j, std::size_t n)
+            : liste(j), nb(n)
+        {
+            if (nb > 0)
+                courant = liste[idx].get();
+        }
+
+        bool isDone() const { return nb == 0; }
+
+        void next()
+        {
+            if (nb == 0)
+                return;
+            --nb;
+            if (nb > 0)
+                courant = liste[++idx].get();
+        }
+
+        std::size_t currentIndex() const { return idx; }
+
+        Joueur &currentItem()
+        {
+            return *courant;
+        }
+    };
+
+    class JoueurConstIterator
+    {
+        const std::vector<std::unique_ptr<Joueur>> &liste;
+        std::size_t idx = 0;
+        std::size_t nb = 0;
+        const Joueur *courant = nullptr;
+
+    public:
+        JoueurConstIterator(const std::vector<std::unique_ptr<Joueur>> &j, std::size_t n)
+            : liste(j), nb(n)
+        {
+            if (nb > 0)
+                courant = liste[idx].get();
+        }
+
+        bool isDone() const { return nb == 0; }
+
+        void next()
+        {
+            if (nb == 0)
+                return;
+            --nb;
+            if (nb > 0)
+                courant = liste[++idx].get();
+        }
+
+        std::size_t currentIndex() const { return idx; }
+
+        const Joueur &currentItem() const
+        {
+            return *courant;
+        }
+    };
+
     /**
      * @brief Constructeur de copie supprimé pour éviter la copie de la partie
      */
@@ -95,13 +164,7 @@ public:
     /**
      * @brief Destructeur de Partie
      */
-    ~Partie()
-    {
-        for (auto j : joueurs)
-        {
-            delete j;
-        }
-    };
+    ~Partie() = default;
 
     // Getters
 
@@ -172,9 +235,24 @@ public:
      * @brief Retourne les joueurs de la partie
      * @return const std::vector<Joueur>& : référence constante vers le vecteur des joueurs
      */
-    const std::vector<Joueur *> &getJoueurs() const
+    JoueurIterator getIterator()
     {
-        return joueurs;
+        return JoueurIterator(joueurs, joueurs.size());
+    }
+
+    JoueurConstIterator getConstIterator() const
+    {
+        return JoueurConstIterator(joueurs, joueurs.size());
+    }
+
+    Joueur &getJoueur(std::size_t idx)
+    {
+        return *joueurs.at(idx);
+    }
+
+    const Joueur &getJoueur(std::size_t idx) const
+    {
+        return *joueurs.at(idx);
     }
 
     /**
@@ -266,7 +344,7 @@ public:
     IllustreArchitecte *getFauxJoueur() const
     {
         if (fauxJoueurPresent())
-            return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1]);
+            return dynamic_cast<IllustreArchitecte *>(joueurs[static_cast<size_t>(nbrJoueurs) - 1].get());
         return nullptr;
     }
 

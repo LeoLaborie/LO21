@@ -14,7 +14,7 @@ Partie::Partie(int nbJoueursInit,
                int mainJoueurInit,
                Chantier chantierInit,
                std::vector<std::vector<Tuile>> pilesInit,
-               std::vector<Joueur *> joueursInit,
+               std::vector<std::unique_ptr<Joueur>> joueursInit,
                bool fauxJoueurPInit)
     : nbrJoueurs(nbJoueursInit),
       maitreArchitecte(maitreArchitecteInit % (nbJoueursInit ? nbJoueursInit : 1)),
@@ -45,7 +45,7 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
         cfg.variantesScore = variantesScore;
         std::unique_ptr<Joueur> joueur = getFactoryJoueur(TypeJoueurs::JoueurHumain)->creer(cfg);
         joueur->setNbrPierres(i + 1);
-        joueurs.push_back(joueur.release());
+        joueurs.push_back(std::move(joueur));
     }
 
     if (nbrJoueurs == 1)
@@ -60,7 +60,7 @@ Partie::Partie(int nbJouer, std::vector<std::string> &pseudo, const bool variant
         cfg.difficulte = difficulte;
         std::unique_ptr<Joueur> fauxJoueur = getFactoryJoueur(TypeJoueurs::IllustreArchitecte)->creer(cfg);
         fauxJoueur->setNbrPierres(2);
-        joueurs.push_back(fauxJoueur.release());
+        joueurs.push_back(std::move(fauxJoueur));
         fauxJoueurP = true;
     }
 

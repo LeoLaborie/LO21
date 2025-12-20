@@ -1,6 +1,10 @@
 #include "Sauvegarde.h"
 
-#include <QCoreApplication>
+#include "Hexagone.h"
+#include "Joueur.h"
+#include "Partie.h"
+#include "Tuile.h"
+
 #include <algorithm>
 #include <chrono>
 #include <cctype>
@@ -41,7 +45,7 @@ std::vector<std::string> getSauvegardes()
         // on vérifie si c'est un fichier et que l'extension est bien celle des fichiers sauvegardes
         if (entry.is_regular_file() && entry.path().extension() == extension)
         {
-            fichiersSave.push_back(entry.path().filename().string());  // on ajoutes dans le vecteur le nom du fichier
+            fichiersSave.push_back(entry.path().filename().string()); // on ajoutes dans le vecteur le nom du fichier
         }
     }
     return fichiersSave;
@@ -67,28 +71,28 @@ std::string typeToString(TypeHex t)
 {
     switch (t)
     {
-        case TypeHex::Habitation:
-            return "Habitation";
-        case TypeHex::Marche:
-            return "Marche";
-        case TypeHex::Temple:
-            return "Temple";
-        case TypeHex::Caserne:
-            return "Caserne";
-        case TypeHex::Jardin:
-            return "Jardin";
-        case TypeHex::PHabitation:
-            return "PHabitation";
-        case TypeHex::PMarche:
-            return "PMarche";
-        case TypeHex::PTemple:
-            return "PTemple";
-        case TypeHex::PCaserne:
-            return "PCaserne";
-        case TypeHex::PJardin:
-            return "PJardin";
-        case TypeHex::Carriere:
-            return "Carriere";
+    case TypeHex::Habitation:
+        return "Habitation";
+    case TypeHex::Marche:
+        return "Marche";
+    case TypeHex::Temple:
+        return "Temple";
+    case TypeHex::Caserne:
+        return "Caserne";
+    case TypeHex::Jardin:
+        return "Jardin";
+    case TypeHex::PHabitation:
+        return "PHabitation";
+    case TypeHex::PMarche:
+        return "PMarche";
+    case TypeHex::PTemple:
+        return "PTemple";
+    case TypeHex::PCaserne:
+        return "PCaserne";
+    case TypeHex::PJardin:
+        return "PJardin";
+    case TypeHex::Carriere:
+        return "Carriere";
     }
     return "Carriere";
 }
@@ -168,10 +172,11 @@ std::istream &operator>>=(std::istream &is, Hexagone &h)
 /*meme chose pour sauvegarde la tuile, mais cette fois on utilise notre opérator créer pour les hexagones
 pour sauvegarder les hexagones de la tuile
 */
-std::ostream &operator<<=(std::ostream &os, const Tuile &t) {
+std::ostream &operator<<=(std::ostream &os, const Tuile &t)
+{
     os << "TUILE " << t.getNbHexa() << ' ' << t.getId() << '\n';
 
-    for(Tuile::ConstIterator it = t.getConstIterator(); !it.isDone(); it.next())
+    for (Tuile::ConstIterator it = t.getConstIterator(); !it.isDone(); it.next())
         os <<= it.currentItem();
 
     return os;
@@ -192,7 +197,7 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile)
 
     int nbHex = 0;
     if (!(is >> nbHex))
-        {
+    {
         is.setstate(std::ios::failbit);
         return is;
     }
@@ -249,7 +254,7 @@ std::istream &operator>>=(std::istream &is, Tuile &tuile)
 
     for (Tuile::Iterator it = tuile.getIterator(); !it.isDone(); it.next())
     {
-        const auto& c = coords[it.currentIndex()];
+        const auto &c = coords[it.currentIndex()];
         it.currentItem().setCoord(c.x, c.y, c.z);
     }
 
@@ -286,18 +291,16 @@ bool sauvegarderPartie(const Partie &p)
         for (const auto &t : piles[i])
             f <<= t;
     }
-    const auto joueurs = p.getJoueurs();
-    f << "JOUEURS " << joueurs.size() << '\n';
+    f << "JOUEURS " << p.getNbrJoueurs() << '\n';
 
-    for (const auto* j : joueurs)
+    for (auto it = p.getConstIterator(); !it.isDone(); it.next())
     {
-        if (!j)
-            continue;
+        const Joueur &j = it.currentItem();
 
-        if (j->isIA())
+        if (j.isIA())
         {
             f << "JOUEUR_IA\n";
-            const auto* ia = dynamic_cast<const IllustreArchitecte*>(j);
+            const auto *ia = dynamic_cast<const IllustreArchitecte *>(&j);
             f << "DIFFICULTE " << (ia ? ia->getdifficulte() : 1) << '\n';
         }
         else
@@ -305,20 +308,20 @@ bool sauvegarderPartie(const Partie &p)
             f << "JOUEUR\n";
         }
 
-        f << "NOM " << j->getNom() << '\n';
-        f << "PIERRES " << j->getNbrPierres() << '\n';
-        f << "POINTS " << j->getNbrPoints() << '\n';
+        f << "NOM " << j.getNom() << '\n';
+        f << "PIERRES " << j.getNbrPierres() << '\n';
+        f << "POINTS " << j.getNbrPoints() << '\n';
         f << "TUILE_MAIN\n";
-        f <<= j->getTuileEnMain();
+        f <<= j.getTuileEnMain();
 
-        const auto& tuilesPlateau = j->getPlateau().getTuiles();
+        const auto &tuilesPlateau = j.getPlateau().getTuiles();
         f << "PLATEAU " << tuilesPlateau.size() << '\n';
-        for (const auto& t : tuilesPlateau)
+        for (const auto &t : tuilesPlateau)
             f <<= t;
 
         f << "VARIANTES ";
         for (unsigned int i = 0; i < 5; ++i)
-            f << j->getPlateau().getVarianteScores()[i] << ' ';
+            f << j.getPlateau().getVarianteScores()[i] << ' ';
         f << '\n';
     }
     return true;
@@ -345,7 +348,7 @@ Partie Partie::FromSave(const std::string &nomFichier)
     std::vector<Tuile> plateauFaux;
     TuileId maxIdSauvegarde = 0;
     TuileId prochainIdStocke = 0;
-    auto enregistrerIdTuile = [&](const Tuile& t)
+    auto enregistrerIdTuile = [&](const Tuile &t)
     {
         if (t.getId() > maxIdSauvegarde)
             maxIdSauvegarde = t.getId();
@@ -448,7 +451,7 @@ Partie Partie::FromSave(const std::string &nomFichier)
         return nomLine;
     };
 
-    std::vector<Joueur*> joueursConstruits;
+    std::vector<std::unique_ptr<Joueur>> joueursConstruits;
     joueursConstruits.reserve(nbJoueursDansFichier);
 
     bool fauxJoueurPresent = false;
@@ -538,13 +541,13 @@ Partie Partie::FromSave(const std::string &nomFichier)
                                           points,
                                           std::move(tuileMain),
                                           std::move(plateau));
-            joueursConstruits.push_back(new Joueur(std::move(tmp)));
+            joueursConstruits.push_back(std::make_unique<Joueur>(std::move(tmp)));
         }
         else
         {
-            auto* ia = IllustreArchitecte::fromSave(difficulteFaux, pierres, points, variantesScore, std::move(plateau));
+            auto *ia = IllustreArchitecte::fromSave(difficulteFaux, pierres, points, variantesScore, std::move(plateau));
             ia->setTuileEnMain(tuileMain);
-            joueursConstruits.push_back(ia);
+            joueursConstruits.push_back(std::unique_ptr<Joueur>(ia));
         }
     }
 
@@ -588,8 +591,8 @@ Partie Partie::FromSave(const std::string &nomFichier)
                         enregistrerIdTuile(t);
                     }
 
-                    auto* ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
-                    joueursConstruits.push_back(ia);
+                    auto *ia = IllustreArchitecte::fromSave(difficulteFaux, pierresFaux, pointsFaux, variantesScore, std::move(plateauFaux));
+                    joueursConstruits.push_back(std::unique_ptr<Joueur>(ia));
                 }
             }
             else

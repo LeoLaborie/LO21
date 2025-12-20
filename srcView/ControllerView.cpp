@@ -142,7 +142,6 @@ void ControllerView::lancerTour()
         // if (partie.fauxJoueurPresent())
         // {
         //     // Dans le mode "1 joueur + Illustre Architecte", quand l'IA pioche, les pierres vont au joueur humain.
-        //     const auto& joueurs = partie.getJoueurs();
         //     const int dernierIndex = partie.getNbrJoueurs() - 1;
         //     if (joueurIndex == dernierIndex && !joueurs.empty())
         //         receveurPierres = joueurs.front();
@@ -203,14 +202,11 @@ void ControllerView::afficherFinPartie()
     partieTerminee = true;
 
     QList<QPair<int, QString>> scores;
-    const auto &joueurs = partie.getJoueurs();
-    for (int i = 0; i < partie.getNbrJoueurs(); ++i)
+    for (auto it = partie.getIterator(); !it.isDone(); it.next())
     {
-        Joueur *j = joueurs[static_cast<size_t>(i)];
-        if (!j)
-            continue;
-        j->setNbrPoints();
-        scores.append(qMakePair(j->getNbrPoints(), QString::fromStdString(j->getNom())));
+        Joueur &j = it.currentItem();
+        j.setNbrPoints();
+        scores.append(qMakePair(j.getNbrPoints(), QString::fromStdString(j.getNom())));
     }
 
     std::sort(scores.begin(), scores.end(), [](const QPair<int, QString> &a, const QPair<int, QString> &b)
@@ -257,21 +253,19 @@ void ControllerView::afficherFinPartie()
 void ControllerView::synchroniserPlateauxGraphiques()
 {
     // Recharge tous les plateaux depuis le modèle (utile après chargement ou actions IA).
-    const auto &joueurs = partie.getJoueurs();
-    for (size_t i = 0; i < joueurs.size(); ++i)
+    size_t idx = 0;
+    for (auto it = partie.getConstIterator(); !it.isDone(); it.next(), ++idx)
     {
-        Joueur *joueur = joueurs[i];
-        if (!joueur)
-            continue;
-        emit chargerPlateauGraphique(static_cast<int>(i), joueur->getPlateau().getTuiles());
+        const Joueur &joueur = it.currentItem();
+        emit chargerPlateauGraphique(static_cast<int>(idx), joueur.getPlateau().getTuiles());
     }
 
     const int joueurCourant = partie.getMainJoueur();
-    if (joueurCourant >= 0 && joueurCourant < static_cast<int>(joueurs.size()))
+    if (joueurCourant >= 0 && joueurCourant < partie.getNbrJoueurs())
     {
-        const Joueur *joueur = joueurs[static_cast<size_t>(joueurCourant)];
-        if (joueur && joueur->getTuileEnMain().getNbHexa() > 0)
-            emit afficherTuileMain(joueurCourant, joueur->getTuileEnMain());
+        const Joueur &joueur = partie.getJoueur(static_cast<size_t>(joueurCourant));
+        if (joueur.getTuileEnMain().getNbHexa() > 0)
+            emit afficherTuileMain(joueurCourant, joueur.getTuileEnMain());
     }
 }
 
