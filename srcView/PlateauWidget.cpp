@@ -274,7 +274,6 @@ void PlateauWidget::afficherAideCommandes()
     dialog.setWindowTitle(tr("Information"));
     dialog.setModal(true);
     dialog.setWindowFlags(dialog.windowFlags() | Qt::Tool | Qt::WindowStaysOnTopHint);
-    dialog.setMinimumSize(200, 140);
 
     auto* layout = new QVBoxLayout(&dialog);
     layout->setContentsMargins(18, 14, 18, 14);
@@ -291,6 +290,8 @@ void PlateauWidget::afficherAideCommandes()
     connect(okBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
     layout->addWidget(okBtn, 0, Qt::AlignCenter);
 
+    dialog.adjustSize();
+    dialog.setMinimumSize(dialog.sizeHint());
     dialog.exec();
 }
 
